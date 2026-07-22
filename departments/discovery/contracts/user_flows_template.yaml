@@ -1,0 +1,99 @@
+author_agent: 'ux-flow-architect-sub'
+# Шаблон контракта State Machine (User Flow) в Ультра-компактном стиле
+# Использовать этот формат для проектирования путей вместо таблиц с интерфейсами.
+# ЗАПРЕЩЕНО: Описывать конкретные UI-элементы (кнопки, дропдауны, страницы). Описывай бизнес-состояния.
+# ЗАПРЕЩЕНО: Создавать микро-состояния для асинхронной валидации полей. Один бизнес-шаг = один стейт.
+
+flow_id: '[Любой ID, например: auth_login, calc_image_analysis]'
+domain: 'название_домена'
+platforms:
+  [
+    '[Список платформ, на которых реализуется данный флоу, например: web, ios, android, linux]',
+  ]
+intent: 'Краткое описание бизнес-цели данного флоу'
+linked_job_stories: ['ID_1', 'ID_2']
+entities: ['[Entity_1]', '[other_domain].[Entity_2]'] # Можно указывать сущности из других доменов через точку
+
+# Глобальные правила и бизнес-ограничения (DRY Composition)
+shared_rules:
+  rule_file_size: 'Файл не более 20МБ'
+  rule_valid_email: 'Email в формате RFC5322, уникальный в БД'
+
+# SLA / Метрики производительности (Опционально, машиночитаемый блок)
+sla:
+  latency_ms: null            # end-to-end бизнес-задержка, ожидаемая пользователем/системой
+  timeout_ms: null            # жесткий технический таймаут для основного вызова (network/API/webhook)
+  ttl_seconds: null           # время жизни кэша/сессии/токена (если есть)
+  retention_days: null        # срок хранения данных (например, аудит-логи)
+  retry_policy: null          # политика повторов (например, 'exponential_backoff, max 3 attempts')
+  throughput: null            # предел пропускной способности (например, '100 req/s')
+  availability_target: null   # целевая доступность (например, '99.9%')
+
+# Глобальные состояния ошибок и прерываний (Заменяет edge_cases).
+# Ключи ниже — рекомендованные, часто переиспользуемые имена (бери их как есть,
+# если подходят по смыслу), но НЕ фиксированный список: `shared_states` — это
+# произвольный словарь, добавляй свои ключи по необходимости флоу.
+shared_states:
+  '[sys_error]':
+    {
+      display_data: ['[Error] Системный сбой'],
+      interactive_elements: ['[Action] Повторить запрос'],
+      Recovery: 'Логирование, откат транзакции',
+    }
+  '[unauthorized]':
+    {
+      display_data: ['[Error] Доступ запрещен'],
+      interactive_elements: [],
+      Recovery: 'Редирект на авторизацию',
+    }
+  '[syncing_crdt]':
+    {
+      display_data: ['[Опционально] Индикатор P2P соединения', 'Фоновая синхронизация'],
+      interactive_elements: [],
+      Recovery: 'Ожидание сети',
+    }
+  '[zkp_generation]':
+    {
+      display_data: ['[Опционально] Индикатор генерации доказательства'],
+      interactive_elements: [],
+      Recovery: 'Повтор вычисления',
+    }
+  '[trust_threshold_failed]':
+    {
+      display_data: ['[Опционально] Ошибка репутации / Изоляция узла'],
+      interactive_elements: [],
+      Recovery: 'Требование социального графа',
+    }
+
+# Метрики успешности (Business Observability)
+success_criteria: ['Завершено без обращения в саппорт', 'Время < 10 сек']
+
+# Состояния и переходы (Один экран/фаза = Один логический стейт). Ключи —
+# имена состояний, которые ты сам придумываешь для этого флоу (см. правило
+# No Dangling Transitions в skill-user-flows.md: каждый `ON`-таргет обязан
+# быть либо ключом здесь, либо `ref:<ключ из shared_states>`, либо
+# `flow:<flow_id>`).
+states:
+  '[initial_state_name]':
+    display_data: ['[Data] Баланс', '[Info] Требования']
+    interactive_elements: ['[Input] file: макет']
+    design_rationale:
+      cognitive_load: 'Medium'
+      friction_justification: 'Пользователю нужно прочитать требования до загрузки файла'
+      business_rule_refs: ['rule_file_size']
+    "ON": { '[file_provided]': 'processing_state_name' } # Неявная валидация: несоблюдение rules приводит к локальной ошибке UI, без смены стейта.
+
+  '[processing_state_name]':
+    display_data: ['[UI] Индикатор загрузки и валидации']
+    interactive_elements: []
+    design_rationale:
+      cognitive_load: 'Low'
+      friction_justification: 'Пассивное ожидание'
+      business_rule_refs: ['rule_timeout_30s']
+    "ON": { '[success]': 'final_state_name', '[timeout]': 'ref:sys_error' }
+
+# Телеметрия (Опционально). Структурировано для последующей агрегации в единый каталог событий
+# (аналогично critical_business_events в business_observability.yaml) — не пиши event_name свободным текстом.
+telemetry_events:
+  - event_name: '[Машиночитаемое имя события. Например: payment_failed]'
+    trigger_state: '[В каком стейте из `states`/`shared_states` срабатывает событие]'

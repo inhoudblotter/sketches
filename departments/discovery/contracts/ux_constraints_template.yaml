@@ -1,0 +1,16 @@
+# UX & Flow Constraints YAML Contract
+# Формируется Tech Synthesizer на основе UX Research и Technical Benchmarks для UX Flow Architect.
+
+flags:
+  offline_first: '[true/false]'
+  is_self_hosted: '[true/false]'
+
+architect_note: '[Краткая выжимка архитектурных и платформенных решений: например, "Использовать Calm Tech, без геймификации, требуется оффлайн-режим и локальное кэширование"]'
+
+friction_management:
+  intentional_friction: '[Где мы намеренно замедляем пользователя? Например: Окно подтверждения перед отправкой]'
+  cognitive_load: '[Ожидаемый уровень когнитивной нагрузки и меры снижения. Например: Не более 3 полей на экран]'
+
+device_specifics:
+  primary_input: '[Например: Touchscreen, Keyboard-only, Voice]'
+  accessibility_level: '[Требования к доступности, например: WCAG 2.1 AA]'

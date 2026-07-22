@@ -1,0 +1,6 @@
+name: job-stories-content
+entrypoint: run_lint_job_stories_content
+inputs:
+- '**/domains/{domain}/epics/**/stories.yaml'
+outputs:
+- stdout

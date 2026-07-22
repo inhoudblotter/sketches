@@ -1,0 +1,34 @@
+name: Build Project Analytics
+type: aggregator
+description: Собирает проектную аналитику (Story Points, Size Bucket, флаги риска, архитектурные метрики, финансовый дашборд, стек, roadmap, эррата) в единый project_analytics.yaml — единственный источник данных для питчдека. Данные о доменах/сторях/фичах/связях/дата-модели получает через query_discovery, не парсит их сам.
+department: discovery
+command: python -m departments.discovery.tools.generators.build_project_analytics.command
+cli_name: build-project-analytics
+# Called as a Python import (query_discovery.logic.queries/reports/orphans), not
+# via CLI <call_tool> — one entry per function actually called in logic.py, scoped
+# to query_discovery's matching subcommand (tool::subcommand). Declaring the bare
+# tool name here instead would wire this aggregator to query_discovery's *entire*
+# input surface (every domain file in the department) instead of just the seven
+# commands it actually calls.
+calls_tools:
+  - query_discovery::stories       # get_filtered_stories
+  - query_discovery::features      # get_filtered_features
+  - query_discovery::flows         # get_filtered_flows
+  - query_discovery::dependencies  # get_dependencies
+  - query_discovery::data-model    # get_data_model_metrics
+  - query_discovery::coverage      # get_coverage (missing_mandatory_epics)
+  - query_discovery::metrics       # get_domain_metrics(is_global=True) (global KPI/critical events)
+inputs:
+  # Strategy/errata data — read directly (outside query_discovery's domain-graph scope).
+  - 'workspace/discovery/strategy/tech_constraints.yaml'
+  - 'workspace/discovery/strategy/unit_economics_model.yaml'
+  - 'workspace/discovery/strategy/platform_strategy.yaml'
+  - 'workspace/discovery/strategy/revenue_model.yaml'
+  - 'workspace/discovery/strategy/launch_roadmap.yaml'
+  - 'workspace/discovery/errata/critical_errata.yaml'
+outputs:
+  - 'workspace/discovery/meta/project_analytics.yaml'
+  - 'workspace/discovery/meta/project_analytics_detail.yaml'
+# Not a contracts/ entry: project_analytics.yaml is never authored by an agent
+# against a template, it's pure tool output — see departments/discovery/playbooks/
+# project_analytics_reference.yaml for a field-by-field reference instead.

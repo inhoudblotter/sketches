@@ -1,0 +1,116 @@
+# Discovery Department Report
+
+**Generated:** {{ report.generated_at }}
+**Agents dir:** `{{ report.agents_dir }}`
+**Workspace dir:** `{{ report.workspace_dir }}`
+
+---
+
+## Summary
+
+{% set top_agents = report.agents | rejectattr("is_subagent") | list %}
+{% set sub_agents  = report.agents | selectattr("is_subagent") | list %}
+{% set counts = {"DONE": 0, "READY": 0, "BLOCKED": 0, "ESCALATED": 0, "UNKNOWN": 0} %}
+{% for agent in top_agents %}{% set _ = counts.update({agent.status: counts[agent.status] + 1}) %}{% endfor %}
+| Status | Count |
+|---|---|
+| ✅ DONE | {{ counts["DONE"] }} |
+| 🔵 READY | {{ counts["READY"] }} |
+| 🔴 BLOCKED | {{ counts["BLOCKED"] }} |
+| 🟠 ESCALATED | {{ counts["ESCALATED"] }} |
+| ⬜ UNKNOWN | {{ counts["UNKNOWN"] }} |
+| **Subagents** | **{{ sub_agents | length }}** |
+| **Completion** | **{{ report.metrics.completion_pct }}%** |
+| **Contract coverage** | **{{ report.metrics.contract_coverage_pct }}%** |
+| **Output Contract Coverage** | **{{ report.metrics.output_contract_coverage_pct }}%** |
+
+---
+
+## Pipeline Status
+
+{% set agent_by_name = {} %}
+{% for a in report.agents %}{% set _ = agent_by_name.update({a.name: a}) %}{% endfor %}
+
+{% set write_index = {} %}
+{% for art in report.artifacts %}{% if art.producers %}{% set _ = write_index.update({art.path: art.producers | join(', ')}) %}{% set _ = write_index.update({art.path | regex_replace('{[^}]+}', '*'): art.producers | join(', ')}) %}{% endif %}{% endfor %}
+
+| Agent | Model | Temp | Status | Blocked on Agents | Blocked on External |
+|---|---|---|---|---|---|
+{% for agent in top_agents | sort(attribute="name") | sort(attribute="stage_number") %}{% set blocked_agents = [] %}{% set blocked_ext = [] %}{% for b in agent.blocked_on %}{% if b in write_index %}{% set _ = blocked_agents.append(write_index[b]) %}{% else %}{% set _ = blocked_ext.append(b.split('/')[-2:] | join('/') if '*' in b else b.split('/')[-1]) %}{% endif %}{% endfor %}| `{{ agent.name }}` | {{ agent.model }} | {{ agent.temperature }} | {{ agent.status }} | {% if blocked_agents %}{{ blocked_agents | unique | list | join(", ") }}{% else %}—{% endif %} | {% if blocked_ext %}{{ blocked_ext | unique | list | join(", ") }}{% else %}—{% endif %} |
+{% if agent.delegates_to %}{% for sub_name in agent.delegates_to %}{% set sub = agent_by_name.get(sub_name) %}{% if sub %}| `↳ {{ sub.name }}{% if sub_name in agent.optional_delegates %} (optional){% endif %}` | {{ sub.model }} | {{ sub.temperature }} | _internal_ | — | — |
+{% endif %}{% endfor %}{% endif %}{% endfor %}
+
+---
+
+## Context Budget
+
+> "Tool Output KB" is measured by actually running each agent's `<call_tool>` invocations against the real workspace and sizing stdout. A non-templated call runs once ("single"); a templated call outside a `<for_each>` (e.g. `--domain {domain}`) is sampled once per real domain/epic and the 90th percentile size is used ("p90", mirrors how templated `<read>` paths are already sized); a templated call inside a `<for_each>` accumulates every iteration into the same context, measured via one unfiltered call standing in for the cumulative total ("full"). Mutation subcommands (e.g. `rename-entity`, mode "write") are never executed and excluded here — they produce a file, not context the calling agent reads back; see Output Sizes below for that. Invocations with unresolved/unsupported `{placeholder}` variables are skipped and excluded from Tool Output KB entirely. Per-invocation detail (including skipped calls): see "Tool Invocation Cost" below. "Own Write KB" adds this agent's own `<write>` tags — before handoff downstream, that output still sits in its own working context alongside everything it read, so it counts toward Total KB/Risk. Tool-produced output (e.g. a generator's own file) does not: that's a separate process's file, never held in this agent's context — see Output Sizes below for that instead.
+>
+> Risk bands are calibrated for frontier ~1M-token context windows, where a single agent's own prompt is meant to stay a small slice of the budget: 🟢 OK &lt;{{ report.risk_ok_max_kb | int }} KB, 🟡 WATCH {{ report.risk_ok_max_kb | int }}–{{ report.risk_high_min_kb | int }} KB (worth a look, not urgent), 🔴 HIGH &gt;{{ report.risk_high_min_kb | int }} KB (real context-bloat signal).
+
+| Agent | Skills | Skills KB | Contracts KB | Artifacts KB (p90) | Tool Output KB | Own Write KB | Total KB | Risk |
+|---|---|---|---|---|---|---|---|---|
+{% for agent in top_agents | sort(attribute="total_sort_kb", reverse=True) %}| `{{ agent.name }}` | {{ agent.required_skills | length }} | {{ agent.skills_kb }} | {{ agent.contracts_kb }} | {{ agent.artifacts_kb }} | {{ agent.tool_output_kb }} | {{ agent.own_write_kb }} | {{ agent.total_risk_kb }}{% if agent.context_is_partial %}~{% endif %} | {{ "🔴 HIGH" if agent.total_risk_kb > report.risk_high_min_kb else ("🟡 WATCH" if agent.total_risk_kb > report.risk_ok_max_kb else "🟢 OK") }} |
+{% if agent.delegates_to %}{% set sub_list = [] %}{% for sn in agent.delegates_to %}{% set sub = agent_by_name.get(sn) %}{% if sub %}{% set _ = sub_list.append(sub) %}{% endif %}{% endfor %}{% for sub in sub_list | sort(attribute="total_sort_kb", reverse=True) %}| `↳ {{ sub.name }}{% if sub.name in agent.optional_delegates %} (optional){% endif %}` | {{ sub.required_skills | length }} | {{ sub.skills_kb }} | {{ sub.contracts_kb }} | {{ sub.artifacts_kb }} | {{ sub.tool_output_kb }} | {{ sub.own_write_kb }} | {{ sub.total_risk_kb }}{% if sub.context_is_partial %}~{% endif %} | {{ "🔴 HIGH" if sub.total_risk_kb > report.risk_high_min_kb else ("🟡 WATCH" if sub.total_risk_kb > report.risk_ok_max_kb else "🟢 OK") }} |
+{% endfor %}{% endif %}{% endfor %}
+{% set any_partial = top_agents | selectattr("context_is_partial") | list %}
+{% if any_partial %}
+`~` = часть входных файлов ещё не сгенерирована (upstream не отработал) — Total KB для этой строки включает оценку по шаблону контракта, а не только уже существующие файлы.
+{% endif %}
+
+---
+
+## Tool Invocation Cost
+
+Per-`<call_tool>` breakdown behind the "Tool Output KB" column above. Identical (agent, tool, subcommand, invocation) calls from multiple prompt sites are merged into one row — "Sites" is how many prompt locations contribute to that row's KB, "Samples" is the per-site run count used for sizing (p90 sampling, loop iterations, etc). Skipped (never-executed) calls are omitted — see "Skipped" in Context Budget above.
+
+| Agent | Tool | Subcommand | Mode | Sites | Samples | KB | Invocation |
+|---|---|---|---|---|---|---|---|
+{% for c in report.tool_invocation_cost_summary | sort(attribute="kb", reverse=True) %}| `{{ c.agent }}` | `{{ c.tool }}` | {{ c.subcommand or "—" }} | {{ c.mode }} | {{ c.sites }} | {{ c.runs }} | {{ c.kb }} | `{{ c.invocation }}` |
+{% endfor %}
+
+---
+
+## Output Sizes
+
+> "Write KB" sizes an agent's own `<write>` tags (p90 across glob matches), plus any single-purpose generator/preprocessor/aggregator `<call_tool>` it invokes (e.g. `generate_pitch_deck`, `extract_bounded_contexts`) — their one deterministic output file is sized directly off disk, same as a `<write>` tag. Not context cost (that's Tool Output KB above), just data volume produced. Mutation subcommands (e.g. `rename-entity`) are still excluded: they're never executed, and their real output size is situational (however many entities the diff touches at runtime), so there's nothing reliable to size.
+
+| Agent | Runs | Write KB (p90) | Tool Output KB | Total Output KB |
+|---|---|---|---|---|
+{% for agent in top_agents | sort(attribute="actual_outputs_kb", reverse=True) %}| `{{ agent.name }}` | {% if agent.actual_runs_min != agent.actual_runs %}{{ agent.actual_runs_min }}-{{ agent.actual_runs }}{% else %}{{ agent.actual_runs }}{% endif %} | {{ agent.actual_own_write_kb }} | {{ agent.tool_write_kb }} | {% set tot_min = (agent.actual_outputs_kb * agent.actual_runs_min) | round(2) %}{% set tot_max = (agent.actual_outputs_kb * agent.actual_runs) | round(2) %}{% if tot_min != tot_max %}{{ tot_min }}-{{ tot_max }}{% else %}{{ tot_max }}{% endif %} |
+{% if agent.delegates_to %}{% set sub_list = [] %}{% for sn in agent.delegates_to %}{% set sub = agent_by_name.get(sn) %}{% if sub %}{% set _ = sub_list.append(sub) %}{% endif %}{% endfor %}{% for sub in sub_list | sort(attribute="actual_outputs_kb", reverse=True) %}| `↳ {{ sub.name }}{% if sub.name in agent.optional_delegates %} (optional){% endif %}` | {% if sub.actual_runs_min != sub.actual_runs %}{{ sub.actual_runs_min }}-{{ sub.actual_runs }}{% else %}{{ sub.actual_runs }}{% endif %} | {{ sub.actual_own_write_kb }} | {{ sub.tool_write_kb }} | {% set tot_min = (sub.actual_outputs_kb * sub.actual_runs_min) | round(2) %}{% set tot_max = (sub.actual_outputs_kb * sub.actual_runs) | round(2) %}{% if tot_min != tot_max %}{{ tot_min }}-{{ tot_max }}{% else %}{{ tot_max }}{% endif %} |
+{% endfor %}{% endif %}{% endfor %}
+
+---
+
+## Parallelism Groups
+
+{% for group in report.metrics.parallelism_groups %}
+### Layer {{ loop.index0 }}
+
+{% for name in group | sort %}- `{{ name }}`
+{% endfor %}
+{% endfor %}
+
+---
+
+## Critical Path
+
+{% if report.metrics.critical_path %}
+`{{ report.metrics.critical_path | join(" → ") }}`
+{% else %}
+_Not determined (possible cycle or no dependencies)._
+{% endif %}
+
+---
+
+## Model Distribution
+
+| Model | Agents |
+|---|---|
+{% for model, count in report.metrics.model_distribution.items() | sort %}| {{ model }} | {{ count }} |
+{% endfor %}
+
+---
+
+---

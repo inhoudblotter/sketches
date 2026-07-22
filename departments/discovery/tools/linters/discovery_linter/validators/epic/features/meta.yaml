@@ -1,0 +1,9 @@
+name: features
+entrypoint: run_validation
+inputs:
+- '**/features.yaml'
+outputs:
+- stdout
+
+contract: departments/discovery/contracts/features_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.epic.features.FeaturesSchema

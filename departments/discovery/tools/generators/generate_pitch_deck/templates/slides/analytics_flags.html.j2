@@ -1,0 +1,21 @@
+<div class="embla__slide">
+  <div class="slide-content">
+    <h2>Технические флаги риска (Risk Flags)</h2>
+    <p style="color: #aaa; margin-bottom: 30px;">
+      {{ scope_analytics.high_risk_stories_count }} MVP-историй ({{ scope_analytics.high_risk_sp }} SP) помечены хотя бы одним флагом риска. Разбивка по типу риска:
+    </p>
+
+    {% if scope_analytics.flags_breakdown %}
+    <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px;">
+      {% for flag, count in scope_analytics.flags_breakdown.items() %}
+      <li style="background: #111; padding: 15px; border-radius: 0; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; border-left: 4px solid #a855f7;">
+        <span><strong>{{ flag }}</strong></span>
+        <span class="text-red" style="font-family: monospace; font-weight: bold;">{{ count }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p style="color: #4ade80;">Флагов риска не обнаружено — оценка не выявила зон повышенной неопределённости.</p>
+    {% endif %}
+  </div>
+</div>

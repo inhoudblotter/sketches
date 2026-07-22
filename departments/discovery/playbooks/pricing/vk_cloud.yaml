@@ -1,0 +1,27 @@
+provider: VK Cloud
+
+compute:
+  - service: 'Cloud Instances'
+    tier: 'Basic (2 Core, 4GB RAM)'
+    price_rub: 1800.0
+    unit: 'per_month'
+  - service: 'Cloud Instances'
+    tier: 'Standard (4 Core, 8GB RAM)'
+    price_rub: 3600.0
+    unit: 'per_month'
+
+database:
+  - service: 'Managed DB for PostgreSQL'
+    tier: 'Basic (2 Core, 4GB RAM)'
+    price_rub: 3500.0
+    unit: 'per_month'
+
+storage_and_cdn:
+  - service: 'Cloud Storage'
+    tier: 'Hot Storage'
+    price_rub: 1.5
+    unit: 'per_gb_month'
+  - service: 'CDN'
+    tier: 'Traffic'
+    price_rub: 1.0
+    unit: 'per_gb'

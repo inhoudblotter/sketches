@@ -1,0 +1,8 @@
+name: flows-batch
+entrypoint: run_validate_flows_batch
+inputs:
+- workspace/discovery/domains/*/epics/*/flows/*.yaml
+outputs:
+- stdout
+calls_tools:
+- Discovery Linter::user-flows

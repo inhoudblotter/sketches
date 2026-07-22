@@ -1,0 +1,13 @@
+<div class="embla__slide">
+  <div class="slide-content">
+    <h2>Открытые блокеры прошлых этапов (Errata)</h2>
+    <div style='margin-top: 40px;'>
+      {% for b in errata_data.blockers %}
+      <div class='errata-box'>
+        <div class='source'>[ {{ b.source }} ]</div>
+        <div class='issue'>{{ b.issue }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

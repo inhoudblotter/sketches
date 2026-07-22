@@ -1,0 +1,37 @@
+provider: Hostkey
+locations: ['Russia', 'Netherlands', 'UK', 'Spain', 'France', 'Germany', 'USA', 'Finland', 'Iceland', 'Turkey', 'Italy', 'Poland', 'Switzerland']
+
+compute:
+  - service: 'VPS'
+    tier: 'v2-pico (1 GB RAM, 3 TB traffic @ 1 Gbps)'
+    price_rub: 285.0
+    unit: 'per_month'
+    notes: 'Good for MVP. Traffic limited to 3 TB.'
+    
+  - service: 'VPS'
+    tier: 'v2-mini (8 GB RAM, 3 TB traffic @ 1 Gbps)'
+    price_rub: 800.0  # Estimated based on "prices are roughly the same"
+    unit: 'per_month'
+    notes: 'Traffic limited to 3 TB.'
+    
+  - service: 'VPS'
+    tier: 'v2-medium (16 GB RAM, 3 TB traffic @ 1 Gbps)'
+    price_rub: 1600.0 # Estimated
+    unit: 'per_month'
+    notes: 'Traffic limited to 3 TB.'
+    
+  - service: 'VPS'
+    tier: 'v2-heavy (32 GB RAM, 3 TB traffic @ 1 Gbps)'
+    price_rub: 3200.0 # Estimated
+    unit: 'per_month'
+    notes: 'Traffic limited to 3 TB.'
+
+  - service: 'VPS GPU'
+    tier: 'GPU Instance'
+    price_eur: 90.0
+    unit: 'per_month'
+    
+  - service: 'Dedicated'
+    tier: 'AMD Ryzen 7950X (16 Core, 128GB RAM, 2x1.92TB NVMe)'
+    price_rub: 12000.0
+    unit: 'per_month'

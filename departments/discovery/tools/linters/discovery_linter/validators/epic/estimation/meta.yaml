@@ -1,0 +1,8 @@
+name: estimation
+entrypoint: run_validation
+inputs:
+- workspace/discovery/domains/*/epics/*/estimation.yaml
+outputs:
+- stdout
+contract: departments/discovery/contracts/estimation_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.epic.estimation.EstimationSchema

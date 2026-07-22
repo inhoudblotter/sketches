@@ -1,0 +1,149 @@
+// 2. Layout — dagre's native layered (Sugiyama-style) algorithm, left-to-
+// right. This replaces a ~250-line hand-rolled force simulation: dagre
+// already does rank assignment (which stage of the pipeline a node belongs
+// to) and edge-crossing minimization as first-class, well-tested library
+// code — no custom physics to tune or debug. The critical path falls out
+// naturally as a mostly-straight run of consecutive ranks, and a closed
+// map/reduce subtree (e.g. business-synthesizer + its scouts) ends up
+// grouped for free, because everything in it shares the same edges to the
+// same rank-defining neighbors.
+
+// --- Ownership clustering ------------------------------------------------
+// Same idea as before: clusterOf[node] = the top-level orchestrator that
+// exclusively owns it (itself for a top-level agent, the root of its
+// delegation chain for a subagent, and — for an artifact/tool — its single
+// owner if every agent that writes/reads/calls it shares one owner). Nodes
+// touched by more than one owner are left unclustered so dagre places them
+// wherever their edges naturally pull them, which is exactly where shared,
+// cross-cutting artifacts (real convergence points) belong.
+const delegatedBy = {};
+data.edges.forEach(e => {
+  if (e.edge_type === 'delegates' && !delegatedBy[e.target]) delegatedBy[e.target] = e.source;
+});
+const ownerCache = {};
+function ownerOf(name) {
+  if (ownerCache[name]) return ownerCache[name];
+  let cur = name;
+  const seen = new Set();
+  while (delegatedBy[cur] && !seen.has(cur)) { seen.add(cur); cur = delegatedBy[cur]; }
+  ownerCache[name] = cur;
+  return cur;
+}
+
+const clusterOf = {};
+data.agents.forEach(a => { clusterOf[a.name] = ownerOf(a.name); });
+
+function distinctOwners(agentNames) {
+  const s = new Set();
+  agentNames.forEach(n => { const o = clusterOf[n]; if (o) s.add(o); });
+  return s;
+}
+
+const nodesList = graph.nodes();
+nodesList.forEach(node => {
+  if (clusterOf[node]) return; // agents already assigned above
+  const md = graph.getNodeAttribute(node, 'metadata') || {};
+  let owners = new Set();
+  if (md.type === 'artifact') {
+    const writers = artifactWriters[node] ? [...artifactWriters[node]] : [];
+    const readers = artifactReaders[node] ? [...artifactReaders[node]].filter(r => agentIds.has(r)) : [];
+    owners = distinctOwners([...writers, ...readers]);
+  } else if (md.type === 'tool') {
+    owners = distinctOwners(toolUsers[node] ? [...toolUsers[node]] : []);
+  }
+  clusterOf[node] = owners.size === 1 ? [...owners][0] : null;
+});
+
+// --- Build the dagre graph ------------------------------------------------
+// Deliberately a plain (non-compound) graph: dagre's compound/nesting-graph
+// mode exists for exactly this (grouping cluster members together), but its
+// internal border-node rewriting overrode the plain rank constraints below
+// in ways that actively fought the ownership anchoring — and it turned out
+// to be unnecessary anyway. Real cluster members already land on the same
+// or adjacent ranks purely from sharing the same edge topology (e.g. every
+// scout under one orchestrator reads the same input and feeds the same
+// synthesis step), so plain ranking gets the same grouped look for free.
+const g = new dagre.graphlib.Graph();
+g.setGraph({
+  rankdir: 'LR',
+  nodesep: 70,
+  ranksep: 170,
+  marginx: 40,
+  marginy: 40,
+  ranker: 'network-simplex', // dagre's default — minimizes total edge length/slack.
+  // (Not 'longest-path': despite the name, that's a different thing from the
+  // backend's nx.dag_longest_path critical-path metric — it's dagre's fast-
+  // but-low-quality ranker that pushes any node with a short *forward* chain
+  // toward the very last rank regardless of how far it is from a source,
+  // which shoved short dead-end branches like feedback files off to the far
+  // edge of the canvas instead of near the orchestrator that owns them.)
+});
+g.setDefaultEdgeLabel(() => ({}));
+
+nodesList.forEach(node => {
+  const size = graph.getNodeAttribute(node, 'size') || 8;
+  g.setNode(node, { width: size * 2.6, height: size * 2.6 });
+});
+
+// Two edge categories are excluded from ranking (still drawn — this only
+// affects layout, not what's visible):
+// - 'delegates': same reasoning as the backend's own build_agent_subgraph()
+//   — an orchestrator calling a subagent and later reading what it wrote
+//   are the same causal direction, but representing both as edges on the
+//   same node id closes a false cycle that has nothing to do with the real
+//   data dependency.
+// - is_optional edges: this codebase's critique/refine loops (an
+//   orchestrator optionally writes a scout a "weak data" feedback file,
+//   the scout optionally reads it and redoes its work) are real conditional
+//   cycles — orchestrator -> feedback.md -> scout -> its-output -> back to
+//   the orchestrator. They're genuinely cyclic, not a graph-building bug
+//   (nx.find_cycle confirms it), and since dagre needs a DAG for ranking,
+//   *some* edge in every such loop has to be dropped for layout purposes.
+//   The optional edge is the principled thing to drop: it's explicitly
+//   marked `optional="true"` in the workflow as the secondary/conditional
+//   path, so excluding it lets the primary, always-executed flow decide
+//   stage order.
+// graphology edge attributes only carry rendering info (color/size/type),
+// not edge_type/is_optional — those live on the original data.edges
+// records, so filter from there rather than from the sigma graph.
+//
+// 'uses_tool' (agent -> tool, "I call this") is also excluded from ranking:
+// the actual data lineage through a multi-caller tool like query_discovery
+// is already carried by that tool's 'reads'/'produces' edges to/from the
+// files it touches, which is what should decide rank. Ranking on uses_tool
+// too made every caller of a shared tool converge on the same rank as that
+// tool, so a heavily-used tool node visually anchored half the graph. It's
+// still drawn (see render.js.j2) — this only affects node placement.
+data.edges.forEach(e => {
+  if (e.edge_type === 'delegates' || e.edge_type === 'uses_tool' || e.is_optional) return;
+  if (!graph.hasNode(e.source) || !graph.hasNode(e.target)) return;
+  g.setEdge(e.source, e.target);
+});
+
+// A node that lost all its INCOMING rank edges above (e.g. a feedback file
+// whose only writer edge was optional, even though it still has outgoing
+// template_match edges to concrete instances) becomes a rootless island —
+// dagre has nothing telling it where that island's rank should start, so it
+// tends to drift far from the cluster it conceptually belongs to. Anchor
+// every such root to its owning orchestrator with a light synthetic edge.
+// This can't introduce a cycle: a true in-degree-0 node has, by
+// construction, no path back to anything (nothing points to it to begin
+// with), so it can never already be an ancestor of its own owner.
+nodesList.forEach(node => {
+  if (!g.hasNode(node)) return;
+  const inEdges = g.inEdges(node) || [];
+  if (inEdges.length > 0) return;
+  const owner = clusterOf[node];
+  if (!owner || owner === node || !g.hasNode(owner)) return;
+  g.setEdge(owner, node, { minlen: 1, weight: 0.01 });
+});
+
+dagre.layout(g);
+
+nodesList.forEach(node => {
+  const n = g.node(node);
+  if (n) {
+    graph.setNodeAttribute(node, 'x', n.x);
+    graph.setNodeAttribute(node, 'y', -n.y); // flip: dagre's +y is down, sigma's is up
+  }
+});

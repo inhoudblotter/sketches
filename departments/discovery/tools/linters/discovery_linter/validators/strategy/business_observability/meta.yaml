@@ -1,0 +1,9 @@
+name: business-observability
+entrypoint: run_validation
+inputs:
+- '**/business_observability.yaml'
+outputs:
+- stdout
+
+contract: departments/discovery/contracts/business_observability_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.strategy.business_observability.BusinessObservabilitySchema

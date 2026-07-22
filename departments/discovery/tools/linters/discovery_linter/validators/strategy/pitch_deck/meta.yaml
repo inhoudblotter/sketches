@@ -1,0 +1,8 @@
+name: pitch-deck
+entrypoint: run_validation
+contract: departments/discovery/contracts/pitch_deck_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.strategy.pitch_deck.PitchDeckSchema
+inputs:
+- '**/pitch_deck.yaml'
+outputs:
+- stdout

@@ -1,0 +1,7 @@
+name: platform-coverage
+entrypoint: run_validate_platform_coverage
+inputs:
+- '**/strategy/platform_strategy.yaml'
+- '**/meta/domains_manifest.yaml'
+outputs:
+- stdout

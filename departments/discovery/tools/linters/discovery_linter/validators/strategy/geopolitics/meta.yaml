@@ -1,0 +1,8 @@
+name: geopolitics
+entrypoint: run_validation
+contract: departments/discovery/contracts/geopolitical_draft_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.strategy.geopolitics.GeopoliticalDraft
+inputs:
+- '**/geopolitical_draft.yaml'
+outputs:
+- stdout

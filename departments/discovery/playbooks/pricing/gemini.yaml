@@ -1,0 +1,61 @@
+provider: Google
+
+external_apis:
+  - service: 'LLM API'
+    model: 'gemini-3.5-flash'
+    description: 'Our most intelligent model built for speed'
+    input_price_1m_usd: 1.50
+    output_price_1m_usd: 9.00
+    cache_input_price_1m_usd: 0.15
+
+  - service: 'LLM API'
+    model: 'gemini-3.1-pro-preview'
+    description: 'Frontier intelligence with superior search and grounding'
+    input_price_1m_usd: 2.70
+    output_price_1m_usd: 16.20
+    cache_input_price_1m_usd: 0.27
+
+  - service: 'LLM API'
+    model: 'gemini-3.1-flash-lite'
+    description: 'Cost-efficient model optimized for high-volume tasks'
+    input_price_1m_usd: 0.25
+    output_price_1m_usd: 1.50
+    cache_input_price_1m_usd: 0.025
+
+  - service: 'LLM API'
+    model: 'gemini-omni-flash-preview'
+    description: 'Low-latency, real-time speech to speech translation'
+    input_price_1m_usd: 3.50
+    output_price_1m_usd: 21.00
+
+  - service: 'Image Generation API'
+    model: 'gemini-3.1-flash-image'
+    description: 'Gemini 3.1 Flash Image (Nano Banana 2)'
+    input_price_1m_usd: 0.50
+    output_price_1m_usd: 3.00
+    image_generation_price_1m_usd: 60.00
+    price_per_1k_image_usd: 0.067
+
+  - service: 'Image Generation API'
+    model: 'gemini-3.1-flash-lite-image'
+    description: 'Gemini 3.1 Flash Lite Image (Nano Banana 2 Lite)'
+    input_price_1m_usd: 0.25
+    output_price_1m_usd: 1.50
+    image_generation_price_1m_usd: 30.00
+    price_per_1k_image_usd: 0.0336
+
+  - service: 'Image Generation API'
+    model: 'gemini-3-pro-image'
+    description: 'Gemini 3 Pro Image (Nano Banana Pro)'
+    input_price_1m_usd: 2.00
+    output_price_1m_usd: 12.00
+    image_generation_price_1m_usd: 120.00
+    price_per_1k_image_usd: 0.134
+
+  - service: 'Video Generation API'
+    model: 'veo-3.1'
+    description: 'Next-generation video generation and editing model'
+    input_price_1m_usd: 1.50
+    output_price_1m_usd: 9.00
+    video_generation_price_1m_usd: 17.50
+    price_per_second_video_usd: 0.10

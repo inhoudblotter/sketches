@@ -1,0 +1,402 @@
+{% import "screens/_macros.html.j2" as ui %}
+{% call ui.page() %}
+    <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <h2 class="text-2xl font-bold text-white mb-1">Staff Analytics</h2>
+        <p class="text-gray-400 text-sm">Analyze and optimize agent performance, context limits, and dependencies.</p>
+      </div>
+
+      <button id="open-filters-btn" class="relative inline-flex items-center gap-2 bg-gray-900 border border-gray-700 hover:border-neon-cyan text-sm rounded-lg px-4 py-2.5 text-white transition-colors">
+        <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+        Filters &amp; Sort
+        <span id="active-filters-badge" class="hidden absolute -top-2 -right-2 bg-neon-cyan text-venture-black text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+      </button>
+    </div>
+
+    <!-- Filters Modal -->
+    <div id="filters-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div id="filters-modal-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+      <div class="relative bg-venture-dark border border-gray-800 rounded-xl shadow-2xl w-full max-w-md p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <i data-lucide="sliders-horizontal" class="w-4 h-4 text-neon-cyan"></i>
+            Filters &amp; Sort
+          </h3>
+          <button id="close-filters-btn" class="text-gray-400 hover:text-white transition-colors">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <div class="relative w-full">
+            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+            <input type="text" id="agent-search" placeholder="Search agents..." class="w-full bg-gray-900 border border-gray-700 text-sm rounded-lg focus:ring-neon-cyan focus:border-neon-cyan block pl-9 p-2.5 text-white placeholder-gray-500 transition-colors">
+          </div>
+
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">Status</label>
+            <select id="status-filter" class="w-full bg-gray-900 border border-gray-700 text-sm rounded-lg focus:ring-neon-cyan focus:border-neon-cyan block p-2.5 text-white transition-colors">
+              <option value="all">All Statuses</option>
+              <option value="DONE">DONE</option>
+              <option value="READY">READY</option>
+              <option value="BLOCKED">BLOCKED</option>
+              <option value="ESCALATED">ESCALATED</option>
+              <option value="UNKNOWN">UNKNOWN</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">Model</label>
+            <select id="model-filter" class="w-full bg-gray-900 border border-gray-700 text-sm rounded-lg focus:ring-neon-cyan focus:border-neon-cyan block p-2.5 text-white transition-colors">
+              <option value="all">All Models</option>
+              {% set models = [] %}
+              {% for a in report.agents %}
+                {% if a.model not in models %}
+                  {% set _ = models.append(a.model) %}
+                {% endif %}
+              {% endfor %}
+              {% for m in models|sort %}
+                <option value="{{ m }}">{{ m }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">Validation</label>
+            <select id="validation-filter" class="w-full bg-gray-900 border border-gray-700 text-sm rounded-lg focus:ring-neon-cyan focus:border-neon-cyan block p-2.5 text-white transition-colors">
+              <option value="all">All Validation</option>
+              <option value="error">Has Lint Errors</option>
+              <option value="ok">Valid</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">Sort by</label>
+            <select id="sort-select" class="w-full bg-gray-900 border border-gray-700 text-sm rounded-lg focus:ring-neon-cyan focus:border-neon-cyan block p-2.5 text-white transition-colors">
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="context-desc">Context Load (High-Low)</option>
+              <option value="context-asc">Context Load (Low-High)</option>
+              <option value="errors-desc">Lint Errors (Most-Least)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-between items-center">
+          <button id="reset-filters-btn" class="text-sm text-neon-cyan hover:underline">Reset Filters</button>
+          <button id="apply-filters-btn" class="px-4 py-2 bg-neon-cyan text-venture-black text-sm font-bold rounded-lg hover:opacity-90 transition-opacity">Done</button>
+        </div>
+      </div>
+    </div>
+
+    {% set tool_labels_by_agent = {} %}
+    {% for c in report.tool_invocation_costs %}
+      {% set label = c.tool ~ '::' ~ c.subcommand if c.subcommand else c.tool %}
+      {% set _ = tool_labels_by_agent.setdefault(c.agent, []) %}
+      {% if label not in tool_labels_by_agent[c.agent] %}{% set _ = tool_labels_by_agent[c.agent].append(label) %}{% endif %}
+    {% endfor %}
+
+    <!-- Agent Cards Grid -->
+    <div id="agents-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 pb-20 custom-scrollbar">
+      {% for agent in report.agents|sort(attribute='name') %}
+      {% set distinct_tools = tool_labels_by_agent.get(agent.name, []) | sort %}
+
+      {% set status_color = "gray-500" %}
+      {% set status_bg = "gray-900" %}
+      {% if agent.status == "DONE" %}{% set status_color = "neon-emerald" %}{% set status_bg = "green-900/20" %}{% endif %}
+      {% if agent.status == "READY" %}{% set status_color = "neon-blue" %}{% set status_bg = "blue-900/20" %}{% endif %}
+      {% if agent.status == "BLOCKED" %}{% set status_color = "neon-magenta" %}{% set status_bg = "fuchsia-900/20" %}{% endif %}
+      {% if agent.status == "ESCALATED" %}{% set status_color = "neon-red" %}{% set status_bg = "red-900/20" %}{% endif %}
+
+      {% set risk_level = "low" %}
+      {% set risk_color = "text-gray-400" %}
+      {% if agent.context_load_kb > report.risk_ok_max_kb %}{% set risk_level = "medium" %}{% set risk_color = "text-yellow-400" %}{% endif %}
+      {% if agent.context_load_kb > report.risk_high_min_kb %}{% set risk_level = "high" %}{% set risk_color = "text-neon-red" %}{% endif %}
+
+      <div class="agent-card bg-venture-dark border border-gray-800 rounded-xl p-5 shadow-lg relative group transition-all duration-300 hover:border-{{ status_color }} hover:shadow-[0_0_15px_rgba(var(--{{ status_color }}-rgb),0.1)] flex flex-col h-full"
+           data-name="{{ agent.name | lower }}"
+           data-status="{{ agent.status }}"
+           data-model="{{ agent.model }}"
+           data-validation="{{ agent.validation_status }}"
+           data-context-kb="{{ agent.context_load_kb }}"
+           data-error-count="{{ agent.validation_errors|length }}">
+
+        <!-- Header -->
+        <div class="flex justify-between items-start mb-4">
+          <div class="flex-1 min-w-0 pr-3">
+            <h3 class="text-base font-bold text-white truncate" title="{{ agent.name }}">{{ agent.name }}</h3>
+            <div class="text-xs text-gray-500 mt-1 flex items-center gap-2">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-800 text-gray-300 border border-gray-700">
+                <i data-lucide="cpu" class="w-3 h-3 mr-1"></i>
+                {{ agent.model }}
+              </span>
+              {% if agent.is_subagent %}
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-800 text-neon-cyan border border-gray-700">Subagent</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="flex-shrink-0 flex flex-col items-end gap-1">
+            <span class="inline-flex items-center px-2 py-1 rounded text-[11px] font-bold border bg-{{ status_bg }} text-{{ status_color }} border-{{ status_color }}/50 uppercase tracking-wider shadow-[0_0_5px_rgba(currentColor,0.2)]">
+              {{ agent.status }}
+            </span>
+            {% if agent.validation_status == "error" %}
+            <span class="lint-copy-btn inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-900/20 text-neon-red border border-neon-red/50 cursor-pointer hover:bg-red-900/40 transition-colors"
+                  title="Click to copy lint errors"
+                  data-errors="{{ agent.validation_errors | join('\n') | e }}">
+              <i data-lucide="triangle-alert" class="w-3 h-3"></i>
+              <span class="lint-copy-label">{{ agent.validation_errors|length }} lint</span>
+            </span>
+            {% elif agent.validation_status == "ok" %}
+            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-900/10 text-neon-emerald border border-neon-emerald/30" title="System prompt passed validate_agent linter">
+              <i data-lucide="check" class="w-3 h-3"></i>
+              valid
+            </span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Body / Metrics -->
+        <div class="flex-grow flex flex-col gap-3">
+
+          <!-- Context Load -->
+          <div class="bg-gray-900/50 rounded-lg p-2.5 border border-gray-800 flex justify-between items-center group-hover:border-gray-700 transition-colors">
+            <span class="text-xs text-gray-400 flex items-center">
+              <i data-lucide="database" class="w-3.5 h-3.5 mr-1"></i>
+              Context Load
+            </span>
+            <span class="text-sm font-mono font-bold {{ risk_color }} flex items-center gap-1">
+              {{ "%.1f"|format(agent.context_load_kb) }} KB
+              {% if agent.context_is_partial %}
+              <i data-lucide="pizza" class="w-3.5 h-3.5 text-amber-400" title="Часть входных файлов ещё не сгенерирована (upstream не отработал) — оценено по шаблону контракта"></i>
+              {% endif %}
+            </span>
+          </div>
+
+          <!-- I/O Complexity -->
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-gray-900/50 rounded-lg p-2.5 border border-gray-800 text-center group-hover:border-gray-700 transition-colors">
+              <div class="text-[10px] uppercase text-gray-500 mb-1 tracking-widest flex items-center justify-center">
+                <i data-lucide="log-in" class="w-3 h-3 mr-1"></i>
+                Fan-In
+              </div>
+              <div class="text-lg font-mono font-bold text-white">{{ agent.fan_in }}</div>
+              <div class="text-[10px] text-gray-500">Reads</div>
+            </div>
+            <div class="bg-gray-900/50 rounded-lg p-2.5 border border-gray-800 text-center group-hover:border-gray-700 transition-colors">
+              <div class="text-[10px] uppercase text-gray-500 mb-1 tracking-widest flex items-center justify-center">
+                <i data-lucide="log-out" class="w-3 h-3 mr-1"></i>
+                Fan-Out
+              </div>
+              <div class="text-lg font-mono font-bold text-white">{{ agent.fan_out }}</div>
+              <div class="text-[10px] text-gray-500">Writes</div>
+            </div>
+          </div>
+
+          <!-- Dependencies / Blockers -->
+          {% if agent.status == "BLOCKED" and agent.blocked_on %}
+          <div class="mt-1">
+            <div class="text-xs text-neon-magenta font-semibold mb-1 flex items-center">
+              <i data-lucide="lock" class="w-3 h-3 mr-1"></i>
+              Blocked On:
+            </div>
+            <div class="flex flex-wrap gap-1">
+              {% for blocked in agent.blocked_on %}
+                <span class="text-[10px] px-1.5 py-0.5 bg-fuchsia-900/30 text-neon-magenta border border-neon-magenta/30 rounded truncate max-w-[150px]" title="{{ blocked }}">{{ blocked.split('/')[-1] }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Delegation -->
+          {% if agent.delegates_to %}
+          <div class="mt-1">
+            <div class="text-xs text-gray-400 font-semibold mb-1 flex items-center justify-between">
+              <span class="flex items-center">
+                <i data-lucide="users" class="w-3 h-3 mr-1"></i>
+                Delegates to
+              </span>
+              <span class="text-[10px] bg-gray-800 text-white px-1.5 py-0.5 rounded">{{ agent.delegates_to|length }}</span>
+            </div>
+            <div class="flex flex-wrap gap-1">
+              {% for sub in agent.delegates_to %}
+                <span class="text-[10px] px-1.5 py-0.5 bg-gray-900 text-gray-300 border border-gray-800 rounded truncate max-w-[150px]" title="{{ sub }}">{{ sub }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-4 pt-3 border-t border-gray-800 flex justify-between items-center text-xs text-gray-400">
+          <div class="flex gap-4">
+            <div class="flex items-center gap-1.5 group/tooltip relative cursor-help" title="Playbooks:&#10;{% for p in agent.required_skills %}{{ p.split('/')[-1] }} ({{ '%.1f'|format(agent.playbook_sizes.get(p, 0.0)) }} KB){% if not loop.last %}&#10;{% endif %}{% endfor %}">
+              <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+              <span class="font-semibold text-gray-300">{{ agent.required_skills|length }}</span>
+            </div>
+            <div class="flex items-center gap-1.5 group/tooltip relative cursor-help" title="Pipeline tools called:&#10;{{ distinct_tools | join('&#10;') }}">
+              <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
+              <span class="font-semibold text-gray-300">{{ distinct_tools|length }}</span>
+            </div>
+          </div>
+          {% if agent.escalation_handoff %}
+          <div class="flex items-center text-neon-red bg-red-900/20 px-1.5 py-0.5 rounded border border-red-900/50 group/tooltip relative cursor-help" title="Handoff: {{ agent.escalation_handoff }}">
+            <i data-lucide="triangle-alert" class="w-3.5 h-3.5 mr-1"></i>
+            <span class="text-[10px] font-bold">Escalation</span>
+          </div>
+          {% endif %}
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Empty State -->
+    <div id="agents-empty-state" class="hidden text-center py-16 text-gray-500 border border-dashed border-gray-800 rounded-lg bg-venture-dark mt-6">
+      <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-4 opacity-50"></i>
+      <p class="text-lg">No agents match your filters.</p>
+      <button id="reset-filters-btn-2" class="mt-4 text-sm text-neon-cyan hover:underline">Reset Filters</button>
+    </div>
+{% endcall %}
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.getElementById('agent-search');
+  const statusFilter = document.getElementById('status-filter');
+  const modelFilter = document.getElementById('model-filter');
+  const validationFilter = document.getElementById('validation-filter');
+  const sortSelect = document.getElementById('sort-select');
+  const grid = document.getElementById('agents-grid');
+  const cards = Array.from(document.querySelectorAll('.agent-card'));
+  const emptyState = document.getElementById('agents-empty-state');
+  const resetBtn = document.getElementById('reset-filters-btn');
+  const resetBtn2 = document.getElementById('reset-filters-btn-2');
+
+  const filtersModal = document.getElementById('filters-modal');
+  const filtersBackdrop = document.getElementById('filters-modal-backdrop');
+  const openFiltersBtn = document.getElementById('open-filters-btn');
+  const closeFiltersBtn = document.getElementById('close-filters-btn');
+  const applyFiltersBtn = document.getElementById('apply-filters-btn');
+  const activeFiltersBadge = document.getElementById('active-filters-badge');
+
+  function openModal() { filtersModal.classList.remove('hidden'); }
+  function closeModal() { filtersModal.classList.add('hidden'); }
+
+  if (openFiltersBtn) openFiltersBtn.addEventListener('click', openModal);
+  if (closeFiltersBtn) closeFiltersBtn.addEventListener('click', closeModal);
+  if (applyFiltersBtn) applyFiltersBtn.addEventListener('click', closeModal);
+  if (filtersBackdrop) filtersBackdrop.addEventListener('click', closeModal);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !filtersModal.classList.contains('hidden')) closeModal();
+  });
+
+  function updateActiveFiltersBadge() {
+    let active = 0;
+    if (searchInput.value.trim() !== '') active++;
+    if (statusFilter.value !== 'all') active++;
+    if (modelFilter.value !== 'all') active++;
+    if (validationFilter && validationFilter.value !== 'all') active++;
+    if (active > 0) {
+      activeFiltersBadge.textContent = active;
+      activeFiltersBadge.classList.remove('hidden');
+    } else {
+      activeFiltersBadge.classList.add('hidden');
+    }
+  }
+
+  function sortCards() {
+    if (!sortSelect) return;
+    const sortVal = sortSelect.value;
+    const sorted = cards.slice().sort((a, b) => {
+      if (sortVal === 'context-desc') {
+        let valB = b.getAttribute('data-context-kb');
+        let valA = a.getAttribute('data-context-kb');
+        return (valB === 'N/A' ? 0 : parseFloat(valB)) - (valA === 'N/A' ? 0 : parseFloat(valA));
+      }
+      if (sortVal === 'context-asc') {
+        let valB = b.getAttribute('data-context-kb');
+        let valA = a.getAttribute('data-context-kb');
+        return (valA === 'N/A' ? 0 : parseFloat(valA)) - (valB === 'N/A' ? 0 : parseFloat(valB));
+      }
+      if (sortVal === 'errors-desc') {
+        return parseInt(b.getAttribute('data-error-count')) - parseInt(a.getAttribute('data-error-count'));
+      }
+      return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
+    });
+    sorted.forEach(card => grid.appendChild(card));
+  }
+
+  function filterCards() {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    const statusVal = statusFilter.value;
+    const modelVal = modelFilter.value;
+    const validationVal = validationFilter ? validationFilter.value : 'all';
+
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const name = card.getAttribute('data-name');
+      const status = card.getAttribute('data-status');
+      const model = card.getAttribute('data-model');
+      const validation = card.getAttribute('data-validation');
+
+      const matchesSearch = name.includes(searchTerm);
+      const matchesStatus = statusVal === 'all' || status === statusVal;
+      const matchesModel = modelVal === 'all' || model === modelVal;
+      const matchesValidation = validationVal === 'all' || validation === validationVal;
+
+      if (matchesSearch && matchesStatus && matchesModel && matchesValidation) {
+        card.style.display = 'flex';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    if (visibleCount === 0 && cards.length > 0) {
+      emptyState.classList.remove('hidden');
+    } else {
+      emptyState.classList.add('hidden');
+    }
+
+    updateActiveFiltersBadge();
+  }
+
+  if (searchInput) searchInput.addEventListener('input', filterCards);
+  if (statusFilter) statusFilter.addEventListener('change', filterCards);
+  if (modelFilter) modelFilter.addEventListener('change', filterCards);
+  if (validationFilter) validationFilter.addEventListener('change', filterCards);
+  if (sortSelect) sortSelect.addEventListener('change', sortCards);
+
+  function resetAll() {
+    searchInput.value = '';
+    statusFilter.value = 'all';
+    modelFilter.value = 'all';
+    if (validationFilter) validationFilter.value = 'all';
+    if (sortSelect) sortSelect.value = 'name-asc';
+    filterCards();
+    sortCards();
+  }
+
+  if (resetBtn) resetBtn.addEventListener('click', resetAll);
+  if (resetBtn2) resetBtn2.addEventListener('click', () => { resetAll(); });
+
+  document.querySelectorAll('.lint-copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const errors = btn.getAttribute('data-errors') || '';
+      const label = btn.querySelector('.lint-copy-label');
+      const original = label.textContent;
+      try {
+        await navigator.clipboard.writeText(errors);
+        label.textContent = 'Copied!';
+      } catch (e) {
+        label.textContent = 'Copy failed';
+      }
+      setTimeout(() => { label.textContent = original; }, 1500);
+    });
+  });
+
+  sortCards();
+  if (window.lucide) lucide.createIcons();
+});
+</script>

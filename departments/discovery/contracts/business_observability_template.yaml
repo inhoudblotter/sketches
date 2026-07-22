@@ -1,0 +1,28 @@
+# Business Observability YAML Contract
+# Метрики и события, за которыми должен следить бизнес.
+
+north_star_metric: '[Главная метрика продукта. Например: Monthly Recurring Revenue]'
+
+kpi:
+  - id: '[Название метрики. Например: user_retention]'
+    name: '[Название. Например: Retention Rate 30d]'
+    description: '[Ожидаемый бизнес-результат. Например: Доля пользователей, оплативших второй месяц]'
+
+network_health_metrics:
+  - id: '[Опционально: Название метрики. Например: sybil_resistance_index]'
+    name: '[Опционально: Например: Sybil Resistance Index]'
+    description: '[Опционально: Например: Индекс устойчивости к ботофермам]'
+  - id: '[Опционально: crdt_convergence_time]'
+    name: '[Опционально: CRDT Convergence Time]'
+    description: '[Опционально: Скорость синхронизации офлайн-узлов]'
+
+critical_business_events:
+  - event_name: '[Название события. Например: payment_failed]'
+    business_impact: '[Влияние на бизнес. Например: Прямая потеря выручки]'
+
+transparency_needs:
+  - need: '[Потребность бизнеса. Например: Дашборд с оттоком клиентов]'
+
+business_scaling_triggers:
+  - trigger: '[Триггер. Например: Достижение 1000 транзакций в час]'
+    action: '[Действие. Например: Выделение биллинга в отдельный кластер]'

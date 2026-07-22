@@ -1,0 +1,8 @@
+name: ux-constraints
+entrypoint: run_validation
+contract: departments/discovery/contracts/ux_constraints_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.general.ux_constraints.UxConstraintsSchema
+inputs:
+- '**/ux_constraints.yaml'
+outputs:
+- stdout

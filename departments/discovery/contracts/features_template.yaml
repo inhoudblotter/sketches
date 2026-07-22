@@ -1,0 +1,23 @@
+author_agent: 'po-strategist-sub'
+# Features YAML Contract
+# Индекс фич ОДНОГО эпика (файл живёт в epics/{epic_name}/features.yaml), разделенных по приоритетам.
+# ЗАПРЕЩЕНО добавлять другие категории. Строго используй: mvp_mandatory, mvp_nice_to_have, future_features.
+# Домен-уровневые поля (domain, strategic_trajectory) сюда не входят — они пишутся один раз в summary.yaml.
+
+features:
+  mvp_mandatory:
+    - id: '[Произвольный ID фичи, например: card_payment]'
+      name: '[Название. Например: Оплата картой]'
+      linked_job_stories:
+        - '[ID связанной Job Story]'
+
+  mvp_nice_to_have:
+    - id: '[Произвольный ID фичи, например: save_card]'
+      name: '[Название. Например: Сохранение карты]'
+      linked_job_stories:
+        - '[ID связанной Job Story]'
+
+  future_features:
+    - id: '[Произвольный ID фичи, например: crypto_payment]'
+      name: '[Название. Например: Оплата криптой]'
+      linked_job_stories: []

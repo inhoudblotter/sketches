@@ -1,0 +1,63 @@
+provider: Selectel
+
+compute:
+  - service: 'Cloud Server'
+    tier: 'Shared (1 Core, 1GB RAM, 20GB NVMe)'
+    price_rub: 450.0
+    unit: 'per_month'
+  - service: 'Dedicated Server'
+    tier: 'Entry (E-2236, 16GB RAM, 2x480GB SSD)'
+    price_rub: 6500.0
+    unit: 'per_month'
+  - service: 'Cloud Server GPU'
+    tier: '1x A100 80GB, 12 Core, 96GB RAM'
+    price_rub: 80000.0
+    unit: 'per_month'
+
+containers:
+  - service: 'Managed Kubernetes'
+    tier: 'Master Node (Regional)'
+    price_rub: 3000.0
+    unit: 'per_month'
+  - service: 'Container Registry'
+    tier: 'Standard'
+    price_rub: 1.5
+    unit: 'per_gb_month'
+
+database:
+  - service: 'Managed PostgreSQL'
+    tier: 'Single-node (2 Core, 4GB RAM)'
+    price_rub: 2500.0
+    unit: 'per_month'
+  - service: 'Managed MySQL'
+    tier: 'Single-node (2 Core, 4GB RAM)'
+    price_rub: 2500.0
+    unit: 'per_month'
+  - service: 'Managed Redis'
+    tier: 'Single-node (1 Core, 2GB RAM)'
+    price_rub: 1500.0
+    unit: 'per_month'
+
+storage_and_cdn:
+  - service: 'Object Storage'
+    tier: 'Standard'
+    price_rub: 1.5
+    unit: 'per_gb_month'
+  - service: 'Network Volume'
+    tier: 'Fast NVMe'
+    price_rub: 8.0
+    unit: 'per_gb_month'
+  - service: 'CDN'
+    tier: 'Traffic'
+    price_rub: 1.0
+    unit: 'per_gb'
+
+network:
+  - service: 'Cloud Load Balancer'
+    tier: 'Basic'
+    price_rub: 1000.0
+    unit: 'per_month'
+  - service: 'Public IP'
+    tier: 'IPv4'
+    price_rub: 150.0
+    unit: 'per_month'

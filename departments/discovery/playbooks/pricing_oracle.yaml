@@ -1,0 +1,142 @@
+metadata:
+  last_updated: '2026-07-18'
+  requested_by: 'system_initialization'
+  note: 'Данные требуют актуализации и проверки. В будущем предполагается подключение по OpenAPI к провайдерам для запроса и точного расчёта цен.'
+  usage_note: 'Этот файл — только индекс (summary + pricing_file путь). Он НЕ содержит точных цифр цен по тирам. Перед любым расчётом COGS/amortized-стоимости ОБЯЗАТЕЛЬНО читать сам файл из pricing_file (departments/discovery/playbooks/pricing/{provider}.yaml) — там реальные price_rub/price_eur по тирам. Цитировать в артефактах строку из pricing/{provider}.yaml, не из индекса.'
+
+categories:
+  compute:
+    description: "Виртуальные серверы, облачные вычисления, VPS/VDS"
+    providers:
+      - id: beget
+        name: "Beget"
+        summary: "Бюджетные VPS в РФ, Латвии и Казахстане. От ~330 руб/мес. Хорошо для MVP."
+        pricing_file: pricing/beget.yaml
+      - id: datacheap_ru
+        name: "DataCheap (Russia)"
+        summary: "VDS на NVMe (РФ) с защитой DDoS. От ~350 руб/мес."
+        pricing_file: pricing/datacheap_ru.yaml
+      - id: datacheap_nl
+        name: "DataCheap (Netherlands)"
+        summary: "VDS на NVMe (Нидерланды) с защитой DDoS. От ~350 руб/мес."
+        pricing_file: pricing/datacheap_nl.yaml
+      - id: datacheap_cz
+        name: "DataCheap (Czechia)"
+        summary: "VDS на NVMe (Чехия) с защитой DDoS. От ~350 руб/мес."
+        pricing_file: pricing/datacheap_cz.yaml
+      - id: hostkey
+        name: "Hostkey"
+        summary: "VPS во множестве локаций. Хорош для MVP (от 285 руб/мес), но с ограниченным трафиком (3 ТБ)."
+        pricing_file: pricing/hostkey.yaml
+      - id: selectel
+        name: "Selectel"
+        summary: "Высоконадежные облачные серверы и выделенные серверы (Enterprise IaaS)."
+        pricing_file: pricing/selectel.yaml
+      - id: yandex_cloud
+        name: "Yandex Cloud"
+        summary: "Крупнейший Enterprise IaaS в РФ. Масштабируемые ВМ."
+        pricing_file: pricing/yandex_cloud.yaml
+      - id: vk_cloud
+        name: "VK Cloud"
+        summary: "Enterprise IaaS от VK. Эластичные инстансы."
+        pricing_file: pricing/vk_cloud.yaml
+
+  containers:
+    description: "Контейнеры и оркестрация (Kubernetes, Registry)"
+    providers:
+      - id: selectel
+        name: "Selectel"
+        summary: "Managed Kubernetes, Container Registry."
+        pricing_file: pricing/selectel.yaml
+      - id: yandex_cloud
+        name: "Yandex Cloud"
+        summary: "Managed Kubernetes, Container Registry."
+        pricing_file: pricing/yandex_cloud.yaml
+
+  database:
+    description: "Управляемые базы данных (DBaaS)"
+    providers:
+      - id: beget
+        name: "Beget"
+        summary: "Простые Managed PostgreSQL, MySQL. От ~330 руб/мес."
+        pricing_file: pricing/beget.yaml
+      - id: selectel
+        name: "Selectel"
+        summary: "Managed PostgreSQL, MySQL, Redis для бизнеса."
+        pricing_file: pricing/selectel.yaml
+      - id: yandex_cloud
+        name: "Yandex Cloud"
+        summary: "Managed PostgreSQL, ClickHouse, Redis, MongoDB, OpenSearch."
+        pricing_file: pricing/yandex_cloud.yaml
+      - id: vk_cloud
+        name: "VK Cloud"
+        summary: "Managed PostgreSQL корпоративного уровня."
+        pricing_file: pricing/vk_cloud.yaml
+
+  storage_and_cdn:
+    description: "Объектное хранилище (S3) и CDN"
+    providers:
+      - id: beget
+        name: "Beget"
+        summary: "Дешевое S3 хранилище (~2.8 руб/ГБ)."
+        pricing_file: pricing/beget.yaml
+      - id: selectel
+        name: "Selectel"
+        summary: "Надежное S3 объектное хранилище и CDN."
+        pricing_file: pricing/selectel.yaml
+      - id: yandex_cloud
+        name: "Yandex Cloud"
+        summary: "S3 Object Storage, Cloud CDN."
+        pricing_file: pricing/yandex_cloud.yaml
+      - id: vk_cloud
+        name: "VK Cloud"
+        summary: "Cloud Storage (Hot/Cold), CDN."
+        pricing_file: pricing/vk_cloud.yaml
+
+  network:
+    description: "Сетевые сервисы (Load Balancers, VPC, IP)"
+    providers:
+      - id: selectel
+        name: "Selectel"
+        summary: "Cloud Load Balancers, выделенные IP."
+        pricing_file: pricing/selectel.yaml
+      - id: yandex_cloud
+        name: "Yandex Cloud"
+        summary: "Application & Network Load Balancers, VPC."
+        pricing_file: pricing/yandex_cloud.yaml
+
+  serverless:
+    description: "Бессерверные вычисления и очереди"
+    providers:
+      - id: yandex_cloud
+        name: "Yandex Cloud"
+        summary: "Cloud Functions, API Gateway, Message Queue."
+        pricing_file: pricing/yandex_cloud.yaml
+
+  ai_and_ml:
+    description: "Искусственный интеллект и машинное обучение"
+    providers:
+      - id: yandex_cloud
+        name: "Yandex Cloud"
+        summary: "SpeechKit (синтез/распознавание), Translate, Vision OCR."
+        pricing_file: pricing/yandex_cloud.yaml
+
+  external_apis:
+    description: "LLM API и другие внешние интеграции"
+    providers:
+      - id: openai
+        name: "OpenAI"
+        summary: "Ведущие LLM (семейство GPT-5.6)."
+        pricing_file: pricing/openai.yaml
+      - id: anthropic
+        name: "Anthropic"
+        summary: "Семейство Claude 5 и 4.5 (Fable, Mythos, Opus, Sonnet, Haiku)."
+        pricing_file: pricing/anthropic.yaml
+      - id: perplexity
+        name: "Perplexity"
+        summary: "Модели с доступом к веб-поиску в реальном времени (Llama 3 Sonar)."
+        pricing_file: pricing/perplexity.yaml
+      - id: google
+        name: "Google (Gemini)"
+        summary: "Модели Gemini 3.5 и 3.1 (Flash, Pro, Lite) от Google AI."
+        pricing_file: pricing/gemini.yaml

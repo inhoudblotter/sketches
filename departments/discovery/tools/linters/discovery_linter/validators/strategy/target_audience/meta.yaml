@@ -1,0 +1,10 @@
+name: target-audience
+entrypoint: run_validation
+inputs:
+- '**/target_audience.yaml'
+- '**/audience_draft.yaml'
+outputs:
+- stdout
+
+contract: departments/discovery/contracts/target_audience_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.strategy.target_audience.TargetAudienceSchema

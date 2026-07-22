@@ -1,0 +1,7 @@
+name: stress-test
+entrypoint: run_stress_test
+inputs:
+  - '**/strategy/revenue_model.yaml'
+  - '**/strategy/unit_economics_model.yaml'
+outputs:
+  - stdout

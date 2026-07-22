@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipeline Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            venture: {
+              black: '#050505',
+              dark: '#0a0a0a',
+              gray: '#171717',
+              light: '#e5e5e5'
+            },
+            neon: {
+              cyan: '#00f3ff',
+              magenta: '#ff00ff',
+              emerald: '#00ff66',
+              red: '#ff3b3b',
+              blue: '#3b82f6'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #050505; color: #e5e5e5; }
+    /* Scrollbar customization for dark theme */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    /* Horizontal-scrolling tab bar / chip rows: keep native scroll, hide the bar. */
+    .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-venture-black min-h-screen flex flex-col">
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<header class="bg-venture-dark border-b border-gray-800 sticky top-0 z-50 shadow-md">
+  <div class="px-3 sm:px-6 py-2.5 sm:py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+    <div class="flex items-center justify-between sm:justify-start gap-4">
+      <h1 class="text-base sm:text-xl font-bold tracking-wide text-white drop-shadow-[0_0_8px_rgba(0,243,255,0.5)] whitespace-nowrap">PIPELINE<span class="text-neon-cyan">_</span>ANALYSIS</h1>
+
+      {% if serve_mode %}
+      <button id="refresh-btn" class="sm:hidden inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-800 hover:bg-gray-700 text-white text-xs rounded transition-colors border border-gray-600">
+        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+        Refresh
+      </button>
+      {% endif %}
+    </div>
+
+    {% set counts = {"DONE":0,"READY":0,"BLOCKED":0,"ESCALATED":0,"UNKNOWN":0} %}
+    {% for a in report.agents %}{% if not a.is_subagent %}{% set _ = counts.update({a.status: counts[a.status]+1}) %}{% endif %}{% endfor %}
+
+    <div class="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold overflow-x-auto no-scrollbar -mx-3 px-3 sm:mx-0 sm:px-0">
+      <span class="shrink-0 px-2 py-1 rounded bg-gray-900 border border-neon-cyan text-neon-cyan shadow-[0_0_5px_rgba(0,243,255,0.2)]">DONE {{ counts.DONE }}</span>
+      <span class="shrink-0 px-2 py-1 rounded bg-gray-900 border border-neon-blue text-neon-blue">READY {{ counts.READY }}</span>
+      <span class="shrink-0 px-2 py-1 rounded bg-gray-900 border border-neon-magenta text-neon-magenta">BLOCKED {{ counts.BLOCKED }}</span>
+      <span class="shrink-0 px-2 py-1 rounded bg-gray-900 border border-neon-red text-neon-red">ESCALATED {{ counts.ESCALATED }}</span>
+      <span class="shrink-0 px-2 py-1 rounded bg-gray-900 border border-gray-700 text-gray-300 sm:hidden">{{ report.metrics.completion_pct }}% done</span>
+    </div>
+
+    <div class="hidden sm:flex items-center gap-4 text-xs text-gray-400 shrink-0">
+      <span>Completion: <strong class="text-neon-emerald">{{ report.metrics.completion_pct }}%</strong></span>
+      <span>{{ report.generated_at[:19] | replace("T"," ") }} UTC</span>
+      {% if serve_mode %}
+      <button id="refresh-btn-desktop" class="refresh-btn-el px-3 py-1 bg-gray-800 hover:bg-gray-700 text-white rounded transition-colors border border-gray-600">
+        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        Refresh
+      </button>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════ TABS ═══════════════════════ -->
+<!-- Horizontal-scroll tab strip: on phones this scrolls instead of wrapping/overflowing;
+     on desktop it fits in one row anyway so the scroll affordance is invisible. -->
+<div class="border-b border-gray-800 bg-venture-dark px-3 sm:px-6 flex gap-4 sm:gap-6 text-xs sm:text-sm font-medium overflow-x-auto no-scrollbar" role="tablist">
+  <button id="tab-graph" class="shrink-0 py-3 text-neon-cyan border-b-2 border-neon-cyan transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/50 rounded-t">Pipeline Graph</button>
+  <button id="tab-workflow" class="shrink-0 py-3 text-gray-400 hover:text-gray-200 border-b-2 border-transparent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/50 rounded-t">Execution Plan</button>
+  <button id="tab-playbooks" class="shrink-0 py-3 text-gray-400 hover:text-gray-200 border-b-2 border-transparent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/50 rounded-t">Playbook Analytics</button>
+  <button id="tab-tools" class="shrink-0 py-3 text-gray-400 hover:text-gray-200 border-b-2 border-transparent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/50 rounded-t">Tools Analytics</button>
+  <button id="tab-agents" class="shrink-0 py-3 text-gray-400 hover:text-gray-200 border-b-2 border-transparent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/50 rounded-t">Staff Analytics</button>
+  <button id="tab-artifacts" class="shrink-0 py-3 text-gray-400 hover:text-gray-200 border-b-2 border-transparent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/50 rounded-t">Artifacts</button>
+  <button id="tab-analytics" class="shrink-0 py-3 text-gray-400 hover:text-gray-200 border-b-2 border-transparent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/50 rounded-t">Analytics</button>
+  <button id="tab-legacy" class="shrink-0 py-3 text-gray-400 hover:text-gray-200 border-b-2 border-transparent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/50 rounded-t flex items-center gap-1.5">
+    Legacy
+    {% set legacy_count = (report.legacy.unused_playbooks|length) + (report.legacy.unused_tools|length) + (report.legacy.unused_contracts|length) %}
+    {% if legacy_count > 0 %}
+    <span class="bg-yellow-900/30 text-yellow-400 text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ legacy_count }}</span>
+    {% endif %}
+  </button>
+</div>
+
+<!-- ═══════════════════════ MAIN CONTENT ═══════════════════════ -->
+<main class="flex-grow relative min-h-0 h-[calc(100vh-108px)] sm:h-[calc(100vh-112px)] overflow-hidden">
+  <div id="view-graph" class="block w-full h-full p-2 sm:p-4">
+    {% include "screens/graph.html.j2" %}
+  </div>
+  <div id="view-workflow" class="hidden w-full h-full">
+    {% include "screens/workflow.html.j2" %}
+  </div>
+  <div id="view-playbooks" class="hidden w-full h-full">
+    {% include "screens/playbooks.html.j2" %}
+  </div>
+  <div id="view-tools" class="hidden w-full h-full">
+    {% include "screens/tools.html.j2" %}
+  </div>
+  <div id="view-agents" class="hidden w-full h-full">
+    {% include "screens/agents.html.j2" %}
+  </div>
+  <div id="view-artifacts" class="hidden w-full h-full">
+    {% include "screens/artifacts.html.j2" %}
+  </div>
+  <div id="view-analytics" class="hidden w-full h-full">
+    {% include "screens/analytics.html.j2" %}
+  </div>
+  <div id="view-legacy" class="hidden w-full h-full">
+    {% include "screens/legacy.html.j2" %}
+  </div>
+</main>
+
+<!-- ═══════════════════════ DATA & SCRIPTS ═══════════════════════ -->
+<script>
+  const reportData = {{ report_json | safe }};
+  const serveMode = {{ "true" if serve_mode else "false" }};
+</script>
+
+<!-- Graphology, Sigma.js & Dagre (automatic layered layout engine) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/graphology/0.25.4/graphology.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/2.4.0/sigma.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dagre/0.8.5/dagre.min.js"></script>
+
+<!-- Chart.js — single lightweight charting lib used exclusively by the Insights tab
+     (model distribution / context budget / output size charts). Loaded once here,
+     configured via the shared helpers below so screens don't each hand-roll Chart.js
+     boilerplate. -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+<script>
+  // ─────────────────────────────────────────────────────────────────────
+  // Shared dashboard chrome: tab switching + chart helpers, used by every
+  // screens/*.html.j2 partial instead of each reimplementing it.
+  // ─────────────────────────────────────────────────────────────────────
+
+  // Tab Switching Logic
+  const tabs = [
+    { btn: document.getElementById('tab-graph'), view: document.getElementById('view-graph') },
+    { btn: document.getElementById('tab-workflow'), view: document.getElementById('view-workflow') },
+    { btn: document.getElementById('tab-playbooks'), view: document.getElementById('view-playbooks') },
+    { btn: document.getElementById('tab-tools'), view: document.getElementById('view-tools') },
+    { btn: document.getElementById('tab-agents'), view: document.getElementById('view-agents') },
+    { btn: document.getElementById('tab-artifacts'), view: document.getElementById('view-artifacts') },
+    { btn: document.getElementById('tab-analytics'), view: document.getElementById('view-analytics') },
+    { btn: document.getElementById('tab-legacy'), view: document.getElementById('view-legacy') }
+  ];
+
+  function switchTab(activeId) {
+    tabs.forEach(tab => {
+      if (tab.btn.id === activeId) {
+        tab.btn.classList.add('text-neon-cyan', 'border-neon-cyan');
+        tab.btn.classList.remove('text-gray-400', 'border-transparent');
+        tab.view.classList.remove('hidden');
+        tab.view.classList.add('block');
+        tab.view.dispatchEvent(new CustomEvent('dashboard:tab-shown'));
+      } else {
+        tab.btn.classList.add('text-gray-400', 'border-transparent');
+        tab.btn.classList.remove('text-neon-cyan', 'border-neon-cyan');
+        tab.view.classList.add('hidden');
+        tab.view.classList.remove('block');
+      }
+    });
+  }
+
+  tabs.forEach(tab => {
+    tab.btn.addEventListener('click', () => switchTab(tab.btn.id));
+  });
+
+  if (window.lucide) lucide.createIcons();
+
+  // Refresh functionality (mobile + desktop buttons share the same handler)
+  const refreshBtns = document.querySelectorAll('#refresh-btn, #refresh-btn-desktop');
+  if (refreshBtns.length && serveMode) {
+    refreshBtns.forEach(btn => {
+      const original = btn.innerHTML;
+      btn.addEventListener('click', () => {
+        refreshBtns.forEach(b => { b.disabled = true; });
+        btn.innerHTML = '⏳ Обновляю...';
+        fetch('/refresh')
+          .then(r => r.json())
+          .then(() => { window.location.reload(); })
+          .catch(() => { refreshBtns.forEach(b => { b.disabled = false; }); btn.innerHTML = original; });
+      });
+    });
+  }
+
+  // ── Chart.js shared helpers ─────────────────────────────────────────
+  // Applies the dashboard's dark chart chrome once (per dataviz skill:
+  // recessive gridlines/axes, muted ink, no default legend box — screens
+  // opt into a custom legend when they have >1 series).
+  if (window.Chart) {
+    Chart.defaults.color = '#898781';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
+    Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+    Chart.defaults.plugins.legend.display = false;
+    Chart.defaults.plugins.tooltip.backgroundColor = '#111111';
+    Chart.defaults.plugins.tooltip.borderColor = '#333333';
+    Chart.defaults.plugins.tooltip.borderWidth = 1;
+    Chart.defaults.plugins.tooltip.padding = 8;
+    Chart.defaults.plugins.tooltip.titleColor = '#e5e5e5';
+    Chart.defaults.plugins.tooltip.bodyColor = '#c3c2b7';
+  }
+
+  // Registry so a screen can be re-entered (tab switched away/back) without
+  // leaking Chart.js instances on the same <canvas>.
+  window._dashboardCharts = window._dashboardCharts || {};
+  function renderChart(canvasId, config) {
+    const el = document.getElementById(canvasId);
+    if (!el || !window.Chart) return null;
+    if (window._dashboardCharts[canvasId]) window._dashboardCharts[canvasId].destroy();
+    const chart = new Chart(el, config);
+    window._dashboardCharts[canvasId] = chart;
+    return chart;
+  }
+</script>
+</body>
+</html>

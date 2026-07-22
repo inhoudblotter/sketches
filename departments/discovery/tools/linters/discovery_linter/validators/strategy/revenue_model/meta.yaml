@@ -1,0 +1,8 @@
+name: revenue-model
+entrypoint: run_validation
+contract: departments/discovery/contracts/revenue_model_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.strategy.revenue_model.RevenueModelConfig
+inputs:
+- '**/revenue_model.yaml'
+outputs:
+- stdout

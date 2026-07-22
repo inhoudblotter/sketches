@@ -1,0 +1,11 @@
+name: Validate Agent
+type: linter
+description: Линтер для проверки агентов на соответствие стандартам skill-agent-crafting.md
+department: operations
+command:
+  - python3 -m departments.operations.tools.validators.validate_agent.command
+inputs:
+  - '**/*.md'
+outputs:
+  - stdout
+cli_name: validate-agent

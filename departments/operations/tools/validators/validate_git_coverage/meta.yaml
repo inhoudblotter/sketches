@@ -1,0 +1,12 @@
+name: Validate Git Coverage
+type: linter
+description: Статически проверяет git-safety гарантии агентов staff/*.md — что каждый артефакт (<write>/tool-output) реально попадает в git add перед merge, что git add не содержит опечаток, что параллельно вызываемые саб-агенты не коммитят сами, и что нигде не используются деструктивные git-операции (add -A/., reset --hard, clean, checkout <path>).
+department: operations
+command:
+  - python3 -m departments.operations.tools.validators.validate_git_coverage.command
+inputs:
+  - '**/staff/*.md'
+  - '**/staff/subagents/*.md'
+outputs:
+  - stdout
+cli_name: validate-git-coverage

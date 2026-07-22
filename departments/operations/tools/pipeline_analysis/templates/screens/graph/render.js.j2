@@ -1,0 +1,130 @@
+// 3. Render with Sigma
+const renderer = new Sigma(graph, container, {
+  renderEdgeLabels: false,
+  defaultEdgeType: "arrow",
+  labelFont: "Inter, sans-serif",
+  labelColor: { color: "#9ca3af" }, // gray-400
+  labelSize: 11,
+  zIndex: true,
+});
+
+// Hover interactions state
+let hoveredNode = null;
+let hoveredNeighbors = new Set();
+
+renderer.setSetting("nodeReducer", (node, data) => {
+  const res = { ...data };
+  if (hoveredNode && !hoveredNeighbors.has(node) && hoveredNode !== node) {
+    res.label = "";
+    res.color = "#1f2937"; // Dim non-neighbors (gray-800)
+    return res;
+  }
+  // Files and tools vastly outnumber agents and their labels overlap into an
+  // unreadable pile at rest — only show them for the hovered node/neighbors
+  // or critical-path members while the toggle is on (so the backbone stays
+  // legible without the toggle); agents/subagents keep their labels always.
+  const isAgentLike = data.metadata && (data.metadata.type === 'agent' || data.metadata.type === 'subagent');
+  const isShownCritical = showCriticalPath && data.metadata && data.metadata.critical;
+  if (!isAgentLike && !isShownCritical && hoveredNode !== node && !hoveredNeighbors.has(node)) {
+    res.label = "";
+  }
+  return res;
+});
+
+renderer.setSetting("edgeReducer", (edge, data) => {
+  const res = { ...data };
+  // Critical-path magenta is off by default (see graph.html.j2) — edges are
+  // built once with that default baked in, so both directions of the toggle
+  // have to be handled here, not just "off": turning it on has to actively
+  // apply the magenta color, not merely skip reverting it.
+  if (data.metadata && data.metadata.critical) {
+    if (showCriticalPath) {
+      res.color = PALETTE.criticalEdge;
+      res.size = 2.5;
+    } else {
+      res.color = data.metadata.normal_color;
+      res.size = 1;
+    }
+  }
+  if (hoveredNode && !graph.hasExtremity(edge, hoveredNode)) {
+    res.hidden = true; // Hide unrelated edges
+  }
+  return res;
+});
+
+renderer.on("enterNode", ({ node }) => {
+  container.style.cursor = "pointer";
+  hoveredNode = node;
+  hoveredNeighbors = new Set(graph.neighbors(node));
+  renderer.refresh();
+  showTooltip(node);
+});
+
+renderer.on("leaveNode", () => {
+  container.style.cursor = "default";
+  hoveredNode = null;
+  hoveredNeighbors = new Set();
+  renderer.refresh();
+  hideTooltip();
+});
+
+renderer.getMouseCaptor().on("mousemove", (e) => {
+  positionTooltip(e.x, e.y);
+});
+
+// --- Tooltip ---
+const tooltipEl = document.getElementById("node-tooltip");
+function showTooltip(node) {
+  const md = graph.getNodeAttribute(node, 'metadata') || {};
+  const lines = [`<div class="font-semibold text-gray-100 mb-1">${node}</div>`];
+  lines.push(`<div class="text-gray-500">${md.type || 'node'}${md.critical ? ' · critical path' : ''}</div>`);
+  if (md.type === 'agent' || md.type === 'subagent') {
+    lines.push(`<div>status: ${md.status} · model: ${md.model}</div>`);
+    lines.push(`<div>output significance: ${md.output_significance}</div>`);
+    if (md.unused) lines.push(`<div class="text-zinc-400">не используется в пайплайне</div>`);
+  } else if (md.type === 'artifact') {
+    lines.push(`<div>подписчиков: ${md.subscribers}</div>`);
+    if (md.locked) lines.push(`<div class="text-teal-400">валидируется: ${md.validated_by.join(', ')}</div>`);
+    if (md.needs_validator) lines.push(`<div class="text-amber-400">структурированные данные без валидатора</div>`);
+    if (md.no_producer) lines.push(`<div class="text-violet-400">ничто в пайплайне это не производит${md.external ? ' (внешний путь)' : ''}</div>`);
+    if (md.dead_end) lines.push(`<div class="${md.external ? 'text-orange-400' : 'text-amber-400'}">${md.external ? 'внешний выход (за пределами workspace)' : 'создан, но никем не читается'}</div>`);
+  } else if (md.type === 'tool') {
+    lines.push(`<div>tool_type: ${md.tool_type} · blast radius: ${md.blast_radius}</div>`);
+    if (md.unused) lines.push(`<div class="text-zinc-400">не используется ни одним агентом</div>`);
+  }
+  tooltipEl.innerHTML = lines.join('');
+  tooltipEl.classList.remove('hidden');
+}
+function hideTooltip() { tooltipEl.classList.add('hidden'); }
+function positionTooltip(x, y) {
+  tooltipEl.style.left = `${x + 16}px`;
+  tooltipEl.style.top = `${y + 16}px`;
+}
+
+// Controls
+const camera = renderer.getCamera();
+document.getElementById("zoom-in").addEventListener("click", () => {
+  camera.animatedZoom({ duration: 300 });
+});
+document.getElementById("zoom-out").addEventListener("click", () => {
+  camera.animatedUnzoom({ duration: 300 });
+});
+document.getElementById("reset-camera").addEventListener("click", () => {
+  camera.animatedReset({ duration: 300 });
+});
+document.getElementById("toggle-legend").addEventListener("click", () => {
+  document.getElementById("graph-panel").classList.toggle("hidden");
+});
+
+const criticalPathBtn = document.getElementById("toggle-critical-path");
+function syncCriticalPathBtn() {
+  criticalPathBtn.classList.toggle("text-neon-magenta", showCriticalPath);
+  criticalPathBtn.classList.toggle("border-neon-magenta", showCriticalPath);
+  criticalPathBtn.classList.toggle("text-gray-500", !showCriticalPath);
+}
+syncCriticalPathBtn();
+criticalPathBtn.addEventListener("click", () => {
+  showCriticalPath = !showCriticalPath;
+  syncCriticalPathBtn();
+  renderer.refresh();
+});

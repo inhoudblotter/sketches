@@ -1,0 +1,36 @@
+# Tech Constraints YAML Contract
+# Синтезируется Tech Synthesizer'ом на основе исследований DevOps и Tech Scout.
+
+technology_stack:
+  frontend: '[Language/Framework]'
+  backend: '[Language/Framework, может быть null для Local-First]'
+  database: '[DB Type, e.g., PostgreSQL, Redis, может быть null для P2P]'
+  infrastructure: '[Hosting/Deployment, e.g., Vercel, AWS EKS, VPS]'
+  p2p_network_layer: '[Опционально: Описание Gossip, реле, Federated Trackers]'
+  data_replication_model: '[Опционально: CRDT, Event Sourcing, SQLite In-Memory]'
+  cryptographic_identity: '[Опционально: Zero-Trust аутентификация, Ed25519]'
+
+resource_quotas_per_user:
+  storage_gb: '[Ожидаемый объем хранилища на 1 пользователя в месяц, GB. Например: 0.5]'
+  database_reads_per_month: '[Ожидаемое количество чтений, шт. Например: 10000]'
+  database_writes_per_month: '[Ожидаемое количество записей, шт. Например: 2000]'
+  egress_bandwidth_gb: '[Ожидаемый исходящий трафик на пользователя, GB. Например: 2.0]'
+  external_api_calls:
+    - provider: '[Например: openai]'
+      metric: '[Например: tokens_per_month]'
+      amount: '[Например: 50000]'
+
+compliance_flags:
+  - '[Например: GDPR]'
+  - '[Например: ФЗ-152]'
+  - '[Например: AGPL-blocked]'
+
+growth_path:
+  - component: '[Например: Database]'
+    trigger: '[Метрика/порог из business_scaling_triggers или deployment_strategy.md#Growth Path. Например: >80 concurrent DB connections]'
+    action: '[Следующий шаг. Например: PgBouncer connection pooler]'
+    rewrite_cost: '[Что переписывается / что переживёт переход без рефакторинга]'
+
+maintainability_notes: '[Какой эксплуатационной экспертизы требует стек и что произойдёт без неё (команда 1-2 человека, без выделенного SRE/DBA). Источник: deployment_strategy.md#Maintainability Note]'
+
+strategic_insight: '[Чем мы жертвуем ради этой архитектуры? Например: Жертвуем скоростью разработки ради дешевизны VPS]'

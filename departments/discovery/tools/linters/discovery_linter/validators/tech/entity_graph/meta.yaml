@@ -1,0 +1,7 @@
+name: entity-graph
+entrypoint: run_validate_entity_graph
+inputs:
+- domains/**/dictionary.yaml
+- domains/**/epics/*/flows/*.yaml
+outputs:
+- stdout

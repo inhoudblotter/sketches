@@ -1,0 +1,73 @@
+{% set department = report.agents_dir.rstrip('/').split('/')[-2] %}
+# WORKFLOW: Отдел {{ department | capitalize }}
+
+> Автоматически сгенерировано `pipeline-analysis` из frontmatter агентов (`{{ report.agents_dir }}`). Не редактируйте руками — правьте агентов и перегенерируйте файл (`pipeline-analysis {{ department }}`). Философия и назначение отдела: см. [README.md](README.md).
+
+**Generated:** {{ report.generated_at }}
+
+---
+
+{% set agent_by_name = {} %}
+{% for a in report.agents %}{% set _ = agent_by_name.update({a.name: a}) %}{% endfor %}
+{% macro agent_block(agent, heading, is_sub) %}
+{{ heading }} `{{ agent.name }}`{% if is_sub %} _(subagent)_{% endif %}
+
+{% if agent.description %}{{ agent.description }}
+
+{% endif %}
+| Field | Value |
+|---|---|
+| Model | {{ agent.model }} |
+| Temperature | {{ agent.temperature }} |
+| Context KB | {{ "%.1f"|format(agent.context_load_kb) }}{% if agent.context_is_partial %} (~, часть входов ещё не сгенерирована){% endif %} |
+{% if not is_sub %}
+| Status | {{ agent.status }} |
+{% endif %}
+{% if agent.required_skills %}
+**Required skills:** {{ agent.required_skills | length }}
+{% endif %}
+{% if agent.uses_tools %}
+**Uses tools:** {{ agent.uses_tools | length }}
+{% endif %}
+{% if agent.delegates_to %}
+**Delegates to:** {{ agent.delegates_to | length }}
+{% endif %}
+{% if not is_sub and agent.blocked_on %}
+**Blocked on:** {{ agent.blocked_on | length }}
+{% endif %}
+
+{% if agent.reads %}
+**Reads (Inputs):**
+{% for r in agent.reads %}  - `{{ r.split('/')[-1] }}`
+{% endfor %}{% endif %}
+
+{% if agent.writes %}
+**Writes (Outputs):**
+{% for w in agent.writes %}  - `{{ w.split('/')[-1] }}`
+{% endfor %}{% endif %}
+{% endmacro %}
+## Execution Plan
+
+Фазы выведены из топологического порядка графа зависимостей (кто что читает/пишет), не заданы вручную — агенты в одной фазе не зависят друг от друга и могут выполняться параллельно.
+
+{% for stage in report.execution_stages %}
+### Phase {{ stage.stage_number }}
+
+{% for stage_agent in stage.parallel_agents %}
+{% set agent = agent_by_name.get(stage_agent.name) %}
+{% if agent %}
+{{ agent_block(agent, "####", False) }}
+{% for sub_name in stage_agent.subagents %}
+{% set sub = agent_by_name.get(sub_name) %}
+{% if sub %}
+{{ agent_block(sub, "#####", True) }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+---
+
+
+
+

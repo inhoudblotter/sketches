@@ -1,0 +1,6 @@
+name: patch
+entrypoint: run_validate_patch
+inputs:
+- workspace/discovery/**/patches/*.yaml
+outputs:
+- stdout

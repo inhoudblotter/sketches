@@ -1,0 +1,158 @@
+{% set department = report.agents_dir.rstrip('/').split('/')[-2] %}
+# ERRORS & WARNINGS: Отдел {{ department | capitalize }}
+
+> Автоматически сгенерировано `pipeline-analysis` из графа агентов (`{{ report.agents_dir }}`).
+**Generated:** {{ report.generated_at }}
+
+---
+
+{% set has_errors = False %}
+
+{% if report.metrics.tool_test_results and "failed" in report.metrics.tool_test_results.lower() %}
+{% set has_errors = True %}
+## 🚨 Tool Tests Failed
+**Описание:** Тесты инструментов отдела завершились с ошибками. Это означает, что линтеры, валидаторы или другие утилиты не работают корректно.
+**Решение:** Проверьте логи pytest для папки `tools/` и исправьте сломанные тесты/линтеры.
+
+- `{{ report.metrics.tool_test_results }}`
+
+{% if report.metrics.tool_test_failures %}
+**Упавшие тесты:**
+{% for failure in report.metrics.tool_test_failures %}
+- `{{ failure }}`
+{% endfor %}
+{% endif %}
+{% elif report.metrics.tool_test_results %}
+## ✅ Tool Tests Passed
+- `{{ report.metrics.tool_test_results }}`
+{% endif %}
+
+{% if report.metrics.contract_drift %}
+{% set has_errors = True %}
+## 🚨 Contract Drift Detected
+**Описание:** Нарушена синхронизация между Pydantic-схемой линтера и YAML-шаблоном контракта. Агент может генерировать поля, о которых линтер не знает (или наоборот).
+**Решение:** Обновите либо шаблон в `contracts/`, либо схему в `tools/linters/.../schemas.py`, чтобы они совпадали.
+
+{% for drift in report.metrics.contract_drift %}
+### Tool: `{{ drift.tool_name }}`
+- **Schema:** `{{ drift.contract_schema }}`
+- **Template:** `{{ drift.contract_path }}`
+{% if drift.schema_only %}
+  - **Schema-only (линтер проверяет, но агенту не показывают):**
+  {% for f in drift.schema_only %}
+    - `{{ f }}`
+  {% endfor %}
+{% endif %}
+{% if drift.template_only %}
+  - **Template-only (агенту показывают, но линтер не проверяет):**
+  {% for f in drift.template_only %}
+    - `{{ f }}`
+  {% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if report.metrics.agent_validation_errors %}
+{% set has_errors = True %}
+## 🚨 Agent Validation Errors (validate_agent)
+**Описание:** Файлы агентов не проходят линтер `departments/operations/tools/validators/validate_agent` (структура XML-секций, плейсхолдеры, контракты вызовов инструментов и т.д.).
+**Решение:** Исправьте перечисленные нарушения в соответствующих `staff/*.md` файлах.
+
+{% for entry in report.metrics.agent_validation_errors %}
+### `{{ entry.file_path }}`
+{% for err in entry.errors %}
+- {{ err }}
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+{% if report.metrics.git_coverage_findings %}
+{% set has_errors = True %}
+## 🚨 Git Coverage Findings (validate_git_coverage)
+**Описание:** Нарушены git-safety гарантии агентов (Scoped Commit, No Parallel Git Ops, Parallel Batch Cap, Destructive Ops) — проверено `departments/operations/tools/validators/validate_git_coverage`.
+**Решение:** Исправьте `git add`/`for_each`/делегирование в указанных файлах согласно категории находки.
+
+{% for f in report.metrics.git_coverage_findings %}
+- **[{{ f.category }}]** `{{ f.file_path }}` — {{ f.message }}{{ " (" + f.detail + ")" if f.detail else "" }}
+{% endfor %}
+{% endif %}
+
+{% if report.metrics.has_cycles %}
+{% set has_errors = True %}
+## 🚨 Cycle detected
+**Описание:** В графе зависимостей агентов обнаружена циклическая зависимость (когда агенты ждут данных друг от друга по кругу).
+**Решение:** Пересмотрите теги `<read>` и `<write>`. Возможно, стоит разбить одного из агентов на две фазы, чтобы разорвать цикл.
+{% endif %}
+
+{% if report.metrics.missing_inputs %}
+{% set has_errors = True %}
+## ❌ Missing Inputs
+**Описание:** Данные файлы требуются агентам (указаны в `<read>`), но ни один другой агент их не генерирует (нет соответствующего `<write>`).
+**Решение:** Убедитесь, что файл создается статично пользователем в `workspace/`, либо добавьте агента, который будет его генерировать.
+
+{% for missing in report.metrics.missing_inputs %}
+- `{{ missing }}`
+{% endfor %}
+{% endif %}
+
+{% if report.metrics.escalated_agents %}
+{% set has_errors = True %}
+## ⚠️ Escalated Agents
+**Описание:** Эти агенты запросили эскалацию (например, через `escalation_protocol`) и не смогли выполнить свою задачу из-за критических бизнес-конфликтов или отсутствия нужных данных.
+**Решение:** Проверьте папку `handoff/` для этих агентов и устраните причину сбоя вручную.
+
+{% for esc in report.metrics.escalated_agents %}
+- `{{ esc }}`
+{% endfor %}
+{% endif %}
+
+{% if report.metrics.temperature_risk_agents %}
+{% set has_errors = True %}
+## ⚠️ Temperature Risk Agents
+**Описание:** У этих агентов установлена `temperature: 0.0`. Для сложных креативных задач или генерации объемного YAML/JSON это повышает риск бесконечного зацикливания модели (она начинает повторять один и тот же паттерн).
+**Решение:** Рекомендуется повысить температуру хотя бы до `0.1` - `0.3` для агентов, которые не занимаются жесткой аналитикой.
+
+{% for t in report.metrics.temperature_risk_agents %}
+- `{{ t }}`
+{% endfor %}
+{% endif %}
+
+{% set legacy_count = (report.legacy.unused_playbooks|length) + (report.legacy.unused_tools|length) + (report.legacy.unused_contracts|length) + (report.legacy.dangling_contract_refs|length) %}
+{% if legacy_count > 0 %}
+{% set has_errors = True %}
+## 🧹 Legacy Code (Unused & Dangling Resources)
+**Описание:** В отделе найдены артефакты, на которые никто не ссылается. Они засоряют проект и усложняют поддержку.
+**Решение:** Удалите эти файлы или явно подключите их агентам через `<required_skills>`, контракты или настройки тулов.
+
+{% if report.legacy.unused_playbooks %}
+**Unused Playbooks:**
+{% for u in report.legacy.unused_playbooks %}
+- `{{ u }}`
+{% endfor %}
+{% endif %}
+
+{% if report.legacy.unused_tools %}
+**Unused Tools:**
+{% for u in report.legacy.unused_tools %}
+- `{{ u }}`
+{% endfor %}
+{% endif %}
+
+{% if report.legacy.unused_contracts %}
+**Unused Contracts:**
+{% for u in report.legacy.unused_contracts %}
+- `{{ u }}`
+{% endfor %}
+{% endif %}
+
+{% if report.legacy.dangling_contract_refs %}
+**Dangling Contract Refs (Указан в meta.yaml тула, но файл отсутствует):**
+{% for u in report.legacy.dangling_contract_refs %}
+- `{{ u }}`
+{% endfor %}
+{% endif %}
+{% endif %}
+
+{% if not has_errors %}
+✅ No potential errors detected.
+{% endif %}

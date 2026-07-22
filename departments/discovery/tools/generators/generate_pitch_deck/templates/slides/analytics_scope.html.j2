@@ -1,0 +1,82 @@
+<div class="embla__slide">
+  <div class="slide-content flex flex-col w-full">
+    <h2>Объем и Трудозатраты (Scope & Effort)</h2>
+    <p style="color: #aaa; max-width: 640px;">
+      T-Shirt-оценка на основе Story Points — язык для discovery, не прогноз бюджета
+      или сроков (точные цифры появятся на этапах архитектуры и разработки).
+    </p>
+    {% set features_count_by_phase = scope_analytics.features_count_by_phase | default({}, true) %}
+    {% set sp_by_phase = scope_analytics.sp_by_phase | default({}, true) %}
+    <div class="flex flex-col gap-8 w-full mt-4">
+      <!-- Metric Cards Top Row -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+        <div class="metric-card !m-0 flex flex-col items-start justify-start">
+          <div class="metric-value text-blue flex flex-col items-start text-left" style="font-size: 3rem; line-height: 1.1;">
+            <div>{{ scope_analytics.mvp_size_bucket }}</div>
+            <div class="text-xs text-indigo-400/80 tracking-widest uppercase font-semibold mt-1">{{ scope_analytics.mvp_size_description }}</div>
+          </div>
+          <div class="metric-label mt-2 text-left">Размер MVP (T-Shirt)</div>
+        </div>
+        <div class="metric-card !m-0 flex flex-col items-start justify-start">
+          <div class="metric-value text-blue text-left">{{ scope_analytics.total_mvp_sp }}</div>
+          <div class="metric-label mt-2 text-left">Всего Story Points (MVP)</div>
+        </div>
+        <div class="metric-card !m-0 flex flex-col items-start justify-start">
+          <div class="metric-value text-left">{{ features_count_by_phase.mvp_mandatory | default(0) + features_count_by_phase.mvp_nice_to_have | default(0) }}</div>
+          <div class="metric-label mt-2 text-left">Всего Features (MVP)</div>
+        </div>
+      </div>
+
+      <!-- Chart Bottom Row -->
+      <div class="w-full relative h-52 sm:h-64">
+        <canvas id="scopeChart"></canvas>
+      </div>
+
+      {% if scope_analytics.top_features %}
+      <div class="w-full">
+        <h3>Топ-3 самые тяжёлые фичи</h3>
+        <ul style="list-style: none; padding: 0;">
+          {% for feat in scope_analytics.top_features %}
+          <li style="background: #111; padding: 15px; border-radius: 0; margin-bottom: 10px; display: flex; justify-content: space-between; border: 1px solid #333;">
+            <span><strong>{{ feat.name }}</strong></span>
+            <span class="text-red">{{ feat.sp }} SP</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const ctx = document.getElementById('scopeChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Обязательно (Mandatory)', 'Желательно (Nice to Have)', 'В будущем (Future)'],
+          datasets: [{
+            label: 'Story Points',
+            data: [
+              {{ sp_by_phase.mvp_mandatory | default(0) }},
+              {{ sp_by_phase.mvp_nice_to_have | default(0) }},
+              {{ sp_by_phase.future_features | default(0) }}
+            ],
+            backgroundColor: ['#4ade80', '#3b82f6', '#333'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { beginAtZero: true, grid: { color: '#333' } },
+            x: { grid: { display: false }, ticks: { color: '#fff' } }
+          }
+        }
+      });
+    });
+  </script>
+</div>

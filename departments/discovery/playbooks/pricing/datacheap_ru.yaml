@@ -1,0 +1,33 @@
+provider: DataCheap
+location: Russia
+
+compute:
+  # Linux VPS SSD NVMe
+  - service: 'VPS (Basic DDoS)'
+    tier: 'Promo NVMe (1 Core, 1GB RAM, 10GB NVMe, 5TB)'
+    price_rub: 350.0
+    unit: 'per_month'
+  - service: 'VPS (Basic DDoS)'
+    tier: 'Start NVMe Unlimited (1 Core, 1GB RAM, 10GB NVMe)'
+    price_rub: 500.0
+    unit: 'per_month'
+  - service: 'VPS (Basic DDoS)'
+    tier: 'Medium NVMe Unlimited (2 Core, 2GB RAM, 20GB NVMe)'
+    price_rub: 650.0
+    unit: 'per_month'
+  - service: 'VPS (Basic DDoS)'
+    tier: 'Advanced NVMe Unlimited (4 Core, 4GB RAM, 50GB NVMe)'
+    price_rub: 840.0
+    unit: 'per_month'
+  - service: 'VPS (Basic DDoS)'
+    tier: 'Professional NVMe Unlimited (8 Core, 8GB RAM, 90GB NVMe)'
+    price_rub: 1680.0
+    unit: 'per_month'
+  - service: 'VPS (Basic DDoS)'
+    tier: 'Ultimate NVMe Unlimited (8 Core, 16GB RAM, 120GB NVMe)'
+    price_rub: 3360.0
+    unit: 'per_month'
+  - service: 'VPS (Basic DDoS)'
+    tier: 'Gold NVMe Unlimited (8 Core, 32GB RAM, 240GB NVMe)'
+    price_rub: 6720.0
+    unit: 'per_month'

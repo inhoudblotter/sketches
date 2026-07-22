@@ -1,0 +1,12 @@
+name: domain
+entrypoint: run_validate_domain
+inputs:
+- '**/domains/{domain}/**'
+outputs:
+- stdout
+calls_tools:
+- Discovery Linter::features
+- Discovery Linter::job-stories
+- Discovery Linter::domain-orphans
+- Discovery Linter::domain-summary
+- Discovery Linter::job-stories-content

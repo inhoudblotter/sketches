@@ -1,0 +1,99 @@
+provider: Yandex Cloud
+
+compute:
+  - service: 'Compute Cloud VM'
+    tier: 'Intel Broadwell (2 Core, 2GB RAM)'
+    price_rub: 1100.0
+    unit: 'per_month'
+  - service: 'Compute Cloud VM'
+    tier: 'Intel Broadwell (4 Core, 8GB RAM)'
+    price_rub: 3800.0
+    unit: 'per_month'
+  - service: 'Compute Cloud GPU'
+    tier: '1x V100 (8 Core, 32GB RAM)'
+    price_rub: 35000.0
+    unit: 'per_month'
+
+containers:
+  - service: 'Managed Service for Kubernetes'
+    tier: 'Zonal Master'
+    price_rub: 3500.0
+    unit: 'per_month'
+  - service: 'Container Registry'
+    tier: 'Storage'
+    price_rub: 1.6
+    unit: 'per_gb_month'
+
+database:
+  - service: 'Managed PostgreSQL'
+    tier: 's2.micro (2 Core, 8GB RAM)'
+    price_rub: 4500.0
+    unit: 'per_month'
+  - service: 'Managed ClickHouse'
+    tier: 's2.micro (2 Core, 8GB RAM)'
+    price_rub: 4500.0
+    unit: 'per_month'
+  - service: 'Managed Redis'
+    tier: 'b2.nano (1 Core, 2GB RAM)'
+    price_rub: 1800.0
+    unit: 'per_month'
+  - service: 'Managed MongoDB'
+    tier: 's2.micro (2 Core, 8GB RAM)'
+    price_rub: 5000.0
+    unit: 'per_month'
+  - service: 'Managed OpenSearch'
+    tier: 's2.micro (2 Core, 8GB RAM)'
+    price_rub: 6000.0
+    unit: 'per_month'
+
+storage_and_cdn:
+  - service: 'Object Storage'
+    tier: 'Standard'
+    price_rub: 1.6
+    unit: 'per_gb_month'
+  - service: 'Cloud CDN'
+    tier: 'Egress Traffic'
+    price_rub: 1.2
+    unit: 'per_gb'
+
+network:
+  - service: 'Application Load Balancer'
+    tier: 'Active Capacity'
+    price_rub: 1500.0
+    unit: 'per_month'
+  - service: 'Network Load Balancer'
+    tier: 'Rules and Traffic'
+    price_rub: 1000.0
+    unit: 'per_month'
+  - service: 'Virtual Private Cloud'
+    tier: 'Public IP'
+    price_rub: 160.0
+    unit: 'per_month'
+
+serverless:
+  - service: 'Cloud Functions'
+    tier: 'Invocations'
+    price_rub: 15.0
+    unit: 'per_1m_requests'
+  - service: 'API Gateway'
+    tier: 'Requests'
+    price_rub: 25.0
+    unit: 'per_1m_requests'
+  - service: 'Yandex Message Queue'
+    tier: 'Requests'
+    price_rub: 15.0
+    unit: 'per_1m_requests'
+
+ai_and_ml:
+  - service: 'Yandex SpeechKit'
+    tier: 'Speech Synthesis'
+    price_rub: 180.0
+    unit: 'per_1m_chars'
+  - service: 'Yandex Translate'
+    tier: 'Text Translation'
+    price_rub: 300.0
+    unit: 'per_1m_chars'
+  - service: 'Yandex Vision'
+    tier: 'OCR / Image Analysis'
+    price_rub: 100.0
+    unit: 'per_1000_images'

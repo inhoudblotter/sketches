@@ -1,0 +1,8 @@
+name: tech-market-brief
+entrypoint: run_validation
+contract: departments/discovery/contracts/tech_market_brief_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.tech.tech_market_brief.TechMarketBriefSchema
+inputs:
+- workspace/discovery/strategy/tech_market_brief.yaml
+outputs:
+- stdout

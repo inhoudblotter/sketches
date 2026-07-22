@@ -1,0 +1,67 @@
+{# ═══════════════════════════════════════════════════════════════════════
+   Shared components — cards, stat tiles, status pills, empty states.
+   Imported by report.html.j2 and every screens/*.html.j2 partial so the
+   same markup pattern isn't hand-rolled per screen. Keep these generic
+   (no screen-specific data reaching in) so any screen can reuse them.
+   ═══════════════════════════════════════════════════════════════════════ #}
+
+{# Maps a pipeline status string to (text color, border color, bg tint) classes. #}
+{% macro status_classes(status) %}
+{%- if status == "DONE" -%}text-neon-cyan|border-neon-cyan|bg-cyan-900/10
+{%- elif status == "READY" -%}text-neon-blue|border-neon-blue|bg-blue-900/10
+{%- elif status == "BLOCKED" -%}text-neon-magenta|border-neon-magenta|bg-fuchsia-900/10
+{%- elif status == "ESCALATED" -%}text-neon-red|border-neon-red|bg-red-900/10
+{%- else -%}text-gray-400|border-gray-700|bg-gray-900/20
+{%- endif -%}
+{% endmacro %}
+
+{# Small uppercase status pill, e.g. inside tables and cards. #}
+{% macro status_pill(status) %}
+{% set c = status_classes(status).strip().split('|') %}
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border {{ c[0] }} {{ c[1] }} {{ c[2] }}">{{ status }}</span>
+{% endmacro %}
+
+{# A single KPI tile: big number + label, optional accent color and 0-100 meter bar. #}
+{% macro stat_tile(label, value, color="text-white", meter_pct=none, icon=none) %}
+<div class="stat-tile bg-[#0f0f0f] border border-gray-800 rounded-lg p-3.5 text-center transition-colors hover:border-gray-700">
+  <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1 flex items-center justify-center gap-1">
+    {% if icon %}<i data-lucide="{{ icon }}" class="w-3 h-3"></i>{% endif %}
+    {{ label }}
+  </div>
+  <div class="text-xl font-bold {{ color }} font-mono tabular-nums">{{ value }}</div>
+  {% if meter_pct is not none %}
+  <div class="mt-2 h-1 w-full rounded-full bg-gray-900 overflow-hidden">
+    <div class="h-full rounded-full {{ color | replace('text-', 'bg-') }}" style="width: {{ meter_pct }}%"></div>
+  </div>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{# Standard "nothing here" placeholder — same iconography/spacing everywhere. #}
+{% macro empty_state(icon, message, tone="text-gray-500") %}
+<div class="text-center py-16 {{ tone }} border border-dashed border-gray-800 rounded-lg bg-venture-dark">
+  <i data-lucide="{{ icon }}" class="w-12 h-12 mx-auto mb-4 opacity-50"></i>
+  <p class="text-lg">{{ message }}</p>
+</div>
+{% endmacro %}
+
+{# Section heading used above every card/table group across screens. #}
+{% macro section_title(text) %}
+<h3 class="text-white font-semibold text-sm mb-3 uppercase tracking-wider">{{ text }}</h3>
+{% endmacro %}
+
+{# A count badge, e.g. "12" pill next to a heading (subscribers, legacy counts, tab badges). #}
+{% macro count_badge(count, color="cyan") %}
+<span class="bg-gray-800 text-neon-{{ color }} text-xs font-bold px-2 py-0.5 rounded-full shadow-[0_0_5px_rgba(0,243,255,0.15)]">{{ count }}</span>
+{% endmacro %}
+
+{# Fluid, wide-screen-friendly content wrapper: no fixed centered "blob" max-width;
+   grows with the viewport but caps at 2xl so text lines don't run edge-to-edge on
+   ultrawide monitors. #}
+{% macro page(cls="") %}
+<div class="h-full w-full overflow-y-auto custom-scrollbar">
+  <div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 {{ cls }}">
+    {{ caller() }}
+  </div>
+</div>
+{% endmacro %}

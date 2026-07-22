@@ -1,0 +1,15 @@
+name: Pipeline Analysis
+type: analyzer
+description: "Строит граф агентов отдела и генерирует DASHBOARD.html, ANALYTICS.md, WORKFLOW.md, ARTIFACTS.md, ERRORS.md из frontmatter/call_tool разметки. CI/operator-инструмент, не вызывается агентами."
+department: operations
+command: python -m departments.operations.tools.pipeline_analysis.command
+entrypoint: manual
+inputs:
+  - "departments/*/staff/**"
+  - "departments/*/tools/**"
+outputs:
+  - "departments/*/DASHBOARD.html"
+  - "departments/*/ANALYTICS.md"
+  - "departments/*/WORKFLOW.md"
+  - "departments/*/ARTIFACTS.md"
+  - "departments/*/ERRORS.md"

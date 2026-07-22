@@ -1,0 +1,25 @@
+# Tech Market Brief (Выжимка из Market Context для технических скаутов)
+# Формируется агентом business-synthesizer для ограничения контекста.
+
+audience_technical_literacy: '[Например: Высокая, крипто-энтузиасты / Низкая, масс-маркет]'
+expected_load:
+  target_mau: '[Например: 100 000 MAU]'
+  peak_events: '[Например: Резкие всплески трафика во время дропов]'
+
+geopolitical_risks:
+  censorship_probability: '[High / Medium / Low]'
+  splinternet_barriers: '[Нужен ли оффлайн или обход блокировок?]'
+  data_residency_requirements: '[Например: Требуется хранение данных в РФ (ФЗ-152) / ЕС (GDPR)]'
+
+compliance_flags:
+  - '[Например: HIPAA]'
+  - '[Например: PCI-DSS]'
+  - '[Например: COPPA]'
+
+competitors_tech_signals:
+  known_bottlenecks: '[Например: Конкурент А падает при 10k онлайне, у Конкурента Б медленный поиск]'
+  architecture_hints: '[Например: Рынок движется в сторону локального AI или Edge Computing]'
+
+platform_focus:
+  primary_devices: '[Например: Мобильные устройства (слабые CPU), Desktop]'
+  connectivity_quality: '[Например: 3G, частое пропадание сети]'

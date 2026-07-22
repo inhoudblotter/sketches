@@ -1,0 +1,83 @@
+# project_analytics.yaml Reference
+# Описывает структуру workspace/discovery/meta/project_analytics.yaml — компактного
+# источника аналитики для discovery-pitcher (investment_memo.md, Red Teaming Шаг 5).
+# Автогенерируется тулом build-project-analytics при каждом запуске, не редактируется руками.
+# Это не контракт для агента-автора (файл никем не пишется вручную по шаблону) — справочник
+# по смыслу полей для тех, кто читает готовый файл.
+#
+# Подробные данные, нужные только для рендера pitch_deck.html (полный tech, roadmap,
+# sp_by_epic/epics_by_domain, data_model_metrics, entity-level domain_coupling), в этот
+# файл НЕ входят — они пишутся отдельно в project_analytics_detail.yaml (см.
+# project_analytics_detail_reference.yaml). discovery-pitcher его не читает: критика и
+# go/no-go вердикт строятся только на этом, компактном файле.
+
+project_analytics:
+  total_mvp_sp: 'Сумма story points по эпикам mvp_mandatory и mvp_nice_to_have'
+  mvp_size_bucket: 'T-shirt-size объёма MVP, одно из: XS, S, M, L, XL, XXL — порог считается от total_mvp_sp'
+  sp_by_phase:
+    mvp_mandatory: 'Сумма story points фич фазы mvp_mandatory'
+    mvp_nice_to_have: 'Сумма story points фич фазы mvp_nice_to_have'
+    future_features: 'Сумма story points фич фазы future_features'
+  sp_by_domain: 'Сумма story points по каждому domain (ключ — domain name), отсортировано по убыванию — крупнейшие домены первыми'
+  high_risk_stories_count: 'Кол-во MVP-стори с непустыми ключами estimation.flags (см. estimation_template.yaml)'
+  high_risk_sp: 'Сумма story points этих high-risk стори'
+  flags_breakdown: >-
+    Разбивка high-risk стори по конкретному флагу estimation.yaml (SPIKE REQUIRED, NEED RESEARCH,
+    LOW VERIFIABILITY, MULTI-RUN FLOW, VENDOR DEPENDENCY, SLA CRITICAL, SECURITY CRITICAL,
+    DATA SCIENCE REQUIRED). Для Red Teaming: концентрация VENDOR DEPENDENCY/SLA CRITICAL/
+    SECURITY CRITICAL/DATA SCIENCE REQUIRED в MVP-скоупе — разные по природе зоны риска
+    (деловая зависимость, инфраструктура, безопасность, данные), не сворачивать в одну фразу.
+  features_count_by_phase:
+    mvp_mandatory: 'Кол-во фич фазы mvp_mandatory'
+    mvp_nice_to_have: 'Кол-во фич фазы mvp_nice_to_have'
+    future_features: 'Кол-во фич фазы future_features'
+  domain_coupling: >-
+    Компактные счётчики связности между доменами (не entity-level граф — тот в detail-файле):
+    для каждого домена — depends_on_count (сколько чужих сущностей импортирует) и used_by_count
+    (сколько раз его сущности используются другими доменами). Для Red Teaming: большие счётчики
+    у одного домена = монолитная перегрузка, риск расфокусировки на старте.
+  flow_metrics: >-
+    Сложность стейт-машин (User Flows), сверяется с launch_roadmap.yaml: total_flows, total_states,
+    total_shared_error_states, total_sla_constraints
+  compliance_flags: 'Комплаенс-флаги из strategy/tech_constraints.yaml'
+  infrastructure_usd_per_month: >-
+    Ежемесячная инфраструктурная себестоимость из strategy/unit_economics_model.yaml
+    (cogs_per_user_usd.fixed_monthly_usd). Для Red Teaming: сверить с бюджетом из revenue_model.yaml —
+    хватает ли на разработку (MVP SP) и ежемесячную инфраструктуру одновременно.
+  platform_count: 'Кол-во целевых платформ из strategy/platform_strategy.yaml'
+  missing_mandatory_epics: >-
+    Для каждого домена — какие из обязательных типов эпика (growth, monitoring/observability, promo;
+    см. job_stories_template.yaml epic_type) в нём отсутствуют. Для Red Teaming: домен без
+    monitoring-эпика — нечем будет измерить успех после запуска, риск для инвестиций.
+  global_metrics: >-
+    Только имена (не описания — те в detail-файле): kpi_names и critical_event_names, реально
+    объявленные в доменах (summary.yaml), собранные глобально по проекту. Для Red Teaming: сверь
+    имена с тем, что заявлено в strategy/business_observability.yaml — расхождение между
+    заявленными и фактическими метриками — красный флаг.
+  observability: >-
+    North Star Metric и счётчики kpi_count/critical_events_count, заявленные стратегом в
+    strategy/business_observability.yaml (не путать с global_metrics — там фактически
+    объявленное в доменах, здесь — то, что стратег выбрал измерять как North Star). Отсутствует
+    (null), если business_observability.yaml не сгенерирован. Для питчдека: заменяет голый
+    total_metrics_count (кол-во story.metrics) на осмысленный North Star + реальное число KPI.
+
+# Поля ниже — не под project_analytics:, собраны отдельно для generate-pitch-deck.
+dashboard: >-
+  Финансовый дашборд для питчдека и для Red Teaming (margin_pct, margin_color, arpu, cogs,
+  budget_color, bep_display, fixed_monthly, mrr, mau, streams, scenarios, grant_runway), собран
+  из strategy/revenue_model.yaml и strategy/unit_economics_model.yaml. Отсутствует (null), если
+  один из этих файлов не сгенерирован.
+  `scenarios` — список Worst/Base/Best (name, driver_ref, arpu, mau, mrr, margin_pct), посчитанный
+  из revenue_model.yaml#scenario_bands на том же COGS, что и основной дашборд (сценарии
+  пересчитывают только рыночную сторону MAU/ARPU, не себестоимость). Отсутствует (null), если
+  business-synthesizer/revenue-scout не заполнили `scenario_bands` (опциональное поле).
+  `grant_runway` (awarded_total_usd, awarded_monthly_offset_usd, awarded_runway_months,
+  pipeline_total_usd, pipeline_count) — финансирование, а не доход (данные для справки, в базовой оценке Red Teaming не участвуют).
+tech_summary: >-
+  Краткий технологический стек для питчдека (frontend, backend, database, infra, p2p) без
+  insight/growth_path/maintainability, собран из strategy/tech_constraints.yaml. Отсутствует
+  (null), если файл не сгенерирован. Полная версия (с insight/growth_path/maintainability) —
+  в detail-файле, ключ `tech`.
+errata_data: >-
+  Блокеры для питчдека и для Red Teaming (blockers: source, issue), собраны из
+  errata/critical_errata.yaml. Отсутствует (null), если файл не сгенерирован.

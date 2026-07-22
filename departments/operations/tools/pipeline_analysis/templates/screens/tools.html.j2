@@ -1,0 +1,196 @@
+{% import "screens/_macros.html.j2" as ui %}
+{% call ui.page() %}
+    <div class="mb-8">
+      <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Tools Analytics</h2>
+      <p class="text-gray-400 text-sm">Overview of CLI tools, linters, generators and their usage across agents and other tools.</p>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      {% for t in report.tools %}
+      
+      {# Calculate callers for the whole tool or its subcommands #}
+      {% set tool_callers = [] %}
+      {% for e in report.edges if e.edge_type in ['uses_tool', 'calls_tool'] and (e.target == t.name or e.target.startswith(t.name ~ "::")) %}
+        {% set _ = tool_callers.append(e.source) %}
+      {% endfor %}
+      {% set tool_callers = tool_callers | unique | sort %}
+      
+      <div class="bg-venture-dark border border-gray-800 rounded-lg p-5 shadow-lg relative group hover:border-neon-cyan transition-colors flex flex-col">
+        
+        <div class="flex justify-between items-start mb-3">
+          <div class="text-sm font-semibold text-neon-cyan break-all pr-2" title="{{ t.name }}">
+            {{ t.name }}
+          </div>
+          <div class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded
+            {% if t.tool_type == 'linter' %}bg-neon-red/20 text-neon-red border border-neon-red/50
+            {% elif t.tool_type == 'generator' %}bg-neon-emerald/20 text-neon-emerald border border-neon-emerald/50
+            {% elif t.tool_type == 'analyzer' %}bg-neon-magenta/20 text-neon-magenta border border-neon-magenta/50
+            {% elif t.tool_type == 'preprocessor' %}bg-neon-blue/20 text-neon-blue border border-neon-blue/50
+            {% elif t.tool_type == 'aggregator' %}bg-yellow-500/20 text-yellow-500 border border-yellow-500/50
+            {% else %}bg-gray-800 text-gray-400 border border-gray-600{% endif %} whitespace-nowrap shrink-0">
+            {{ t.tool_type }}
+          </div>
+        </div>
+
+        {% if t.description %}
+        <div class="text-xs text-gray-400 mb-4 line-clamp-3" title="{{ t.description }}">
+          {{ t.description }}
+        </div>
+        {% endif %}
+
+        {% if t.contract_drift %}
+        <div class="mb-4 bg-red-900/10 border border-neon-red/30 rounded p-3 text-xs">
+          <div class="flex items-center text-neon-red font-bold mb-2">
+            <i data-lucide="triangle-alert" class="w-4 h-4 mr-1.5"></i> Contract Drift Detected
+          </div>
+          {% if t.contract_drift.schema_only %}
+          <div class="mb-2">
+            <span class="font-semibold text-gray-300">Schema-only (Missing in Template):</span>
+            <ul class="list-disc pl-4 mt-1 text-gray-400 space-y-0.5">
+              {% for path in t.contract_drift.schema_only %}
+              <li><code class="text-[10px] bg-gray-900 px-1 py-0.5 rounded text-neon-magenta">{{ path }}</code></li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+          {% if t.contract_drift.template_only %}
+          <div>
+            <span class="font-semibold text-gray-300">Template-only (Ignored by Validator):</span>
+            <ul class="list-disc pl-4 mt-1 text-gray-400 space-y-0.5">
+              {% for path in t.contract_drift.template_only %}
+              <li><code class="text-[10px] bg-gray-900 px-1 py-0.5 rounded text-neon-blue">{{ path }}</code></li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="flex-grow"></div>
+
+        <div class="flex items-center justify-between border-t border-gray-800 pt-3 mb-2">
+          <span class="text-xs font-semibold text-gray-300 uppercase tracking-wider">Callers</span>
+          {{ ui.count_badge(tool_callers | length, "cyan") }}
+        </div>
+        
+        <div class="max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+          {% if tool_callers %}
+          <ul class="flex flex-col gap-1.5">
+            {% for sub in tool_callers %}
+            <li class="text-xs text-gray-400 bg-gray-900/50 px-2 py-1.5 rounded flex items-center before:content-[''] before:w-1.5 before:h-1.5 before:bg-neon-blue before:rounded-full before:mr-2 before:inline-block border border-gray-800/50 hover:border-gray-700 transition-colors">
+              {{ sub }}
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <div class="text-xs italic text-gray-600 py-1">No active callers in pipeline</div>
+          {% endif %}
+        </div>
+
+        {% if t.commands %}
+        {# Multi-Tool with Commands #}
+        <details class="mt-3 pt-3 border-t border-gray-800">
+          <summary class="cursor-pointer list-none flex items-center justify-between text-xs font-semibold text-gray-300 uppercase tracking-wider">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+              Subcommands
+            </span>
+            <span class="flex items-center gap-2">
+              <span class="bg-gray-800 text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded-full">{{ t.commands|length }}</span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-500"></i>
+            </span>
+          </summary>
+          <div class="mt-2 flex flex-col gap-2 max-h-64 overflow-y-auto custom-scrollbar pr-2">
+            {% for cmd_name, cmd_data in t.commands.items() %}
+            <div class="bg-gray-900/50 border border-gray-800/80 rounded p-2">
+              <div class="text-xs font-mono text-neon-magenta mb-1.5">{{ cmd_name }}</div>
+              
+              {% set cmd_callers = [] %}
+              {% for e in report.edges if e.edge_type in ['uses_tool', 'calls_tool'] and e.target == (t.name ~ "::" ~ cmd_name) %}
+                {% set _ = cmd_callers.append(e.source) %}
+              {% endfor %}
+              {% set cmd_callers = cmd_callers | unique | sort %}
+              
+              {% if cmd_callers %}
+              <div class="flex flex-wrap gap-1 mb-2">
+                {% for c in cmd_callers %}
+                <span class="text-[9px] px-1.5 py-0.5 bg-gray-800 text-gray-300 rounded border border-gray-700">{{ c }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+
+              {% if cmd_data.get('inputs') or cmd_data.get('outputs') %}
+              <div class="grid grid-cols-2 gap-2 mt-1">
+                {% if cmd_data.get('inputs') %}
+                <div>
+                  <div class="text-[9px] text-gray-500 uppercase mb-0.5 flex items-center gap-1"><i data-lucide="arrow-down-to-line" class="w-2.5 h-2.5 text-neon-blue"></i> Reads</div>
+                  <ul class="space-y-0.5">
+                    {% for p in cmd_data.get('inputs') %}
+                    <li class="text-[9px] font-mono text-gray-400 truncate" title="{{ p }}">- {{ p.replace('**/', '').replace('workspace/discovery/', '') }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% endif %}
+                {% if cmd_data.get('outputs') %}
+                <div>
+                  <div class="text-[9px] text-gray-500 uppercase mb-0.5 flex items-center gap-1"><i data-lucide="arrow-up-from-line" class="w-2.5 h-2.5 text-neon-emerald"></i> Writes</div>
+                  <ul class="space-y-0.5">
+                    {% for p in cmd_data.get('outputs') %}
+                    <li class="text-[9px] font-mono text-gray-400 truncate" title="{{ p }}">- {{ p.replace('**/', '').replace('workspace/discovery/', '') }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% endif %}
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        </details>
+
+        {% elif t.inputs or t.outputs %}
+        {# Flat Tool without Subcommands #}
+        <details class="mt-3 pt-3 border-t border-gray-800">
+          <summary class="cursor-pointer list-none flex items-center justify-between text-xs font-semibold text-gray-300 uppercase tracking-wider">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="file-code-2" class="w-3.5 h-3.5"></i>
+              I/O Contracts
+            </span>
+            <span class="flex items-center gap-2">
+              <span class="bg-gray-800 text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded-full">{{ (t.inputs|length) + (t.outputs|length) }}</span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-500"></i>
+            </span>
+          </summary>
+          <div class="mt-2 flex flex-col gap-3">
+            {% if t.inputs %}
+            <div>
+              <div class="text-[10px] text-gray-500 uppercase mb-1 flex items-center gap-1"><i data-lucide="arrow-down-to-line" class="w-3 h-3 text-neon-blue"></i> Reads ({{ t.inputs|length }})</div>
+              <ul class="space-y-1 pl-1">
+                {% for p in t.inputs %}
+                <li class="text-[10px] font-mono text-gray-400 truncate break-all" title="{{ p }}">- {{ p.replace('**/', '').replace('workspace/discovery/', '') }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+            {% if t.outputs %}
+            <div>
+              <div class="text-[10px] text-gray-500 uppercase mb-1 flex items-center gap-1"><i data-lucide="arrow-up-from-line" class="w-3 h-3 text-neon-emerald"></i> Writes ({{ t.outputs|length }})</div>
+              <ul class="space-y-1 pl-1">
+                {% for p in t.outputs %}
+                <li class="text-[10px] font-mono text-gray-400 truncate break-all" title="{{ p }}">- {{ p.replace('**/', '').replace('workspace/discovery/', '') }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+          </div>
+        </details>
+        {% endif %}
+
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if not report.tools %}
+    {{ ui.empty_state("wrench", "No tools found in the pipeline.") }}
+    {% endif %}
+{% endcall %}

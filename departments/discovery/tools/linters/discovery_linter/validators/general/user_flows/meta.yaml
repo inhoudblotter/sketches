@@ -1,0 +1,8 @@
+name: user-flows
+entrypoint: run_validate_user_flows
+inputs:
+- workspace/discovery/domains/*/epics/*/flows/*.yaml
+outputs:
+- stdout
+contract: departments/discovery/contracts/user_flows_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.general.user_flows.UserFlowsSchema

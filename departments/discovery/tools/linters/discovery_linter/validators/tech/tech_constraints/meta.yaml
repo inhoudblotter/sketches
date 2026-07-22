@@ -1,0 +1,8 @@
+name: tech-constraints
+entrypoint: run_validation
+contract: departments/discovery/contracts/tech_constraints_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.tech.tech_constraints.TechConstraintsConfig
+inputs:
+- '**/tech_constraints.yaml'
+outputs:
+- stdout

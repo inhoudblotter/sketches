@@ -1,0 +1,20 @@
+name: workspace
+entrypoint: run_validate_workspace
+inputs:
+- workspace/discovery/**
+outputs:
+- stdout
+calls_tools:
+- Discovery Linter::strategy
+- Discovery Linter::tech-market-brief
+- Discovery Linter::tech-synthesis
+- Discovery Linter::revenue-model
+- Discovery Linter::economics
+- Discovery Linter::pitch-deck
+- Discovery Linter::launch-roadmap
+- Discovery Linter::domain
+- Discovery Linter::business-observability
+- Discovery Linter::entity-graph
+- Discovery Linter::markdown-links
+- Discovery Linter::estimation
+- Discovery Linter::errata

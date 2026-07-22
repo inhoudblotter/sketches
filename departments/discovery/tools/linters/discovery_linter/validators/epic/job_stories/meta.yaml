@@ -1,0 +1,8 @@
+name: job-stories
+entrypoint: run_validation
+inputs:
+- '**/stories.yaml'
+outputs:
+- stdout
+contract: departments/discovery/contracts/job_stories_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.epic.job_stories.JobStoriesSchema

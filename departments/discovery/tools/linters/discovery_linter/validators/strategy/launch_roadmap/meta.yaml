@@ -1,0 +1,8 @@
+name: launch-roadmap
+entrypoint: run_validation
+contract: departments/discovery/contracts/launch_roadmap_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.strategy.launch_roadmap.LaunchRoadmapSchema
+inputs:
+- '**/launch_roadmap.yaml'
+outputs:
+- stdout

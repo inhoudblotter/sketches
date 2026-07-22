@@ -1,0 +1,6 @@
+name: domain-exports
+entrypoint: run_validate_domain_exports
+inputs:
+- workspace/discovery/domains/*/summary.yaml
+outputs:
+- stdout

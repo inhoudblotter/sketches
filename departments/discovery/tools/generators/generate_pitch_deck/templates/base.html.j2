@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ pitch_title|default("Pitch Deck") }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    /* Strict Minimalism / Venture Classic */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@500;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+    
+    :root {
+      --family-display: 'Outfit', sans-serif;
+      --family-body: 'Inter', sans-serif;
+      --family-mono: 'JetBrains Mono', monospace;
+      
+      --font-h1: clamp(1.8rem, 1.2rem + 3vw, 2.8rem);
+      --font-h2: clamp(1.4rem, 1rem + 2vw, 2rem);
+      --font-h3: clamp(1.1rem, 0.9rem + 1.5vw, 1.6rem);
+      --font-metric-val: clamp(1.8rem, 1.3rem + 2.5vw, 3rem);
+      --font-metric-lbl: clamp(0.7rem, 0.65rem + 0.5vw, 1rem);
+      --font-metric-sub: clamp(0.65rem, 0.6rem + 0.4vw, 0.9rem);
+      --font-body: clamp(0.9rem, 0.85rem + 0.5vw, 1.2rem);
+      
+      --bar-width: 100%;
+      --bar-bottom: 0px;
+      --bar-height: 54px;
+    }
+    
+    @media (max-width: 768px) {
+      :root {
+        --bar-width: 100%;
+        --bar-bottom: 0px;
+      }
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #fff;
+      font-family: var(--family-body);
+      font-size: var(--font-body);
+      overflow: hidden; /* Embla handles scrolling */
+      /* Smallest supported mobile viewport (iPhone SE class); below this,
+         layouts get squeezed instead of gracefully reflowing. Below the
+         floor, the page scrolls horizontally rather than breaking. */
+      min-width: 320px;
+      overflow-x: auto;
+    }
+
+  </style>
+  <style type="text/tailwindcss">
+    @layer base {
+      h1, h2, h3 { font-family: var(--family-display); text-transform: none; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 0.5em 0; }
+      h1 { font-size: var(--font-h1); }
+      h2 { font-size: var(--font-h2); color: #ddd; }
+      h3 { font-size: var(--font-h3); }
+      ul { margin-top: 1em; padding-left: 20px; }
+      li { margin-bottom: 0.5em; font-weight: 300; color: #ccc; font-size: var(--font-body); line-height: 1.4; }
+      strong { color: #fff; font-weight: 600; }
+    }
+  </style>
+  <style>
+    /* Embla Structure */
+    .embla {
+      overflow: hidden;
+      height: 100dvh;
+      width: 100vw;
+    }
+    .embla__container {
+      display: flex;
+      height: 100%;
+    }
+    .embla__slide {
+      flex: 0 0 100%;
+      min-width: 0;
+      height: 100%;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .embla__slide::after {
+      content: '';
+      display: block;
+      min-height: calc(var(--bar-height) + 40px);
+      width: 100%;
+      flex-shrink: 0;
+    }
+    .slide-content {
+      width: 100%;
+      max-width: 960px;
+      padding: 40px 20px;
+      box-sizing: border-box;
+      margin: auto 0;
+      text-align: left;
+    }
+
+    /* Dashboard Grid Styles */
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px; }
+    @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; gap: 15px; margin-top: 20px; } }
+    .metric-card { background: #111; border: 1px solid #333; border-radius: 0; padding: 30px; text-align: left; display: flex; flex-direction: column; justify-content: center; }
+    @media (max-width: 768px) { .metric-card { padding: 15px; } }
+    .metric-value { font-family: var(--family-mono); font-size: var(--font-metric-val); font-weight: 800; margin-bottom: 10px; }
+    .metric-label { font-size: var(--font-metric-lbl); color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+    .metric-sub { font-size: var(--font-metric-sub); color: #555; margin-top: 5px; }
+    
+    /* Tech Stack Badges */
+    .tech-badges { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
+    .tech-badge { background: #111; border: 1px solid #333; padding: 10px 20px; border-radius: 0; font-size: 0.9em; color: #ddd; }
+    .tech-badge strong { font-family: var(--family-mono); color: #fff; }
+    
+    /* Errata Alert Box */
+    .errata-box { background: #111; border: 1px solid #333; border-left: 4px solid #f87171; padding: 20px; text-align: left; margin-bottom: 15px; border-radius: 0; }
+    .errata-box .source { font-family: var(--family-mono); color: #f87171; font-size: 0.8em; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
+    .errata-box .issue { color: #eee; font-size: 0.9em; line-height: 1.4; }
+    .errata-success { background: #111; border: 1px solid #333; border-left: 4px solid #4ade80; padding: 20px; text-align: left; color: #4ade80; font-weight: bold; border-radius: 0; }
+    
+    .progress-bar-container { width: 100%; background: #111; border: 1px solid #333; border-radius: 0; margin-top: 15px; overflow: hidden; display: flex; }
+    .progress-segment { height: 20px; display: inline-block; }
+    .color-1 { background: #4ade80; }
+    .color-2 { background: #3b82f6; }
+    .color-3 { background: #a855f7; }
+    .text-green { color: #4ade80; }
+    .text-red { color: #f87171; }
+    .text-blue { color: #3b82f6; }
+    .text-white { color: #fff; }
+    
+    /* Custom Bottom Bar */
+    .custom-bottom-bar {
+      position: fixed;
+      bottom: var(--bar-bottom);
+      left: 0;
+      width: var(--bar-width);
+      height: var(--bar-height);
+      background: rgba(17, 17, 17, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid #333;
+      border-radius: 0;
+      z-index: 50;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 15px;
+      box-sizing: border-box;
+      overflow: hidden; /* for progress line */
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 10px 15px;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .nav-btn:hover { opacity: 1; }
+    .nav-btn:disabled { opacity: 0.2; cursor: default; }
+
+    .slide-indicator {
+      font-family: var(--family-mono);
+      font-size: 14px;
+      font-weight: 600;
+      color: #aaa;
+      letter-spacing: 0.1em;
+      pointer-events: none;
+    }
+
+    .progress-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: #4ade80;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="embla" id="embla-viewport">
+    <div class="embla__container">
+      {% block slides %}{% endblock %}
+    </div>
+  </div>
+
+  <div class="custom-bottom-bar">
+    <div class="progress-line" id="progress"></div>
+    <button id="prev-btn" class="nav-btn">←</button>
+    <div class="slide-indicator" id="indicator">1 / 1</div>
+    <button id="next-btn" class="nav-btn">→</button>
+  </div>
+
+  <script src="https://unpkg.com/embla-carousel/embla-carousel.umd.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const emblaNode = document.getElementById('embla-viewport');
+      const embla = EmblaCarousel(emblaNode, { loop: false, dragFree: false });
+      
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const indicator = document.getElementById('indicator');
+      const progress = document.getElementById('progress');
+      
+      const updateUI = () => {
+        const snapNodes = embla.scrollSnapList();
+        const currentIndex = embla.selectedScrollSnap();
+        const total = snapNodes.length;
+
+        // Buttons
+        prevBtn.disabled = !embla.canScrollPrev();
+        nextBtn.disabled = !embla.canScrollNext();
+
+        // Indicator
+        indicator.textContent = `${currentIndex + 1} / ${total}`;
+
+        // Progress (width percentage based on index)
+        const percent = total > 1 ? (currentIndex / (total - 1)) * 100 : 100;
+        progress.style.width = `${percent}%`;
+      };
+
+      // Each slide keeps its own scroll position independently, so a slide
+      // scrolled down on a previous visit stays scrolled down next time it's
+      // shown. Reset every slide to the top on every navigation so a slide
+      // always starts fresh, regardless of where it (or its neighbor) was left.
+      const resetSlideScroll = () => {
+        embla.slideNodes().forEach((slide) => {
+          slide.scrollTop = 0;
+        });
+      };
+
+      embla.on('select', updateUI);
+      embla.on('select', resetSlideScroll);
+      embla.on('reInit', updateUI);
+      
+      prevBtn.addEventListener('click', () => embla.scrollPrev());
+      nextBtn.addEventListener('click', () => embla.scrollNext());
+      
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') embla.scrollPrev();
+        if (e.key === 'ArrowRight' || e.key === ' ') embla.scrollNext();
+      });
+      
+      // Init UI state
+      updateUI();
+    });
+  </script>
+</body>
+</html>

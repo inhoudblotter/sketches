@@ -1,0 +1,15 @@
+name: Generate Pitch Deck
+type: generator
+description: Генерирует Reveal.js HTML-презентацию из YAML-нарратива и предагрегированных метрик project_analytics.yaml (экономика, техника, эррата, roadmap собираются тулом build-project-analytics)
+department: discovery
+command: python -m departments.discovery.tools.generators.generate_pitch_deck.command
+inputs:
+  - 'workspace/discovery/pitch_deck.yaml'
+  - 'workspace/discovery/meta/project_analytics.yaml'
+  - 'workspace/discovery/meta/project_analytics_detail.yaml'
+outputs:
+  - 'workspace/discovery/pitch_deck.html'
+calls_tools:
+  - 'discovery-linter::pitch-deck'
+contract: 'departments/discovery/contracts/pitch_deck_template.yaml'
+contract_schema: 'departments.discovery.tools.linters.discovery_linter.validators.strategy.pitch_deck.PitchDeckSchema'

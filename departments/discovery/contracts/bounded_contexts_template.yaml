@@ -1,0 +1,19 @@
+# Bounded Contexts YAML Contract
+# Описывает взаимосвязи между доменами системы.
+
+contexts:
+  - domain: 'название_домена_1'
+    description: 'Зона ответственности домена'
+    dependencies:
+      - target_domain: 'название_домена_2'
+        relationship_type: 'Customer-Supplier' # Conformist, ACL, Shared Kernel
+        data_exchanged:
+          - 'Какие данные запрашиваются или передаются'
+        business_reason: 'Почему эта связь необходима'
+
+shared_kernel_signals:
+  - signal_type: 'event_collision'
+    value: 'Название события или ограничения'
+    domains:
+      - 'название_домена_1'
+      - 'название_домена_2'

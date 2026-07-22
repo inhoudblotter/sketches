@@ -1,0 +1,64 @@
+<div class="embla__slide">
+  <div class="slide-content">
+    <h2>Юнит-Экономика и Окупаемость</h2>
+    <p style="font-size: 16px; color: #888; margin-top: -10px; margin-bottom: 30px; font-style: italic;">* Учитываются только расходы на серверную инфраструктуру и сторонние API. Затраты на ФОТ (зарплаты), разработку и прочие операционные расходы исключены.</p>
+    <div class="dashboard-grid">
+      <div class="metric-card">
+        <div class="metric-value {{ dashboard.margin_color }}">{{ "%.1f"|format(dashboard.margin_pct) }}%</div>
+        <div class="metric-label">Валовая маржа (Gross Margin)</div>
+        <div class="metric-sub">ARPU: ${{ "%.2f"|format(dashboard.arpu) }} | COGS: <span class='{{ dashboard.budget_color }}'>${{ "%.2f"|format(dashboard.cogs) }}</span></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value text-blue">{{ dashboard.bep_display }}</div>
+        <div class="metric-label">Точка безубыточности (Break-Even)</div>
+        <div class="metric-sub">Постоянные расходы: ${{ "%.0f"|format(dashboard.fixed_monthly) }}/мес</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value text-white">${{ "%.0f"|format(scope_analytics.infrastructure_usd_per_month) }}</div>
+        <div class="metric-label">Infrastructure Baseline</div>
+        <div class="metric-sub">Сырые серверные косты (без з/п)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value text-green">${{ "%.0f"|format(dashboard.mrr) }}</div>
+        <div class="metric-label">Прогноз MRR (Год 1)</div>
+        <div class="metric-sub">Целевой MAU: {{ dashboard.mau|int }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if dashboard.scenarios %}
+<div class="embla__slide">
+  <div class="slide-content">
+    <h2>Сценарии (Worst / Base / Best)</h2>
+    <div class="dashboard-grid">
+      {% for s in dashboard.scenarios %}
+      <div class="metric-card">
+        <div class="metric-value {{ 'text-red' if s.name == 'worst' else ('text-green' if s.name == 'best' else 'text-white') }}">{{ "%.1f"|format(s.margin_pct) }}%</div>
+        <div class="metric-label">{{ s.name|upper }} — MRR ${{ "%.0f"|format(s.mrr) }}</div>
+        <div class="metric-sub">ARPU ${{ "%.2f"|format(s.arpu) }} × MAU {{ s.mau|int }} — {{ s.driver_ref }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="embla__slide">
+  <div class="slide-content">
+    <h2>Структура выручки (Revenue Streams)</h2>
+    <div class="dashboard-grid" style="display: block; text-align: left; background: #111; padding: 40px; border-radius: 0; margin-top: 40px; border: 1px solid #333;">
+        <h3 style="margin-bottom: 20px;">Прогнозируемое распределение</h3>
+        <div class="progress-bar-container">
+            {% for stream in dashboard.streams %}
+            <div class='progress-segment color-{{ (loop.index0 % 3) + 1 }}' style='width: {{ stream.share }}%;'></div>
+            {% endfor %}
+        </div>
+        <ul style="list-style: none; padding-left: 0; margin-top: 30px;">
+            {% for stream in dashboard.streams %}
+            <li><span class='color-{{ (loop.index0 % 3) + 1 }}'>&nbsp;&nbsp;</span> <strong>{{ stream.share }}%</strong> - {{ stream.name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+  </div>
+</div>

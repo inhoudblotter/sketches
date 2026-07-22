@@ -1,0 +1,58 @@
+{% set department = report.agents_dir.rstrip('/').split('/')[-2] %}
+# ARTIFACTS: Отдел {{ department | capitalize }}
+
+> Автоматически сгенерировано `pipeline-analysis` из графа агентов (`{{ report.agents_dir }}`).
+**Generated:** {{ report.generated_at }}
+
+---
+
+## 📥 Внешние входы (External Inputs)
+Файлы, которые читаются агентами этого отдела, но не генерируются внутри него.
+
+{% if report.metrics.external_inputs %}
+{% for path in report.metrics.external_inputs %}
+- `{{ path }}`
+{% endfor %}
+{% else %}
+*Нет внешних входов.*
+{% endif %}
+
+---
+
+## 📤 Внешние выходы (External Outputs)
+Файлы, которые генерируются внутри этого отдела, но не используются (не читаются) его агентами. Они могут быть точками входа для других отделов или финальными артефактами.
+
+{% if report.metrics.external_outputs %}
+{% for path in report.metrics.external_outputs %}
+- `{{ path }}`
+{% endfor %}
+{% else %}
+*Нет внешних выходов.*
+{% endif %}
+
+---
+
+## 🛡️ Покрытие линтерами (Linter Coverage)
+Доля выходных файлов отдела (сгенерированных агентом или тулом), которые проверяются хотя бы одним линтером (`tool_type: linter`, чей `inputs` совпадает с путём файла).
+
+**{{ report.metrics.output_contract_coverage_pct }}%** выходных артефактов покрыто линтерами.
+
+{% set output_artifacts = report.artifacts | selectattr('producers') | list %}
+{% set uncovered = output_artifacts | rejectattr('locked') | list %}
+{% if uncovered %}
+Не покрыты линтером:
+{% for a in uncovered %}
+- `{{ a.path }}`
+{% endfor %}
+{% else %}
+*Все выходные артефакты покрыты линтером.*
+{% endif %}
+
+---
+
+## 🗂️ Дерево внутренних артефактов (Internal Artifacts Tree)
+Структура директорий и файлов (включая будущие плейсхолдеры), генерируемых отделом.
+
+```text
+{{ report.artifact_tree }}
+```

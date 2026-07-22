@@ -1,0 +1,10 @@
+name: errata
+entrypoint: run_validation
+contract: departments/discovery/contracts/errata_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.epic.errata.ErrataEntry
+inputs:
+- workspace/discovery/domains/*/domain_errata.yaml
+- workspace/discovery/domains/*/epics/*/errata.yaml
+- workspace/discovery/errata/critical_errata.yaml
+outputs:
+- stdout

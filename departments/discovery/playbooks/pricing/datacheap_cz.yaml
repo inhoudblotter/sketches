@@ -1,0 +1,31 @@
+provider: DataCheap
+location: Czechia
+
+compute:
+  # Linux VPS SSD NVMe
+  - service: 'VPS (Basic DDoS)'
+    tier: 'Promo NVMe (1 Core, 1GB RAM, 10GB NVMe, 5TB)'
+    price_rub: 350.0
+    unit: 'per_month'
+
+  # VPS NVMe (Intel Xeon Gold 6240R)
+  - service: 'VPS (Xeon Gold)'
+    tier: 'Start NVMe (1 Core, 1GB RAM, 15GB NVMe, Unlimited)'
+    price_rub: 550.0
+    unit: 'per_month'
+  - service: 'VPS (Xeon Gold)'
+    tier: 'Medium NVMe (2 Core, 2GB RAM, 30GB NVMe, Unlimited)'
+    price_rub: 700.0
+    unit: 'per_month'
+  - service: 'VPS (Xeon Gold)'
+    tier: 'Advanced NVMe (4 Core, 4GB RAM, 60GB NVMe, Unlimited)'
+    price_rub: 1050.0
+    unit: 'per_month'
+  - service: 'VPS (Xeon Gold)'
+    tier: 'Professional NVMe (8 Core, 8GB RAM, 120GB NVMe, Unlimited)'
+    price_rub: 2100.0
+    unit: 'per_month'
+  - service: 'VPS (Xeon Gold)'
+    tier: 'Ultimate NVMe (16 Core, 16GB RAM, 240GB NVMe, Unlimited)'
+    price_rub: 4201.05
+    unit: 'per_month'

@@ -1,0 +1,76 @@
+provider: Beget
+
+compute:
+  # Russia, St. Petersburg
+  - service: 'VPS (Russia)'
+    tier: '1 Core (3-3.3 GHz), 1GB RAM, 10GB NVMe, 1 Gbps'
+    price_rub: 330.0
+    unit: 'per_month'
+  - service: 'VPS (Russia)'
+    tier: '1 Core (3-3.3 GHz), 2GB RAM, 15GB NVMe, 1 Gbps'
+    price_rub: 510.0
+    unit: 'per_month'
+  - service: 'VPS (Russia)'
+    tier: '2 Core (3-3.3 GHz), 2GB RAM, 30GB NVMe, 1 Gbps'
+    price_rub: 810.0
+    unit: 'per_month'
+  - service: 'VPS (Russia)'
+    tier: '2 Core (3-3.3 GHz), 4GB RAM, 40GB NVMe, 1 Gbps'
+    price_rub: 990.0
+    unit: 'per_month'
+  - service: 'VPS (Russia)'
+    tier: '4 Core (3-3.3 GHz), 6GB RAM, 80GB NVMe, 1 Gbps'
+    price_rub: 2040.0
+    unit: 'per_month'
+  - service: 'VPS (Russia)'
+    tier: '6 Core (3-3.3 GHz), 12GB RAM, 150GB NVMe, 1 Gbps'
+    price_rub: 3600.0
+    unit: 'per_month'
+  - service: 'VPS (Russia)'
+    tier: '8 Core (3-3.3 GHz), 16GB RAM, 220GB NVMe, 1 Gbps'
+    price_rub: 5490.0
+    unit: 'per_month'
+
+  # Europe, Latvia
+  - service: 'VPS (Latvia)'
+    tier: '1 Core (3-3.3 GHz), 1GB RAM, 15GB NVMe, 200 Mbps'
+    price_rub: 540.0
+    unit: 'per_month'
+  - service: 'VPS (Latvia)'
+    tier: '2 Core (3-3.3 GHz), 2GB RAM, 30GB NVMe, 200 Mbps'
+    price_rub: 990.0
+    unit: 'per_month'
+  - service: 'VPS (Latvia)'
+    tier: '2 Core (3-3.3 GHz), 4GB RAM, 40GB NVMe, 200 Mbps'
+    price_rub: 1290.0
+    unit: 'per_month'
+  - service: 'VPS (Latvia)'
+    tier: '4 Core (3-3.3 GHz), 6GB RAM, 80GB NVMe, 200 Mbps'
+    price_rub: 2700.0
+    unit: 'per_month'
+  - service: 'VPS (Latvia)'
+    tier: '6 Core (3-3.3 GHz), 12GB RAM, 150GB NVMe, 200 Mbps'
+    price_rub: 5190.0
+    unit: 'per_month'
+  - service: 'VPS (Latvia)'
+    tier: '8 Core (3-3.3 GHz), 16GB RAM, 220GB NVMe, 200 Mbps'
+    price_rub: 6900.0
+    unit: 'per_month'
+
+  # Asia, Kazakhstan
+  - service: 'VPS (Kazakhstan)'
+    tier: '2 Core (3-3.3 GHz), 2GB RAM, 30GB NVMe, 150 Mbps'
+    price_rub: 900.0
+    unit: 'per_month'
+  - service: 'VPS (Kazakhstan)'
+    tier: '4 Core (3-3.3 GHz), 6GB RAM, 80GB NVMe, 150 Mbps'
+    price_rub: 2160.0
+    unit: 'per_month'
+  - service: 'VPS (Kazakhstan)'
+    tier: '6 Core (3-3.3 GHz), 12GB RAM, 150GB NVMe, 150 Mbps'
+    price_rub: 3480.0
+    unit: 'per_month'
+  - service: 'VPS (Kazakhstan)'
+    tier: '8 Core (3-3.3 GHz), 16GB RAM, 220GB NVMe, 150 Mbps'
+    price_rub: 6480.0
+    unit: 'per_month'

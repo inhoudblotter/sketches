@@ -1,0 +1,15 @@
+<div class="embla__slide">
+  <div class="slide-content flex flex-col items-center text-center">
+    <h2>Compliance & Legal Risk</h2>
+    <p style="color: #aaa; max-width: 520px; margin: 0 auto 30px;">
+      Комплаенс-ограничения, обязательные к учёту в архитектуре и GTM ({{ scope_analytics.compliance_flags|length }}).
+    </p>
+    <div style="width: 100%; max-width: 760px; display: flex; flex-direction: column; gap: 12px; text-align: left;">
+      {% for flag in scope_analytics.compliance_flags %}
+      <div class="metric-card" style="border-left: 4px solid #f87171; padding: 16px 22px;">
+        <span style="color: #fff;">{{ flag }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

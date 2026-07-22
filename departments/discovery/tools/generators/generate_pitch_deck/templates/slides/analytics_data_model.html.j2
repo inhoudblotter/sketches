@@ -1,0 +1,26 @@
+<div class="embla__slide">
+  <div class="slide-content">
+    <h2>Сложность Data Model</h2>
+    <p style="color: #aaa; margin-bottom: 30px;">Оценка сложности архитектуры на основе словарей доменов (Domain Dictionary).</p>
+    {% set data_model_metrics = scope_analytics.data_model_metrics | default({}, true) %}
+
+    <div class="dashboard-grid" style="margin-bottom: 30px;">
+      <div class="metric-card" style="justify-content: flex-start;">
+        <div class="metric-value">{{ data_model_metrics.total_entities | default(0) }}</div>
+        <div class="metric-label">Всего Сущностей (Entities)</div>
+        <div class="metric-sub">{{ data_model_metrics.aggregate_roots | default(0) }} Aggregate Roots / {{ data_model_metrics.value_objects | default(0) }} Value Objects</div>
+      </div>
+      <div class="metric-card" style="justify-content: flex-start;">
+        <div class="metric-value text-blue">{{ data_model_metrics.total_attributes | default(0) }}</div>
+        <div class="metric-label">Всего Атрибутов (Attributes)</div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: center;">
+      <div class="metric-card" style="width: 50%; justify-content: flex-start;">
+        <div class="metric-value text-green">{{ data_model_metrics.total_relationships | default(0) }}</div>
+        <div class="metric-label">Определено Связей (Relationships)</div>
+      </div>
+    </div>
+  </div>
+</div>

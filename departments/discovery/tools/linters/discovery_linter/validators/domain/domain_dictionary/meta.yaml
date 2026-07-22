@@ -1,0 +1,9 @@
+name: domain-dictionary
+entrypoint: run_validation
+inputs:
+- '**/dictionary.yaml'
+outputs:
+- stdout
+
+contract: departments/discovery/contracts/domain_dictionary_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.domain.domain_dictionary.DomainDictionarySchema

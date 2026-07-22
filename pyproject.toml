@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mvp-develop-pipeline"
+version = "0.1.0"
+dependencies = ["typer", "pyyaml", "rich", "pydantic", "networkx", "jinja2", "markdown"]
+
+[project.optional-dependencies]
+dev = ["ruff", "black", "mypy", "pytest"]
+
+[project.scripts]
+build-project-analytics = "departments.dispatcher:build_project_analytics"
+business-observability = "departments.dispatcher:business_observability"
+discovery-linter = "departments.dispatcher:discovery_linter"
+domain = "departments.dispatcher:domain"
+domain-dictionary = "departments.dispatcher:domain_dictionary"
+domain-exports = "departments.dispatcher:domain_exports"
+domain-orphans = "departments.dispatcher:domain_orphans"
+domain-summary = "departments.dispatcher:domain_summary"
+domains-manifest = "departments.dispatcher:domains_manifest"
+economics = "departments.dispatcher:economics"
+entity-graph = "departments.dispatcher:entity_graph"
+errata = "departments.dispatcher:errata"
+estimation = "departments.dispatcher:estimation"
+extract-bounded-contexts = "departments.dispatcher:extract_bounded_contexts"
+features = "departments.dispatcher:features"
+flows-batch = "departments.dispatcher:flows_batch"
+generate-pitch-deck = "departments.dispatcher:generate_pitch_deck"
+geopolitics = "departments.dispatcher:geopolitics"
+job-stories = "departments.dispatcher:job_stories"
+job-stories-content = "departments.dispatcher:job_stories_content"
+launch-roadmap = "departments.dispatcher:launch_roadmap"
+markdown-headings = "departments.dispatcher:markdown_headings"
+markdown-links = "departments.dispatcher:markdown_links"
+market-context = "departments.dispatcher:market_context"
+patch = "departments.dispatcher:patch"
+pipeline-analysis = "departments.dispatcher:pipeline_analysis"
+pitch-deck = "departments.dispatcher:pitch_deck"
+platform-coverage = "departments.dispatcher:platform_coverage"
+platform-strategy = "departments.dispatcher:platform_strategy"
+query-discovery = "departments.dispatcher:query_discovery"
+revenue-model = "departments.dispatcher:revenue_model"
+strategy = "departments.dispatcher:strategy"
+stress-test = "departments.dispatcher:stress_test"
+target-audience = "departments.dispatcher:target_audience"
+tech-constraints = "departments.dispatcher:tech_constraints"
+tech-market-brief = "departments.dispatcher:tech_market_brief"
+tech-synthesis = "departments.dispatcher:tech_synthesis"
+user-flows = "departments.dispatcher:user_flows"
+ux-constraints = "departments.dispatcher:ux_constraints"
+validate-agent = "departments.dispatcher:validate_agent"
+validate-git-coverage = "departments.dispatcher:validate_git_coverage"
+workspace = "departments.dispatcher:workspace"
+
+[tool.setuptools]
+packages = ["departments"]
+
+[tool.ruff]
+# E, F: Standard PEP8 errors and Pyflakes
+# C90: mccabe (complexity)
+# B: flake8-bugbear (common design issues)
+# SIM: flake8-simplify (cleaner, more functional code)
+# PLR: pylint refactor (limits on size, arguments, etc.)
+# RET: flake8-return (cleaner returns)
+# C4: flake8-comprehensions (functional comprehensions)
+[tool.ruff.lint]
+select = ["E", "F", "C90", "B", "SIM", "PLR", "RET", "C4"]
+ignore = ["E501", "B008", "PLR0913"] # Black handles line length
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pylint]
+max-args = 5
+max-branches = 12
+max-returns = 6
+max-statements = 50

@@ -1,0 +1,22 @@
+provider: Perplexity
+
+external_apis:
+  - service: 'Search API'
+    description: 'No token costs. Flat request pricing.'
+    price_per_1k_requests_usd: 5.0
+    price_per_request_usd: 0.005
+  
+  - service: 'Agent API'
+    description: 'Access to third-party models (OpenAI, Anthropic, etc.) with transparent, token-based pricing at direct provider rates (no markup).'
+
+  - service: 'Sonar API'
+    description: 'Token pricing + Request pricing by search context size.'
+    models:
+      - model: 'llama-3-sonar-large-32k-online'
+      - model: 'llama-3-sonar-small-32k-online'
+
+  - service: 'Pro Search'
+    description: 'Enhances Sonar Pro with automated tool usage and multi-step reasoning.'
+
+  - service: 'Embeddings API'
+    description: 'Standard and Contextualized Embeddings for semantic search and RAG.'

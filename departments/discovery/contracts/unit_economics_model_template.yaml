@@ -1,0 +1,22 @@
+author_agent: 'cogs-scout'
+# Unit Economics Model YAML Contract
+# Калькуляция исключительно расходов (COGS) на базе tech_constraints.yaml.
+# Валидатор Economics Linter самостоятельно вычтет эти расходы из revenue_model.yaml.
+
+cogs_per_user_usd:
+  fixed_monthly_usd:
+    compute: '[Базовая цена серверов. Например: 20.0]'
+    database: '[Базовая цена БД. Например: 25.0]'
+    p2p_infrastructure: '[Опционально: Базовая цена Relay-серверов. Например: 10.0]'
+  variable_per_user_usd:
+    egress_traffic: '[Стоимость исходящего трафика на юзера. Например: 0.10]'
+    tokenomics_costs: '[Опционально: Gas fees, стоимость деплоя смарт-контрактов на юзера. Например: 0.05]'
+    external_apis:
+      - provider: '[Например: OpenAI]'
+        cost: '[Стоимость за юзера. Например: 1.50]'
+    operational:
+      maintenance_and_support: '[Стоимость поддержки на юзера. Например: 0.50]'
+      payment_gateway_fees: '[Комиссии Stripe/PayPal. Например: 0.30]'
+
+total_cogs_per_user_usd: '[Сумма расходов: (fixed_monthly_usd / target_mau) + variable_per_user_usd. Например: 3.10]'
+rationale: '[Обоснование расходов с учетом квот из tech_constraints.yaml. Ссылки на актуальные прайс-листы]'

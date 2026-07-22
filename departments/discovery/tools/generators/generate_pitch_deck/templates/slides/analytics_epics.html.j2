@@ -1,0 +1,42 @@
+<div class="embla__slide">
+  <div class="slide-content">
+    <h2>Сложность по доменам и эпикам (Domain & Epic Complexity)</h2>
+    <p style="color: #aaa; margin-bottom: 20px;">Распределение Story Points MVP по доменам, с разбивкой каждого домена на эпики.</p>
+
+    <div class="w-full">
+      {% set sp_by_epic = scope_analytics.sp_by_epic | default({}, true) %}
+      {% set epics_by_domain = scope_analytics.epics_by_domain | default({}, true) %}
+      {% set domains = (scope_analytics.sp_by_domain | default({}, true)).items() | list %}
+      {% if domains %}
+        {% set max_domain_sp = domains[0][1] %}
+        {% set max_epic_sp = (sp_by_epic.values() | list | max) if sp_by_epic else 0 %}
+        <div class="flex flex-col gap-6 mt-2">
+          {% for domain, domain_sp in domains %}
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center gap-4">
+                <div class="w-2/5 md:w-1/3 text-right text-sm font-bold text-white truncate" title="{{ domain }}">
+                  {{ domain }}
+                </div>
+                <div class="flex-grow flex items-center gap-3">
+                  <div class="h-6 bg-blue-500 rounded-none transition-all duration-500" style="width: {{ (domain_sp / max_domain_sp * 100) if max_domain_sp else 0 }}%;"></div>
+                  <div class="text-xs font-mono font-bold text-white whitespace-nowrap">{{ domain_sp }} SP</div>
+                </div>
+              </div>
+              {% for item in epics_by_domain.get(domain, []) %}
+                <div class="flex items-center gap-4 group">
+                  <div class="w-2/5 md:w-1/3 text-right text-xs text-gray-400 group-hover:text-white transition-colors truncate" title="{{ item.epic }}">
+                    {{ item.epic }}
+                  </div>
+                  <div class="flex-grow flex items-center gap-3">
+                    <div class="h-3 bg-purple-500 rounded-none transition-all duration-500" style="width: {{ (item.sp / max_epic_sp * 100) if max_epic_sp else 0 }}%;"></div>
+                    <div class="text-xs font-mono text-gray-300 whitespace-nowrap">{{ item.sp }} SP</div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

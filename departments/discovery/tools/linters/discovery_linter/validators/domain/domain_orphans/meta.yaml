@@ -1,0 +1,6 @@
+name: domain-orphans
+entrypoint: run_check_domain_orphans
+inputs:
+- '**/domains/{domain}/**'
+outputs:
+- stdout

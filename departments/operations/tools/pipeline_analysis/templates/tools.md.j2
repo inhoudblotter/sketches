@@ -1,0 +1,25 @@
+# Tools Analytics
+
+| Tool / Subcommand | Subscribers (Agents) |
+|---|---|
+{% for tool in report.tools | sort(attribute="name") %}
+{% set tool_subs = [] %}
+{% for c in report.tool_invocation_costs %}{% if c.tool == tool.name and not c.subcommand %}{% set _ = tool_subs.append(c.agent) %}{% endif %}{% endfor %}
+| `{{ tool.name }}` | {{ tool_subs | unique | sort | join(", ") if tool_subs else "—" }} |
+{% if tool.commands %}
+{% for cmd_name, cmd_data in tool.commands.items() | sort %}
+{% set cmd_subs = [] %}
+{% for c in report.tool_invocation_costs %}{% if c.tool == tool.name and c.subcommand == cmd_name %}{% set _ = cmd_subs.append(c.agent) %}{% endif %}{% endfor %}
+| `↳ {{ cmd_name }}` | {{ cmd_subs | unique | sort | join(", ") if cmd_subs else "—" }} |
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+## Python Code Quality
+
+| Linter | Status |
+|---|---|
+| **Ruff** | `{{ report.metrics.python_linter_results.get('ruff', 'N/A') }}` |
+| **Black** | `{{ report.metrics.python_linter_results.get('black', 'N/A') }}` |
+| **Mypy** | `{{ report.metrics.python_linter_results.get('mypy', 'N/A') }}` |
+| **File Size (< 300 lines)** | `{{ report.metrics.python_linter_results.get('max-lines', 'N/A') }}` |

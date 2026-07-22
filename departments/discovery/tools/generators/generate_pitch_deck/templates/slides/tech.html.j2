@@ -1,0 +1,53 @@
+<div class="embla__slide">
+  <div class="slide-content">
+    <h2>Architecture & Time-to-Market</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 w-full">
+      <div class="bg-[#111] border border-[#333] px-5 py-4 rounded-none flex flex-col justify-center h-full">
+        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Frontend</span>
+        <strong class="text-white text-sm" style="font-family: var(--family-mono);">{{ tech.frontend }}</strong>
+      </div>
+      <div class="bg-[#111] border border-[#333] px-5 py-4 rounded-none flex flex-col justify-center h-full">
+        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Backend</span>
+        <strong class="text-white text-sm" style="font-family: var(--family-mono);">{{ tech.backend }}</strong>
+      </div>
+      <div class="bg-[#111] border border-[#333] px-5 py-4 rounded-none flex flex-col justify-center h-full">
+        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Database</span>
+        <strong class="text-white text-sm" style="font-family: var(--family-mono);">{{ tech.database }}</strong>
+      </div>
+      <div class="bg-[#111] border border-[#333] px-5 py-4 rounded-none flex flex-col justify-center h-full">
+        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Infrastructure</span>
+        <strong class="text-white text-sm" style="font-family: var(--family-mono);">{{ tech.infra }}</strong>
+      </div>
+      {% if tech.p2p %}
+      <div class="bg-[#111] border border-[#333] px-5 py-4 rounded-none flex flex-col justify-center h-full md:col-span-2">
+        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">P2P Layer</span>
+        <strong class="text-white text-sm" style="font-family: var(--family-mono);">{{ tech.p2p }}</strong>
+      </div>
+      {% endif %}
+    </div>
+    <div style="margin-top: 40px; text-align: left; background: #111; padding: 30px; border-radius: 0; border: 1px solid #333;">
+      <h4 style="color: #888; font-size: 0.85em; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--family-mono); font-weight: 700;">Strategic TTM Insight</h4>
+      <p style="font-size: 0.95em; line-height: 1.6; color: #ddd; margin: 0;">{{ tech.insight }}</p>
+    </div>
+    {% if tech.growth_path %}
+    <div style="margin-top: 20px; text-align: left; background: #111; padding: 30px; border-radius: 0; border: 1px solid #333;">
+      <h4 style="color: #888; font-size: 0.85em; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--family-mono); font-weight: 700;">Growth Path</h4>
+      <div class="grid grid-cols-1 gap-2">
+        {% for step in tech.growth_path %}
+        <div style="border-bottom: 1px solid #222; padding: 8px 0; font-size: 0.9em; line-height: 1.5; color: #ddd;">
+          <strong class="text-white" style="font-family: var(--family-mono);">{{ step.component }}</strong>
+          — {{ step.trigger }} &rarr; {{ step.action }}
+          {% if step.rewrite_cost %}<span style="color: #888;">({{ step.rewrite_cost }})</span>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% if tech.maintainability %}
+    <div style="margin-top: 20px; text-align: left; background: #111; padding: 30px; border-radius: 0; border: 1px solid #333;">
+      <h4 style="color: #888; font-size: 0.85em; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--family-mono); font-weight: 700;">Maintainability</h4>
+      <p style="font-size: 0.95em; line-height: 1.6; color: #ddd; margin: 0;">{{ tech.maintainability }}</p>
+    </div>
+    {% endif %}
+  </div>
+</div>

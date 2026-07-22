@@ -1,0 +1,16 @@
+# Platform Strategy YAML Contract
+# Маппинг доменов на платформы (web, mobile, api).
+
+architecture_topology: '[Тип архитектуры. Например: Federated (ActivityPub), Local-First, Self-Hosted Node, Centralized SaaS]'
+strategic_insight: '[Свободное поле для стратегических мыслей, аномалий или команд пайплайну. Например: Это простая CLI-утилита, флоу не нужны]'
+
+platforms:
+  - id: '[Название платформы. Например: web_admin]'
+    name: '[Название. Например: Панель администратора]'
+    is_headless: '[true/false. Укажи true, если платформа не имеет UI и предназначена для машин (API/MCP)]'
+    description: '[Назначение платформы. Например: Управление контентом и модерация]'
+    target_users:
+      - '[Роль пользователя. Например: Модератор]'
+    supported_domains:
+      - '[ID домена из domains_manifest. Например: system]'
+      - '[ID домена. Например: billing]'

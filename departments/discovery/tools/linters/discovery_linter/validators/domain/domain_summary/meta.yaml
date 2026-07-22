@@ -1,0 +1,9 @@
+name: domain-summary
+entrypoint: run_validation
+inputs:
+- '**/summary.yaml'
+outputs:
+- stdout
+
+contract: departments/discovery/contracts/domain_summary_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.domain.domain_summary.DomainSummarySchema

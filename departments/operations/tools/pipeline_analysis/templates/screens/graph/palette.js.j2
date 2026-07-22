@@ -1,0 +1,49 @@
+// ---------------------------------------------------------------------
+// Palette — dark venture-style with neon accents. Each category below is
+// a distinct *identity* color; status/critical-path are layered on top
+// via size and opacity rather than competing for the same channel.
+//
+// This is a preventive/pre-run analysis tool: agent files are parsed
+// statically, so an artifact may legitimately not exist on disk yet
+// (it just hasn't been generated). Disk existence is therefore NOT used
+// to distinguish "external input" from "error" — that distinction isn't
+// knowable before a run. no_producer/dead_end are purely graph-topology
+// facts (does any agent in this pipeline declare writing/reading it),
+// and coloring is left neutral about whether that's a bug or by design.
+// ---------------------------------------------------------------------
+const statusColorMap = {
+  DONE: '#00f3ff',      // Neon cyan
+  READY: '#3b82f6',     // Bright blue
+  BLOCKED: '#ff00ff',   // Neon magenta
+  ESCALATED: '#ff3b3b', // Neon red
+  UNKNOWN: '#4b5563'    // Gray-600
+};
+
+const PALETTE = {
+  document: '#374151',          // gray-700 — обычный документ
+  documentValidated: '#0d9488', // teal-600 — документ с валидацией (locked)
+  documentUnused: '#f59e0b',    // amber-500 — создан в пайплайне, никем не читается
+  externalInput: '#8b5cf6',     // violet-500 — внешний вход (ничто в пайплайне его не производит)
+  externalOutput: '#fb923c',    // orange-400 — внешний выход (уходит за пределы workspace)
+  toolGenerator: '#eab308',     // yellow-500 — тул-генератор
+  toolOther: '#a16207',         // yellow-800 — прочие тулы (linter исключены из графа)
+  unusedEntity: '#52525b',      // zinc-600 — неиспользуемый агент/сабагент/тул
+  criticalEdge: '#ff00ff',
+  readsEdge: '#10b981',         // emerald-500 — реально забираемые данные (reads)
+  writesEdge: '#475569',        // slate-600 — обычная запись, читается дальше
+};
+
+function isExternalPath(path) {
+  if (!path || !workspaceRoot) return false;
+  return !path.startsWith(workspaceRoot);
+}
+
+// Blend a hex color toward gray — used to visually de-emphasize subagents
+// relative to their orchestrator without inventing a whole second palette.
+function muteColor(hex, factor) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const mix = (c) => Math.round(c * (1 - factor) + 100 * factor);
+  return `#${[r, g, b].map(c => mix(c).toString(16).padStart(2, '0')).join('')}`;
+}

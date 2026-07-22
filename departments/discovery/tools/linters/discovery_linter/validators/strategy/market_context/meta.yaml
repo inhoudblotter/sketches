@@ -1,0 +1,6 @@
+name: market-context
+entrypoint: validate_tracer_pattern
+inputs:
+- workspace/discovery/strategy/market_context.md
+outputs:
+- stdout

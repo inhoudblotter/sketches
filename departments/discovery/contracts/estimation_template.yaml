@@ -1,0 +1,20 @@
+epic_id: "{epic_name}"
+architectural_risks:
+  - risk: "[Название риска]"
+    impact: "[High/Medium/Low]"
+    description: "[Описание проблемы, максимум 2 предложения]"
+    action_required: "[Что нужно сделать для разрешения]"
+estimations:
+  - story_id: "{story_id}"
+    story_points: 5
+    dependencies: ["[Ссылки на flows или tech_constraints, если есть]"]
+    rationale:
+      technical_scope: "[Краткий объем работы, 1-2 предложения]"
+      promptability: "[High/Medium/Low. Краткое обоснование]"
+      verifiability: "[High/Medium/Low. Краткое обоснование]"
+      blindspots: "[High/Medium/Low. Укажите конкретные риски или слепые зоны]"
+    # Выявленные риски. Базовые значения: [SPIKE REQUIRED], [NEED RESEARCH], [LOW VERIFIABILITY],
+    # [MULTI-RUN FLOW], [VENDOR DEPENDENCY], [SLA CRITICAL], [SECURITY CRITICAL],
+    # [DATA SCIENCE REQUIRED]. Разрешается добавлять свои теги, если базовых не хватает. Указывать только применимые.
+    flags:
+      "[FLAG_NAME]": "[Одно предложение: почему этот флаг добавлен]"

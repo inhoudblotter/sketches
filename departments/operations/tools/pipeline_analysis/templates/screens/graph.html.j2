@@ -1,0 +1,147 @@
+<div id="sigma-container" class="w-full h-full relative bg-[#0a0a0a] border border-gray-800 rounded-lg overflow-hidden shadow-[0_0_15px_rgba(0,243,255,0.05)]">
+  <!-- Controls Overlay -->
+  <div class="absolute top-2 sm:top-4 right-2 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[calc(100%-1rem)]">
+    <button id="zoom-in" class="bg-gray-900 border border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 p-1.5 sm:p-2 rounded shadow-md transition-colors">
+      <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+    </button>
+    <button id="zoom-out" class="bg-gray-900 border border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 p-1.5 sm:p-2 rounded shadow-md transition-colors">
+      <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+    </button>
+    <button id="reset-camera" class="bg-gray-900 border border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 p-1.5 sm:p-2 rounded shadow-md transition-colors" title="Reset Camera">
+      <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+    </button>
+    <button id="toggle-critical-path" class="bg-gray-900 border border-gray-700 text-gray-500 hover:text-white hover:border-gray-500 p-2 rounded shadow-md transition-colors text-[11px] sm:text-xs px-2 sm:px-3" title="Показать/скрыть подсветку критического пути">
+      <span class="hidden sm:inline">Critical Path</span><span class="sm:hidden">Path</span>
+    </button>
+    <button id="toggle-legend" class="bg-gray-900 border border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 p-2 rounded shadow-md transition-colors text-[11px] sm:text-xs px-2 sm:px-3" title="Legend / Issues">
+      Legend
+    </button>
+  </div>
+
+  <!-- Legend + Issues Panel -->
+  <div id="graph-panel" class="absolute top-14 sm:top-16 right-2 sm:right-4 z-10 w-[calc(100%-1rem)] sm:w-80 max-h-[calc(100%-4.5rem)] sm:max-h-[calc(100%-5rem)] overflow-y-auto bg-gray-950/95 border border-gray-800 rounded-lg shadow-[0_0_15px_rgba(0,243,255,0.05)] text-xs text-gray-300 hidden">
+    <div class="p-3 border-b border-gray-800">
+      <div class="text-gray-500 uppercase tracking-wide text-[10px] mb-2">Легенда</div>
+      <div id="graph-legend" class="space-y-1 max-h-56 overflow-y-auto pr-1"></div>
+    </div>
+    <div class="p-3">
+      <div class="text-gray-500 uppercase tracking-wide text-[10px] mb-2">Замечания по архитектуре</div>
+      <div id="graph-issues" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- Node Detail Tooltip -->
+  <div id="node-tooltip" class="absolute z-20 hidden bg-gray-950/95 border border-gray-700 rounded-md shadow-lg px-3 py-2 text-xs text-gray-300 pointer-events-none max-w-xs"></div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const container = document.getElementById("sigma-container");
+  if (!container) return;
+
+  const data = reportData; // Injected globally from report.html.j2
+  const workspaceRoot = data.workspace_dir || "";
+
+  // System tools (git, ...) are pure workflow scaffolding (branch/commit/push),
+  // not a data dependency between agents and artifacts — every agent calls them,
+  // which turns them into a single node every other node visually gravitates
+  // toward without conveying any real pipeline structure. Drop them from the
+  // graph entirely, same treatment as skills/contracts/playbooks below.
+  const SYSTEM_TOOL_NAMES = new Set(['git']);
+  data.edges = data.edges.filter(e => !SYSTEM_TOOL_NAMES.has(e.source) && !SYSTEM_TOOL_NAMES.has(e.target));
+  data.tools = (data.tools || []).filter(t => !SYSTEM_TOOL_NAMES.has(t.name));
+
+  // A tool node with no `produces` edge is never a real transformation — it's
+  // called purely as a getter (e.g. every read-only query_discovery subcommand:
+  // toc, stats, errata, flows...), so it never writes anything back, it only
+  // relays whatever it read. Rather than drawing it as its own node sitting
+  // between every reader artifact and every caller, collapse it into direct
+  // artifact -> caller edges — the same "who effectively reads this file"
+  // relationship the rest of the graph already reasons about via `reads`
+  // edges. The caller can be an agent (uses_tool, from a <call_tool> in its
+  // prompt) or another tool (calls_tool, from that tool's own meta.yaml
+  // `calls_tools: [tool::subcommand]` — e.g. build_project_analytics importing
+  // query_discovery's Python API directly): both get the same direct-to-file,
+  // green treatment, since from the artifact's point of view it makes no
+  // difference whether the reader is an agent or an aggregator tool. Mutation
+  // subcommands (rename-entity, resolve-errata, ...) and true generator tools
+  // (Extract Bounded Contexts, Generate Pitch Deck, ...) do have `produces`
+  // edges and keep their own node, since they're a real step, not a pass-through.
+  // Per-subcommand virtual nodes (e.g. "Query Discovery::toc") are synthesized
+  // straight into the edge list by the backend and never appear in data.tools
+  // at all (only the base tool name does) — so tool-likeness has to be read
+  // off the edges themselves (anything ever called via uses_tool/calls_tool),
+  // not off data.tools.
+  const producingTools = new Set(data.edges.filter(e => e.edge_type === 'produces').map(e => e.source));
+  const toolLikeNodes = new Set(
+    data.edges.filter(e => e.edge_type === 'uses_tool' || e.edge_type === 'calls_tool').map(e => e.target)
+  );
+  const readOnlyTools = new Set([...toolLikeNodes].filter(t => !producingTools.has(t)));
+  if (readOnlyTools.size) {
+    const readersByTool = {};
+    const callersByTool = {};
+    data.edges.forEach(e => {
+      if (!readOnlyTools.has(e.target)) return;
+      if (e.edge_type === 'reads') (readersByTool[e.target] = readersByTool[e.target] || []).push(e.source);
+      // A caller can itself be a read-only tool node (chained composition,
+      // e.g. tool A -> read-only subcommand B -> read-only subcommand C) —
+      // resolveCaller below walks that chain to the nearest non-read-only
+      // node so the collapsed edge always lands on something that stays in
+      // the graph, instead of silently vanishing into another collapsed node.
+      if (e.edge_type === 'uses_tool' || e.edge_type === 'calls_tool') (callersByTool[e.target] = callersByTool[e.target] || []).push(e.source);
+    });
+    function resolveCallers(node, seen) {
+      seen = seen || new Set();
+      if (seen.has(node)) return [];
+      seen.add(node);
+      const direct = callersByTool[node] || [];
+      const resolved = [];
+      direct.forEach(caller => {
+        if (readOnlyTools.has(caller)) {
+          resolved.push(...resolveCallers(caller, seen));
+        } else {
+          resolved.push(caller);
+        }
+      });
+      return resolved;
+    }
+    const collapsedEdges = [];
+    readOnlyTools.forEach(tool => {
+      (readersByTool[tool] || []).forEach(artifact => {
+        resolveCallers(tool).forEach(caller => {
+          // Tagged (not hardcoded to any specific tool name) so the renderer
+          // can highlight "data that flows through one of our shared
+          // query/analyzer tools" specifically, instead of every plain
+          // <read> edge in the graph — this works for any department that
+          // has this read-only-tool pattern, not just Discovery's
+          // query_discovery, and for any caller (agent or tool).
+          collapsedEdges.push({ source: artifact, target: caller, edge_type: 'reads', is_optional: false, via_query_tool: true });
+        });
+      });
+    });
+    data.edges = data.edges
+      .filter(e => !readOnlyTools.has(e.source) && !readOnlyTools.has(e.target))
+      .concat(collapsedEdges);
+    data.tools = data.tools.filter(t => !readOnlyTools.has(t.name));
+  }
+
+  // Initialize Graphology
+  const graph = new graphology.Graph();
+
+  const criticalSet = new Set(data.metrics.critical_path || []);
+
+  // Critical-path highlighting (magenta) is off by default — it's the
+  // brightest color on the graph and, drawn on every edge at once, it reads
+  // as noise rather than a backbone. Toggled on via the "Critical Path"
+  // button (see render.js.j2); build.js.j2 stores each critical edge's
+  // would-be non-critical color alongside it so the reducer can flip
+  // between the two without recomputing anything.
+  let showCriticalPath = false;
+
+  {% include "screens/graph/palette.js.j2" %}
+  {% include "screens/graph/build.js.j2" %}
+  {% include "screens/graph/layout.js.j2" %}
+  {% include "screens/graph/render.js.j2" %}
+  {% include "screens/graph/legend.js.j2" %}
+});
+</script>

@@ -1,0 +1,55 @@
+<div class="embla__slide">
+  <div class="slide-content">
+    <h2>Архитектура и Связность (Architecture & Complexity)</h2>
+    <p style="color: #aaa; margin-bottom: 30px;">Оценка монолитности, платформ и сложности флоу.</p>
+    {% set flow_metrics = scope_analytics.flow_metrics | default({}, true) %}
+    {% set domain_coupling = scope_analytics.domain_coupling | default({}, true) %}
+    <div style="display: flex; gap: 40px; align-items: stretch; justify-content: space-between; flex-wrap: wrap;">
+
+      <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column;">
+        <div class="metric-card" style="margin-bottom: 20px; border-left: 4px solid #60a5fa;">
+          <div class="metric-value" style="color: #60a5fa;">{{ scope_analytics.platform_count }}</div>
+          <div class="metric-label">Целевые платформы</div>
+          <div class="metric-sub">Platform Fragmentation</div>
+        </div>
+        <div class="metric-card" style="margin-bottom: 20px; border-left: 4px solid #facc15;">
+          <div class="metric-value" style="color: #facc15;">{{ flow_metrics.total_flows | default(0) }}</div>
+          <div class="metric-label">User Flows</div>
+          <div class="metric-sub">{{ flow_metrics.total_states | default(0) }} стейтов</div>
+        </div>
+        <div class="metric-card" style="flex-grow: 1; border-left: 4px solid #f87171;">
+          <div class="metric-value" style="color: #f87171;">{{ flow_metrics.total_shared_error_states | default(0) }}</div>
+          <div class="metric-label">Обработчики сбоев</div>
+          <div class="metric-sub">Компенсации и ошибки (Shared States)</div>
+        </div>
+      </div>
+
+      <div style="flex: 2; max-width: 600px; min-width: 300px; margin: 0 auto; background: #111; padding: 20px; border: 1px solid #333; border-radius: 0; display: flex; flex-direction: column; justify-content: center;">
+        <h3 style="margin-bottom: 20px; font-size: 1.1rem; color: #fff;">Domain Coupling (Узкие места)</h3>
+        <div class="w-full overflow-x-auto">
+        <table class="min-w-[280px]" style="width: 100%; border-collapse: collapse; color: #ccc;">
+          <thead>
+            <tr style="border-bottom: 1px solid #444;">
+              <th style="text-align: left; padding: 10px;">Domain</th>
+              <th style="text-align: center; padding: 10px;">Depends On</th>
+              <th style="text-align: center; padding: 10px;">Used By</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for domain, metrics in domain_coupling.items() %}
+            {% set depends_count = (metrics.depends_on | default({}, true)).values() | map('length') | sum %}
+            {% set used_by_count = (metrics.used_by | default({}, true)).values() | map('length') | sum %}
+            <tr style="border-bottom: 1px solid #222;">
+              <td class="whitespace-nowrap" style="padding: 10px;"><strong>{{ domain }}</strong></td>
+              <td style="text-align: center; padding: 10px; color: {% if depends_count > 3 %}#f87171{% else %}#fff{% endif %}" title="{{ metrics.depends_on }}">{{ depends_count }}</td>
+              <td style="text-align: center; padding: 10px; color: {% if used_by_count > 3 %}#60a5fa{% else %}#fff{% endif %}" title="{{ metrics.used_by }}">{{ used_by_count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>

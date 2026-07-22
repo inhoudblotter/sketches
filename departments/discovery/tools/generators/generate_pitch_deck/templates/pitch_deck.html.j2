@@ -1,0 +1,74 @@
+{% extends "base.html.j2" %}
+
+{% block slides %}
+  <div class="embla__slide">
+    <div class="slide-content">
+      <h1>{{ pitch_title }}</h1>
+      <h3>{{ subtitle }}</h3>
+    </div>
+  </div>
+
+  {# 1. Opening pitch: problem, solution, market, GTM #}
+  {% for slide in narrative_slides %}
+    {% set title = slide.title %}
+    {% set content_html = slide.content_html %}
+    {% include "slides/markdown_slide.html.j2" %}
+  {% endfor %}
+
+  {# 1.5. Execution & Traction details (immediately following GTM) #}
+  {% if roadmap %}
+    {% include "slides/roadmap.html.j2" %}
+  {% endif %}
+
+  {# 2. Customer pain validates the problem right after the opening pitch #}
+  {% if scope_analytics %}
+    {% include "slides/analytics_risk.html.j2" %}
+  {% endif %}
+
+  {# 3. Execution depth: what we're building and how big it is #}
+
+  {% if scope_analytics %}
+    {% include "slides/analytics_scope.html.j2" %}
+    {% include "slides/analytics_epics.html.j2" %}
+    {% include "slides/analytics_data_model.html.j2" %}
+    {% include "slides/analytics_architecture.html.j2" %}
+  {% endif %}
+
+  {% if tech %}
+    {% include "slides/tech.html.j2" %}
+  {% endif %}
+
+  {% if scope_analytics %}
+    {% include "slides/analytics_observability.html.j2" %}
+  {% endif %}
+
+  {# 4. Risk section: address objections head-on, synthesized last #}
+  {% if scope_analytics %}
+    {% include "slides/analytics_flags.html.j2" %}
+    {% if scope_analytics.compliance_flags %}
+    {% include "slides/analytics_compliance.html.j2" %}
+    {% endif %}
+  {% endif %}
+
+  {% if risks_slide %}
+    {% set title = risks_slide.title %}
+    {% set content_html = risks_slide.content_html %}
+    {% include "slides/markdown_slide.html.j2" %}
+  {% endif %}
+
+  {% if errata_data and errata_data.blockers %}
+    {% include "slides/errata.html.j2" %}
+  {% endif %}
+
+  {# 5. Close on the strongest note: the economics #}
+  {% if dashboard %}
+    {% include "slides/dashboard.html.j2" %}
+  {% endif %}
+
+  {# 6. Final Verdict (Go / No-Go / Pivot) #}
+  {% if final_verdict_slide %}
+    {% set title = final_verdict_slide.title %}
+    {% set content_html = final_verdict_slide.content_html %}
+    {% include "slides/final_verdict.html.j2" %}
+  {% endif %}
+{% endblock %}

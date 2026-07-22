@@ -1,0 +1,78 @@
+{% import "screens/_macros.html.j2" as ui %}
+{% call ui.page() %}
+  <div class="mb-8">
+    <h2 class="text-xl sm:text-2xl font-bold text-white mb-2 flex items-center gap-2">
+      <i data-lucide="archive" class="w-6 h-6 text-yellow-400"></i>
+      Legacy Analytics
+    </h2>
+    <p class="text-gray-400 text-sm">Assets on disk that the pipeline never actually touches — playbooks nobody requires or references, tools nobody calls, contract templates nobody's <code class="text-neon-cyan">contracts:</code> list points at, and tools whose declared <code class="text-neon-cyan">contract:</code> file no longer exists.</p>
+  </div>
+
+  {% set legacy_count = (report.legacy.unused_playbooks|length) + (report.legacy.unused_tools|length) + (report.legacy.unused_contracts|length) + (report.legacy.dangling_contract_refs|length) %}
+
+  {% if legacy_count == 0 %}
+    {{ ui.empty_state("check-circle-2", "No unused assets detected.", tone="text-gray-500") }}
+  {% else %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+    <div class="bg-venture-dark border border-yellow-900/40 rounded-lg p-5">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="book-open" class="w-4 h-4 text-yellow-400"></i>
+        <span class="text-sm font-semibold text-yellow-400">Unused Playbooks</span>
+        <span class="ml-auto bg-yellow-900/30 text-yellow-400 text-xs font-bold px-2 py-0.5 rounded-full">{{ report.legacy.unused_playbooks|length }}</span>
+      </div>
+      <ul class="flex flex-col gap-1.5 max-h-96 overflow-y-auto custom-scrollbar pr-1">
+        {% for p in report.legacy.unused_playbooks %}
+        <li class="text-xs text-gray-300 bg-gray-900/50 px-2 py-1.5 rounded border border-gray-800/50 truncate" title="{{ p }}">{{ p.split('/')[-1] }}</li>
+        {% else %}
+        <li class="text-xs text-gray-600 italic">None</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="bg-venture-dark border border-yellow-900/40 rounded-lg p-5">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="wrench" class="w-4 h-4 text-yellow-400"></i>
+        <span class="text-sm font-semibold text-yellow-400">Unused Tools</span>
+        <span class="ml-auto bg-yellow-900/30 text-yellow-400 text-xs font-bold px-2 py-0.5 rounded-full">{{ report.legacy.unused_tools|length }}</span>
+      </div>
+      <ul class="flex flex-col gap-1.5 max-h-96 overflow-y-auto custom-scrollbar pr-1">
+        {% for t in report.legacy.unused_tools %}
+        <li class="text-xs text-gray-300 bg-gray-900/50 px-2 py-1.5 rounded border border-gray-800/50 truncate" title="{{ t }}">{{ t }}</li>
+        {% else %}
+        <li class="text-xs text-gray-600 italic">None</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="bg-venture-dark border border-yellow-900/40 rounded-lg p-5">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="file-text" class="w-4 h-4 text-yellow-400"></i>
+        <span class="text-sm font-semibold text-yellow-400">Unused Contracts</span>
+        <span class="ml-auto bg-yellow-900/30 text-yellow-400 text-xs font-bold px-2 py-0.5 rounded-full">{{ report.legacy.unused_contracts|length }}</span>
+      </div>
+      <ul class="flex flex-col gap-1.5 max-h-96 overflow-y-auto custom-scrollbar pr-1">
+        {% for c in report.legacy.unused_contracts %}
+        <li class="text-xs text-gray-300 bg-gray-900/50 px-2 py-1.5 rounded border border-gray-800/50 truncate" title="{{ c }}">{{ c.split('/')[-1] }}</li>
+        {% else %}
+        <li class="text-xs text-gray-600 italic">None</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="bg-venture-dark border border-yellow-900/40 rounded-lg p-5">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="alert-triangle" class="w-4 h-4 text-yellow-400"></i>
+        <span class="text-sm font-semibold text-yellow-400">Dangling Contract Refs</span>
+        <span class="ml-auto bg-yellow-900/30 text-yellow-400 text-xs font-bold px-2 py-0.5 rounded-full">{{ report.legacy.dangling_contract_refs|length }}</span>
+      </div>
+      <ul class="flex flex-col gap-1.5 max-h-96 overflow-y-auto custom-scrollbar pr-1">
+        {% for r in report.legacy.dangling_contract_refs %}
+        <li class="text-xs text-gray-300 bg-gray-900/50 px-2 py-1.5 rounded border border-gray-800/50 truncate" title="{{ r }}">{{ r }}</li>
+        {% else %}
+        <li class="text-xs text-gray-600 italic">None</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+{% endcall %}

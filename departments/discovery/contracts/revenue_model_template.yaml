@@ -1,0 +1,89 @@
+author_agent: 'revenue-scout'
+# Revenue Model YAML Contract
+# Описание источников выручки (Revenue Streams) и их веса.
+
+target_mau: '[Прогнозируемая аудитория (Monthly Active Users) на первый год. Например: 10000]'
+
+# Единый список всех потоков, один уровень — позиция в файле ничего не значит.
+#   evidence_tier — сила доказательства: red_ocean_benchmark (прямые конкуренты уже берут
+#     деньги за это) | adjacent_analog (аналог в смежной индустрии) | speculative_blue_ocean
+#     (аналога нет, обязателен confidence).
+#   commitment_status — входит ли поток в бюджет: proposed (по умолчанию) | committed
+#     (учтён в blended_arpu_usd; требует arpu_monthly_usd и expected_share_percent, сумма
+#     share по всем committed строго 100) | deferred | rejected (для обоих — share строго 0).
+revenue_streams:
+  # Первая запись показывает все возможные поля — образец для линтера синхронизации схемы,
+  # не инструкция заполнять их все при commitment_status: committed.
+  - id: '[Любой уникальный ID потока, например: b2c_premium]'
+    type: '[Например: subscription, transactional, one-time, ads]'
+    evidence_tier: red_ocean_benchmark # red_ocean_benchmark | adjacent_analog | speculative_blue_ocean
+    commitment_status: committed # proposed | committed | deferred | rejected
+    target_audience: '[На кого рассчитана модель. Например: Фрилансеры]'
+    arpu_monthly_usd: '[Прогноз ARPU в месяц. Обязательно при commitment_status: committed. Например: 15.0]'
+    expected_share_percent: '[Доля общей выручки. Обязательно при committed, иначе строго 0. Например: 80]'
+    source_hypothesis: '[Для не-red_ocean_benchmark: ссылка на исходную гипотезу монетизации]'
+    wtp_validation_status: '[Только для evidence_tier: adjacent_analog: Аналог найден / прямой плательщик не найден]'
+    confidence: '[Только для evidence_tier: speculative_blue_ocean, обязательно: low/medium/high]'
+    rationale: '[Обоснование ARPU/оценки: боль пользователя, ссылка на аналог или ERRC-логика — в зависимости от evidence_tier]'
+
+  - id: '[Второй поток, например: b2b_api]'
+    type: '[Например: transactional]'
+    evidence_tier: red_ocean_benchmark
+    commitment_status: committed
+    target_audience: '[Например: Агентства]'
+    arpu_monthly_usd: '[Например: 250.0]'
+    expected_share_percent: '[Например: 20]'
+    rationale: '[Обоснование]'
+
+  - id: '[Опционально: ID потока]'
+    type: '[Опционально: тип монетизации]'
+    evidence_tier: adjacent_analog # или speculative_blue_ocean
+    commitment_status: proposed
+    target_audience: '[Опционально: на кого рассчитана модель]'
+    source_hypothesis: '[Ссылка на исходную гипотезу монетизации]'
+    wtp_validation_status: '[Аналог найден / прямой плательщик не найден — обязательно для adjacent_analog]'
+    confidence: '[low/medium/high — обязательно для speculative_blue_ocean]'
+    expected_share_percent: 0
+    rationale: '[Для adjacent_analog — ссылка на аналог. Для speculative_blue_ocean — ERRC-обоснование]'
+
+non_arpu_funding:
+  # Опционально: невозвратное/грантовое финансирование. НЕ входит в blended_arpu_usd (не
+  # масштабируется с MAU) и НЕ смягчает budget_constraint_usd/margin-гейт (продлевает
+  # runway при плохой unit-экономике, а не делает её хорошей).
+  - id: '[Уникальный ID, например: gitcoin_rpgf_round_20]'
+    type: grant # grant | treasury_allocation | quadratic_funding | rpgf | accelerator
+    source: '[Кто выдаёт: фонд/DAO/программа]'
+    total_amount_usd: '[Общая сумма. Например: 30000]'
+    runway_months: '[На сколько месяцев хватает. Например: 6]'
+    application_status: candidate # candidate | applied | awarded | rejected
+    confidence: '[low/medium/high — вероятность получения, не сама сумма]'
+    rationale: '[Почему проект подходит под критерии гранта/раунда]'
+    monthly_runway_offset_usd: '[total_amount_usd / runway_months. Например: 5000]'
+
+blended_arpu_usd: '[Средневзвешенный ARPU по commitment_status: committed. Вычисляется как Сумма(arpu * (share/100)). Например: 62.0]'
+budget_constraint_usd: '[Максимально допустимый COGS (Cost of Goods Sold). Например, 30% от Blended ARPU: 18.0]'
+strategic_insight: '[Например: Зависимость от B2B слишком высока, нужно диверсифицироваться]'
+
+speculative_scenario:
+  # Опционально: необязывающий upside-прогноз по потокам с commitment_status: proposed/deferred.
+  # Не участвует в budget_constraint_usd/margin-гейте — отдельная витрина, не бюджетное число.
+  included_stream_ids: '[Список id потоков с commitment_status: proposed/deferred, чей потенциал здесь суммируется]'
+  combined_confidence: '[low/medium/high — минимум/консенсус по включённым потокам]'
+  projected_uplift_arpu_usd: '[Confidence-дисконтированная добавка к ARPU. Например: 4.5]'
+  blended_arpu_with_speculative_usd: '[blended_arpu_usd + projected_uplift_arpu_usd. Например: 66.5]'
+
+scenario_bands:
+  # Опционально: количественная развёртка только двух метрик под сценарные драйверы
+  # Worst/Base/Best. Детализация по каждому revenue_stream не ведётся.
+  worst:
+    driver_ref: '[Ссылка на Worst-драйвер, например: "Конкурент удерживает бесплатное ядро дольше ожидаемого"]'
+    target_mau: '[Прогноз MAU в худшем сценарии]'
+    blended_arpu_usd: '[Прогноз ARPU в худшем сценарии]'
+  base:
+    driver_ref: '[Ссылка на Base-драйвер]'
+    target_mau: '[Совпадает с target_mau выше]'
+    blended_arpu_usd: '[Совпадает с blended_arpu_usd выше]'
+  best:
+    driver_ref: '[Ссылка на Best-драйвер]'
+    target_mau: '[Прогноз MAU в лучшем сценарии]'
+    blended_arpu_usd: '[Прогноз ARPU в лучшем сценарии]'

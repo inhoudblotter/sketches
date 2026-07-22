@@ -1,0 +1,7 @@
+name: markdown-links
+entrypoint: run_validation
+inputs:
+- '**/*.md'
+outputs:
+- stdout
+- '**/*.md'

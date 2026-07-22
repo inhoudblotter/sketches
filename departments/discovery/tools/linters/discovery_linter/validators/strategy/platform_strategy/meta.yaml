@@ -1,0 +1,9 @@
+name: platform-strategy
+entrypoint: run_validation
+inputs:
+- '**/platform_strategy.yaml'
+outputs:
+- stdout
+
+contract: departments/discovery/contracts/platform_strategy_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.strategy.platform_strategy.PlatformStrategySchema

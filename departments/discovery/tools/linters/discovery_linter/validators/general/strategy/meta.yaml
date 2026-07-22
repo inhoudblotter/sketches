@@ -1,0 +1,12 @@
+name: strategy
+entrypoint: run_validate_strategy
+inputs:
+- '**/strategy/*.yaml'
+- '**/meta/domains_manifest.yaml'
+outputs:
+- stdout
+calls_tools:
+- Discovery Linter::domains-manifest
+- Discovery Linter::platform-strategy
+- Discovery Linter::platform-coverage
+- Discovery Linter::target-audience

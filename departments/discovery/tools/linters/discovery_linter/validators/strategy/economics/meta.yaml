@@ -1,0 +1,9 @@
+name: economics
+entrypoint: run_validation
+contract: departments/discovery/contracts/unit_economics_model_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.strategy.economics.UnitEconomicsModel
+inputs:
+  - '**/strategy/revenue_model.yaml'
+  - '**/strategy/unit_economics_model.yaml'
+outputs:
+  - stdout

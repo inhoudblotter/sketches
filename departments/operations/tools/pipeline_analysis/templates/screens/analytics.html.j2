@@ -1,0 +1,194 @@
+{% import "screens/_macros.html.j2" as ui %}
+{% set top_agents = report.agents | rejectattr("is_subagent") | list %}
+{% set sub_agents  = report.agents | selectattr("is_subagent") | list %}
+{% set agent_by_name = {} %}
+{% for a in report.agents %}{% set _ = agent_by_name.update({a.name: a}) %}{% endfor %}
+{% set write_index = {} %}
+{% for art in report.artifacts %}{% if art.producers %}{% set _ = write_index.update({art.path: art.producers | join(', ')}) %}{% set _ = write_index.update({art.path | regex_replace('{[^}]+}', '*'): art.producers | join(', ')}) %}{% endif %}{% endfor %}
+
+{% call ui.page() %}
+  <div class="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+    <div>
+      <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Department Analytics</h2>
+      <p class="text-gray-400 text-sm">Pipeline status, context budget, tool cost and output sizing — mirrors <code class="text-gray-500">ANALYTICS.md</code>. Charts and distribution breakdowns live in the <span class="text-neon-cyan">Insights</span> tab.</p>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+    {{ ui.stat_tile("Completion", report.metrics.completion_pct ~ "%", "text-neon-emerald", meter_pct=report.metrics.completion_pct, icon="check-circle-2") }}
+    {{ ui.stat_tile("Contract Coverage", report.metrics.contract_coverage_pct ~ "%", "text-neon-cyan", meter_pct=report.metrics.contract_coverage_pct, icon="file-check-2") }}
+    {{ ui.stat_tile("Output Contract Coverage", report.metrics.output_contract_coverage_pct ~ "%", "text-neon-blue", meter_pct=report.metrics.output_contract_coverage_pct, icon="file-output") }}
+    {{ ui.stat_tile("Subagents", sub_agents | length, "text-white", icon="users") }}
+  </div>
+
+  <!-- Pipeline Status -->
+  <div class="mb-10">
+    {{ ui.section_title("Pipeline Status") }}
+    <div class="overflow-x-auto bg-[#0f0f0f] border border-gray-800 rounded-lg">
+      <table class="w-full text-xs">
+        <thead>
+          <tr class="border-b border-gray-800 text-gray-500 uppercase tracking-wider">
+            <th class="text-left p-2.5">Agent</th>
+            <th class="text-left p-2.5">Model</th>
+            <th class="text-left p-2.5">Status</th>
+            <th class="text-left p-2.5">Blocked on Agents</th>
+            <th class="text-left p-2.5">Blocked on External</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for agent in top_agents | sort(attribute="name") | sort(attribute="stage_number") %}
+          {% set blocked_agents = [] %}{% set blocked_ext = [] %}
+          {% for b in agent.blocked_on %}{% if b in write_index %}{% set _ = blocked_agents.append(write_index[b]) %}{% else %}{% set _ = blocked_ext.append(b.split('/')[-2:] | join('/') if '*' in b else b.split('/')[-1]) %}{% endif %}{% endfor %}
+          <tr class="border-b border-gray-900 hover:bg-gray-900/30 transition-colors">
+            <td class="p-2.5 text-white font-mono">{{ agent.name }}</td>
+            <td class="p-2.5 text-gray-400">{{ agent.model }}</td>
+            <td class="p-2.5">{{ ui.status_pill(agent.status) }}</td>
+            <td class="p-2.5 text-gray-400">{{ blocked_agents | unique | list | join(", ") if blocked_agents else "—" }}</td>
+            <td class="p-2.5 text-gray-400">{{ blocked_ext | unique | list | join(", ") if blocked_ext else "—" }}</td>
+          </tr>
+          {% if agent.delegates_to %}{% for sub_name in agent.delegates_to %}{% set sub = agent_by_name.get(sub_name) %}{% if sub %}
+          <tr class="border-b border-gray-900">
+            <td class="p-2.5 text-gray-500 font-mono pl-6">↳ {{ sub.name }}</td>
+            <td class="p-2.5 text-gray-500">{{ sub.model }}</td>
+            <td class="p-2.5 text-gray-600 italic">internal</td>
+            <td class="p-2.5 text-gray-600">—</td>
+            <td class="p-2.5 text-gray-600">—</td>
+          </tr>
+          {% endif %}{% endfor %}{% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Context Budget -->
+  <div class="mb-10">
+    {{ ui.section_title("Context Budget") }}
+    <div class="overflow-x-auto bg-[#0f0f0f] border border-gray-800 rounded-lg">
+      <table class="w-full text-xs">
+        <thead>
+          <tr class="border-b border-gray-800 text-gray-500 uppercase tracking-wider">
+            <th class="text-left p-2.5">Agent</th>
+            <th class="text-right p-2.5">Skills</th>
+            <th class="text-right p-2.5">Skills KB</th>
+            <th class="text-right p-2.5">Contracts KB</th>
+            <th class="text-right p-2.5">Artifacts KB (p90)</th>
+            <th class="text-right p-2.5">Tool Output KB</th>
+            <th class="text-right p-2.5">Own Write KB</th>
+            <th class="text-right p-2.5">Total KB</th>
+            <th class="text-left p-2.5">Risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for agent in top_agents | sort(attribute="total_sort_kb", reverse=True) %}
+          <tr class="border-b border-gray-900 hover:bg-gray-900/30 transition-colors">
+            <td class="p-2.5 text-white font-mono">{{ agent.name }}</td>
+            <td class="p-2.5 text-gray-400 text-right">{{ agent.required_skills | length }}</td>
+            <td class="p-2.5 text-gray-400 text-right">{{ agent.skills_kb }}</td>
+            <td class="p-2.5 text-gray-400 text-right">{{ agent.contracts_kb }}</td>
+            <td class="p-2.5 text-gray-400 text-right">{{ agent.artifacts_kb }}</td>
+            <td class="p-2.5 text-gray-400 text-right">{{ agent.tool_output_kb }}</td>
+            <td class="p-2.5 text-gray-400 text-right">{{ agent.own_write_kb }}</td>
+            <td class="p-2.5 text-gray-300 text-right"><span class="inline-flex items-center gap-1 justify-end">{{ agent.total_risk_kb }}{% if agent.context_is_partial %}<i data-lucide="pizza" class="w-3.5 h-3.5 text-amber-400" title="Часть входов ещё не сгенерирована — оценено по шаблону контракта"></i>{% endif %}</span></td>
+            <td class="p-2.5">
+              {% if agent.total_risk_kb > report.risk_high_min_kb %}<span class="text-neon-red font-bold">🔴 HIGH</span>{% elif agent.total_risk_kb > report.risk_ok_max_kb %}<span class="text-yellow-400">🟡 WATCH</span>{% else %}<span class="text-neon-emerald">🟢 OK</span>{% endif %}
+            </td>
+          </tr>
+          {% if agent.delegates_to %}{% set sub_list = [] %}{% for sn in agent.delegates_to %}{% set sub = agent_by_name.get(sn) %}{% if sub %}{% set _ = sub_list.append(sub) %}{% endif %}{% endfor %}
+          {% for sub in sub_list | sort(attribute="total_sort_kb", reverse=True) %}
+          <tr class="border-b border-gray-900">
+            <td class="p-2.5 text-gray-500 font-mono pl-6">↳ {{ sub.name }}</td>
+            <td class="p-2.5 text-gray-500 text-right">{{ sub.required_skills | length }}</td>
+            <td class="p-2.5 text-gray-500 text-right">{{ sub.skills_kb }}</td>
+            <td class="p-2.5 text-gray-500 text-right">{{ sub.contracts_kb }}</td>
+            <td class="p-2.5 text-gray-500 text-right">{{ sub.artifacts_kb }}</td>
+            <td class="p-2.5 text-gray-500 text-right">{{ sub.tool_output_kb }}</td>
+            <td class="p-2.5 text-gray-500 text-right">{{ sub.own_write_kb }}</td>
+            <td class="p-2.5 text-gray-500 text-right"><span class="inline-flex items-center gap-1 justify-end">{{ sub.total_risk_kb }}{% if sub.context_is_partial %}<i data-lucide="pizza" class="w-3.5 h-3.5 text-amber-400" title="Часть входов ещё не сгенерирована — оценено по шаблону контракта"></i>{% endif %}</span></td>
+            <td class="p-2.5">
+              {% if sub.total_risk_kb > report.risk_high_min_kb %}<span class="text-neon-red font-bold">🔴 HIGH</span>{% elif sub.total_risk_kb > report.risk_ok_max_kb %}<span class="text-yellow-400">🟡 WATCH</span>{% else %}<span class="text-neon-emerald">🟢 OK</span>{% endif %}
+            </td>
+          </tr>
+          {% endfor %}{% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tool Invocation Cost -->
+  <div class="mb-10">
+    {{ ui.section_title("Tool Invocation Cost") }}
+    <p class="text-gray-500 text-xs mb-3">Per-<code>&lt;call_tool&gt;</code> breakdown behind the "Tool Output KB" column above. Identical calls from multiple prompt sites are merged — "Sites" counts prompt locations, "Samples" is the per-site run count. Skipped (never-executed) calls are omitted.</p>
+    <div class="overflow-x-auto bg-[#0f0f0f] border border-gray-800 rounded-lg max-h-[28rem] overflow-y-auto">
+      <table class="w-full text-xs">
+        <thead class="sticky top-0 bg-[#0f0f0f]">
+          <tr class="border-b border-gray-800 text-gray-500 uppercase tracking-wider">
+            <th class="text-left p-2.5">Agent</th>
+            <th class="text-left p-2.5">Tool</th>
+            <th class="text-left p-2.5">Subcommand</th>
+            <th class="text-left p-2.5">Mode</th>
+            <th class="text-right p-2.5">Sites</th>
+            <th class="text-right p-2.5">Samples</th>
+            <th class="text-right p-2.5">KB</th>
+            <th class="text-left p-2.5">Invocation</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in report.tool_invocation_cost_summary | sort(attribute="kb", reverse=True) %}
+          <tr class="border-b border-gray-900 hover:bg-gray-900/30 transition-colors">
+            <td class="p-2.5 text-white font-mono">{{ c.agent }}</td>
+            <td class="p-2.5 text-gray-400">{{ c.tool }}</td>
+            <td class="p-2.5 text-gray-400">{{ c.subcommand or "—" }}</td>
+            <td class="p-2.5 text-gray-500">{{ c.mode }}</td>
+            <td class="p-2.5 text-gray-500 text-right">{{ c.sites }}</td>
+            <td class="p-2.5 text-gray-400 text-right">{{ c.runs }}</td>
+            <td class="p-2.5 text-gray-300 text-right">{{ c.kb }}</td>
+            <td class="p-2.5 text-gray-500 font-mono break-all">{{ c.invocation }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Output Sizes -->
+  <div>
+    {{ ui.section_title("Output Sizes") }}
+    <div class="overflow-x-auto bg-[#0f0f0f] border border-gray-800 rounded-lg">
+      <table class="w-full text-xs">
+        <thead>
+          <tr class="border-b border-gray-800 text-gray-500 uppercase tracking-wider">
+            <th class="text-left p-2.5">Agent</th>
+            <th class="text-right p-2.5">Runs</th>
+            <th class="text-right p-2.5">Write KB (p90)</th>
+            <th class="text-right p-2.5">Tool Output KB</th>
+            <th class="text-right p-2.5">Total Output KB</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for agent in top_agents | sort(attribute="actual_outputs_kb", reverse=True) %}
+          <tr class="border-b border-gray-900 hover:bg-gray-900/30 transition-colors">
+            <td class="p-2.5 text-white font-mono">{{ agent.name }}</td>
+            <td class="p-2.5 text-gray-400 text-right">{% if agent.actual_runs_min != agent.actual_runs %}{{ agent.actual_runs_min }}-{{ agent.actual_runs }}{% else %}{{ agent.actual_runs }}{% endif %}</td>
+            <td class="p-2.5 text-gray-300 text-right">{{ agent.actual_own_write_kb }}</td>
+            <td class="p-2.5 text-gray-300 text-right">{{ agent.tool_write_kb }}</td>
+            <td class="p-2.5 text-gray-300 text-right">{% set tot_min = (agent.actual_outputs_kb * agent.actual_runs_min) | round(2) %}{% set tot_max = (agent.actual_outputs_kb * agent.actual_runs) | round(2) %}{% if tot_min != tot_max %}{{ tot_min }}-{{ tot_max }}{% else %}{{ tot_max }}{% endif %}</td>
+          </tr>
+          {% if agent.delegates_to %}{% set sub_list = [] %}{% for sn in agent.delegates_to %}{% set sub = agent_by_name.get(sn) %}{% if sub %}{% set _ = sub_list.append(sub) %}{% endif %}{% endfor %}
+          {% for sub in sub_list | sort(attribute="actual_outputs_kb", reverse=True) %}
+          <tr class="border-b border-gray-900">
+            <td class="p-2.5 text-gray-500 font-mono pl-6">↳ {{ sub.name }}</td>
+            <td class="p-2.5 text-gray-500 text-right">{% if sub.actual_runs_min != sub.actual_runs %}{{ sub.actual_runs_min }}-{{ sub.actual_runs }}{% else %}{{ sub.actual_runs }}{% endif %}</td>
+            <td class="p-2.5 text-gray-500 text-right">{{ sub.actual_own_write_kb }}</td>
+            <td class="p-2.5 text-gray-500 text-right">{{ sub.tool_write_kb }}</td>
+            <td class="p-2.5 text-gray-500 text-right">{% set tot_min = (sub.actual_outputs_kb * sub.actual_runs_min) | round(2) %}{% set tot_max = (sub.actual_outputs_kb * sub.actual_runs) | round(2) %}{% if tot_min != tot_max %}{{ tot_min }}-{{ tot_max }}{% else %}{{ tot_max }}{% endif %}</td>
+          </tr>
+          {% endfor %}{% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endcall %}

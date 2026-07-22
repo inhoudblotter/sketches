@@ -1,0 +1,11 @@
+name: Extract Bounded Contexts
+type: preprocessor
+description: Извлекает ограниченные контексты (bounded contexts) и их зависимости из полей imports/exports в summary.yaml доменов
+department: discovery
+command: python -m departments.discovery.tools.preprocessors.extract_bounded_contexts.command
+inputs:
+  - "workspace/discovery/domains/*/summary.yaml"
+outputs:
+  - "workspace/discovery/meta/bounded_contexts.yaml"
+contract: "departments/discovery/contracts/bounded_contexts_template.yaml"
+contract_schema: "departments.discovery.tools.preprocessors.extract_bounded_contexts.schemas.BoundedContextsOutput"

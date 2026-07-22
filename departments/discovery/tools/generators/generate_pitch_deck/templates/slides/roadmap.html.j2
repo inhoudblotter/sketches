@@ -1,0 +1,80 @@
+<div class="embla__slide">
+  <div class="slide-content flex flex-col">
+    <h2>Launch Roadmap & Traction</h2>
+    <div class="flex flex-col gap-6 w-full mt-4">
+      {% for phase in roadmap.phases %}
+      <div class="bg-[#111] rounded-none p-6 border border-[#333] flex flex-col md:flex-row gap-6 w-full">
+        
+        <!-- Left side: Title & Description -->
+        <div class="md:w-1/3 flex flex-col justify-center border-b md:border-b-0 md:border-r border-[#333] pb-4 md:pb-0 md:pr-6">
+          <h3 class="text-xl font-bold text-blue-400 capitalize mb-2" style="margin-top: 0;">{{ phase.id | replace('_', ' ') }}</h3>
+          <p class="text-sm text-gray-300 italic mb-0">"{{ phase.description }}"</p>
+          <div class="mt-4 bg-blue-900/50 rounded-none p-3 border-l-2 border-blue-500">
+            <span class="text-xs font-bold uppercase text-blue-400 tracking-wider mb-1 block" style="font-family: var(--family-mono);">Economics & Validation</span>
+            <span class="text-sm text-gray-100">{{ phase.unit_economics_validation }}</span>
+          </div>
+        </div>
+        
+        <!-- Right side: Tactics List -->
+        <div class="md:w-2/3 flex flex-col gap-y-4">
+          {% if phase.primary_growth_loop %}
+          <div>
+            <h4 class="text-xs font-bold uppercase text-green-400 tracking-wider mb-1 block" style="margin-top: 0; font-family: var(--family-mono);">Primary Growth Loop</h4>
+            <ul class="list-disc pl-4 text-sm text-green-200 mt-0 mb-0">
+              {% for loop_item in phase.primary_growth_loop %}
+              <li class="text-sm">{{ loop_item }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+
+          {% if phase.cold_start_tactics %}
+          <div>
+            <h4 class="text-xs font-bold uppercase text-purple-400 tracking-wider mb-1 block" style="margin-top: 0; font-family: var(--family-mono);">Cold Start Tactics</h4>
+            <ul class="list-disc pl-4 text-sm text-purple-200 mt-0 mb-0">
+              {% for act in phase.cold_start_tactics %}
+              <li class="text-sm">{{ act }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+
+          {% if phase.ecosystem_symbiosis %}
+          <div>
+            <h4 class="text-xs font-bold uppercase text-yellow-400 tracking-wider mb-1 block" style="margin-top: 0; font-family: var(--family-mono);">Ecosystem Symbiosis</h4>
+            <ul class="list-disc pl-4 text-sm text-yellow-200 mt-0 mb-0">
+              {% for og in phase.ecosystem_symbiosis %}
+              <li class="text-sm">{{ og }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+          
+          {% if phase.defensibility_moats %}
+          <div>
+            <h4 class="text-xs font-bold uppercase text-red-400 tracking-wider mb-1 block" style="margin-top: 0; font-family: var(--family-mono);">Defensibility Moat</h4>
+            <ul class="list-disc pl-4 text-sm text-red-200 mt-0 mb-0">
+              {% for og in phase.defensibility_moats %}
+              <li class="text-sm">{{ og }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+
+          {% if phase.friction_management %}
+          <div>
+            <h4 class="text-xs font-bold uppercase text-gray-400 tracking-wider mb-1 block" style="margin-top: 0; font-family: var(--family-mono);">Friction Management</h4>
+            <ul class="list-disc pl-4 text-sm text-gray-200 mt-0 mb-0">
+              {% for tactic in phase.friction_management %}
+              <li class="text-sm">{{ tactic }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

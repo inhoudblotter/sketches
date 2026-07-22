@@ -1,0 +1,65 @@
+# Launch Roadmap Template (Post-Internet & Behavioral Loops Edition)
+# Контракт для описания фаз валидации, роста и построения защиты (Defensibility).
+# 
+# ИНСТРУКЦИЯ ПО ЗАПОЛНЕНИЮ:
+# - Опирайтесь на "The Mom Test Anti-Pattern": валидируются ТОЛЬКО поведенческие действия (Skin in the game).
+# - Запрещено: Incentivized Virality (рефералки за деньги). Только Inherent Virality.
+
+metadata:
+  generated_by: "Product Strategist"
+  last_updated: "YYYY-MM-DD"
+
+phases:
+  demo_prototype:
+    source_ref: "strategy/growth_draft.md#L..."
+    description: |
+      [Фокус: Идентификация поведенческого сдвига. Как мы через минимальную версию
+      разрушаем текущий статус-кво? Опишите, как работает Agent-First API для самых первых юзеров.]
+    unit_economics_validation: |
+      [Как мы проверяем готовность рынка платить без опросов? (Только Skin in the Game: депозиты, пресейл).]
+    primary_growth_loop: 
+      - "[Day-0 Viral Lens: Какие Magnet Features обеспечат старт без маркетингового бюджета?]"
+    cold_start_tactics: 
+      - "[Симуляция активности, ручной перенос графов (Napster/Fediverse паттерн).]"
+    friction_management: 
+      - "[Намеренное внедрение трения (Friction) для субкультурной валидации (отсев нормисов).]"
+    ecosystem_symbiosis: 
+      - "[Паразитирование на существующих сетях через протокольную совместимость.]"
+    defensibility_moats: 
+      - "[Посев Immutable Trust Topology. Сбор криптографических доказательств (ZKP) активности первых адоптеров.]"
+
+  seed_mvp:
+    source_ref: "strategy/growth_draft.md#L..."
+    description: |
+      [Фокус: Value Innovation. Радикальное снижение издержек за счет устранения (Eliminate)
+      стандартных фичей конкурентов и вывод продукта на ранних последователей.]
+    unit_economics_validation: |
+      [Валидация COGS с учетом Local-First архитектуры. Сколько мы экономим на отказе от облаков?]
+    primary_growth_loop: 
+      - "[Behavioral Loop: Дофаминовая адаптация. Как Variable Rewards и статус удерживают ядро?]"
+    cold_start_tactics: 
+      - "[Отказ от ручных методов. Переход к автономным Agentic-интеграциям.]"
+    friction_management: 
+      - "[Снижение трения для Agent-First взаимодействий (семантические API, MCP).]"
+    ecosystem_symbiosis: 
+      - "[Hyper-Composability: Внедрение наших примитивов в другие dApps/сервисы.]"
+    defensibility_moats: 
+      - "[Cultural Moat: Формирование плотного идеологического графа, защищенного от мимикрии гигантов.]"
+
+  v1_scale:
+    source_ref: "strategy/growth_draft.md#L..."
+    description: |
+      [Фокус: Масштабирование без компромиссов. Как сохранить Trustless Resilience 
+      и суверенность (Data Sovereignty) при росте нагрузок.]
+    unit_economics_validation: |
+      [Удержание экономики при росте сложности графа. Алгоритмическое регулирование эмиссии/стоимости (Bonding Curves).]
+    primary_growth_loop: 
+      - "[Масштабирование P2P-сети. Сдвиг от Product к Protocol.]"
+    cold_start_tactics: 
+      - "[Неприменимо. Механизмы защиты от экспоненциального спама (Eclipse Attacks, Slashing).]"
+    friction_management: 
+      - "[Динамическая социальная мобильность (Exponential Decay статусов) для борьбы со стагнацией элит.]"
+    ecosystem_symbiosis: 
+      - "[Продукт становится базовым инфраструктурным слоем для других.]"
+    defensibility_moats: 
+      - "[Полный разрыв посредника (Market-Breaking P2P). Сетевые эффекты на уровне протокола.]"

@@ -1,0 +1,55 @@
+<div class="embla__slide">
+  <div class="slide-content">
+    <h2>Боль клиента (Customer Pain)</h2>
+    <p style="color: #aaa; margin-bottom: 30px;">Распределение MVP Job Stories по уровню боли клиента.</p>
+    {% set pain_distribution = scope_analytics.pain_distribution | default({}, true) %}
+    <div style="display: flex; gap: 40px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+
+      <div style="flex: 1; min-width: 250px;">
+        <div class="metric-card" style="margin-bottom: 20px; border-left: 4px solid #f87171;">
+          <div class="metric-value" style="color: #f87171;">{{ pain_distribution.High | default(0) }}</div>
+          <div class="metric-label">Критичная боль (High)</div>
+        </div>
+        <div class="metric-card" style="margin-bottom: 20px; border-left: 4px solid #facc15;">
+          <div class="metric-value" style="color: #facc15;">{{ pain_distribution.Medium | default(0) }}</div>
+          <div class="metric-label">Средняя боль (Medium)</div>
+        </div>
+        <div class="metric-card" style="border-left: 4px solid #4ade80;">
+          <div class="metric-value" style="color: #4ade80;">{{ pain_distribution.Low | default(0) }}</div>
+          <div class="metric-label">Низкая боль (Low)</div>
+        </div>
+      </div>
+
+      <div style="flex: 2; max-width: 400px; min-width: 300px; margin: 0 auto;">
+        <canvas id="riskChart"></canvas>
+      </div>
+
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const ctx = document.getElementById('riskChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['High', 'Medium', 'Low'],
+          datasets: [{
+            data: [
+              {{ pain_distribution.High | default(0) }},
+              {{ pain_distribution.Medium | default(0) }},
+              {{ pain_distribution.Low | default(0) }}
+            ],
+            backgroundColor: ['#f87171', '#facc15', '#4ade80'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#fff' } }
+          }
+        }
+      });
+    });
+  </script>
+</div>
