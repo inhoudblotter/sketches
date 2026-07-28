@@ -6,7 +6,7 @@ from ..utils.common import extract_float, load_strategy_yaml
 def gather_strategy_metrics(strategy_dir):
     compliance_flags = []
     infra_usd_per_month = 0.0
-    platform_count = 0
+    platforms = []
 
     if strategy_dir.exists():
         compliance_flags = load_strategy_yaml(
@@ -21,13 +21,11 @@ def gather_strategy_metrics(strategy_dir):
         infra_usd_per_month += extract_float(fixed_monthly.get("database", 0))
         infra_usd_per_month += extract_float(fixed_monthly.get("p2p_infrastructure", 0))
 
-        platform_count = len(
-            load_strategy_yaml(strategy_dir / "platform_strategy.yaml").get(
-                "platforms", []
-            )
+        platforms = load_strategy_yaml(strategy_dir / "platform_strategy.yaml").get(
+            "platforms", []
         )
 
-    return compliance_flags, infra_usd_per_month, platform_count
+    return compliance_flags, infra_usd_per_month, platforms
 
 
 def gather_observability_metrics(strategy_dir):

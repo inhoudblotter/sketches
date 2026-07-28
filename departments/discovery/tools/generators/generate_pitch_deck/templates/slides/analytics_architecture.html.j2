@@ -1,52 +1,81 @@
 <div class="embla__slide">
   <div class="slide-content">
-    <h2>Архитектура и Связность (Architecture & Complexity)</h2>
-    <p style="color: #aaa; margin-bottom: 30px;">Оценка монолитности, платформ и сложности флоу.</p>
+    <h2>Архитектурная Сложность и Охват (Complexity & Scope)</h2>
+    <p class="text-zinc-400 mb-6">Оценка платформ, связности доменов и сложности пользовательских сценариев.</p>
     {% set flow_metrics = scope_analytics.flow_metrics | default({}, true) %}
     {% set domain_coupling = scope_analytics.domain_coupling | default({}, true) %}
-    <div style="display: flex; gap: 40px; align-items: stretch; justify-content: space-between; flex-wrap: wrap;">
+    
+    <div class="flex flex-col gap-5">
 
-      <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column;">
-        <div class="metric-card" style="margin-bottom: 20px; border-left: 4px solid #60a5fa;">
-          <div class="metric-value" style="color: #60a5fa;">{{ scope_analytics.platform_count }}</div>
-          <div class="metric-label">Целевые платформы</div>
-          <div class="metric-sub">Platform Fragmentation</div>
-        </div>
-        <div class="metric-card" style="margin-bottom: 20px; border-left: 4px solid #facc15;">
-          <div class="metric-value" style="color: #facc15;">{{ flow_metrics.total_flows | default(0) }}</div>
-          <div class="metric-label">User Flows</div>
-          <div class="metric-sub">{{ flow_metrics.total_states | default(0) }} стейтов</div>
-        </div>
-        <div class="metric-card" style="flex-grow: 1; border-left: 4px solid #f87171;">
-          <div class="metric-value" style="color: #f87171;">{{ flow_metrics.total_shared_error_states | default(0) }}</div>
-          <div class="metric-label">Обработчики сбоев</div>
-          <div class="metric-sub">Компенсации и ошибки (Shared States)</div>
+      <!-- Platforms Full Width Row -->
+      <div class="metric-card border-l-4 border-l-blue-400 mb-0 px-5 py-4">
+        <div class="metric-label mb-3">Целевые платформы</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {% for platform in scope_analytics.platforms %}
+            <div class="text-sm bg-[#222] border border-[#444] px-3 py-2 rounded text-gray-200 flex items-center justify-center text-center">
+              {{ platform.name }}
+            </div>
+          {% else %}
+            <div class="text-sm text-gray-200">{{ scope_analytics.platform_count }} платформ</div>
+          {% endfor %}
         </div>
       </div>
 
-      <div style="flex: 2; max-width: 600px; min-width: 300px; margin: 0 auto; background: #111; padding: 20px; border: 1px solid #333; border-radius: 0; display: flex; flex-direction: column; justify-content: center;">
-        <h3 style="margin-bottom: 20px; font-size: 1.1rem; color: #fff;">Domain Coupling (Узкие места)</h3>
+      <!-- Metrics Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {% set flows = flow_metrics.total_flows | default(0) %}
+        {% set states = flow_metrics.total_states | default(0) %}
+        {% set states_per_flow = (states / flows) | round(1) if flows > 0 else 0 %}
+        
+        <div class="metric-card border-l-4 border-l-yellow-400 mb-0 px-5 py-4">
+          <div class="metric-value text-yellow-400 text-3xl mb-1">{{ states_per_flow }}</div>
+          <div class="metric-label">Плотность логики (States per Flow)</div>
+          <div class="metric-sub mt-2 text-xs text-zinc-400 leading-relaxed">
+            {% if states_per_flow > 5 %}
+              Высокая плотность: говорит о глубоком и сложном продукте с ветвлениями.
+            {% else %}
+              Простой транзакционный опыт с короткими линейными сценариями.
+            {% endif %}
+            ({{ flows }} flows / {{ states }} states)
+          </div>
+        </div>
+        
+        {% set error_states = flow_metrics.total_shared_error_states | default(0) %}
+        {% set error_rate = ((error_states / states) * 100) | round(1) if states > 0 else 0 %}
+        <div class="metric-card border-l-4 border-l-red-400 mb-0 px-5 py-4">
+          <div class="metric-value text-red-400 text-3xl mb-1">{{ error_rate }}%</div>
+          <div class="metric-label">Сценарии сбоев (Error Rate)</div>
+          <div class="metric-sub mt-2 text-xs text-zinc-400 leading-relaxed">
+            {{ error_rate }}% архитектуры заложено на обработку краевых случаев и отказоустойчивость ({{ error_states }} shared states).
+          </div>
+        </div>
+      </div>
+
+      <!-- Graph -->
+      <div class="bg-[#111] p-5 border border-[#333] flex flex-col items-center">
+        <h3 class="mb-4 text-lg text-white text-left w-full">Domain Coupling (Узкие места)</h3>
         <div class="w-full overflow-x-auto">
-        <table class="min-w-[280px]" style="width: 100%; border-collapse: collapse; color: #ccc;">
-          <thead>
-            <tr style="border-bottom: 1px solid #444;">
-              <th style="text-align: left; padding: 10px;">Domain</th>
-              <th style="text-align: center; padding: 10px;">Depends On</th>
-              <th style="text-align: center; padding: 10px;">Used By</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for domain, metrics in domain_coupling.items() %}
-            {% set depends_count = (metrics.depends_on | default({}, true)).values() | map('length') | sum %}
-            {% set used_by_count = (metrics.used_by | default({}, true)).values() | map('length') | sum %}
-            <tr style="border-bottom: 1px solid #222;">
-              <td class="whitespace-nowrap" style="padding: 10px;"><strong>{{ domain }}</strong></td>
-              <td style="text-align: center; padding: 10px; color: {% if depends_count > 3 %}#f87171{% else %}#fff{% endif %}" title="{{ metrics.depends_on }}">{{ depends_count }}</td>
-              <td style="text-align: center; padding: 10px; color: {% if used_by_count > 3 %}#60a5fa{% else %}#fff{% endif %}" title="{{ metrics.used_by }}">{{ used_by_count }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+          <div class="mermaid bg-transparent w-full flex justify-center items-center min-w-[300px]">
+%%{init: {'theme':'dark', 'themeVariables': { 'darkMode': true, 'background': 'transparent' }}}%%
+graph TD;
+{% for domain, metrics in domain_coupling.items() %}
+{% set depends_count = (metrics.depends_on | default({}, true)).values() | map('length') | sum %}
+{% set used_by_count = (metrics.used_by | default({}, true)).values() | map('length') | sum %}
+{% if used_by_count > 3 %}
+classDef bottleneck_{{ loop.index }} fill:#7f1d1d,stroke:#f87171,color:#fff,stroke-width:2px;
+{{ domain }}:::bottleneck_{{ loop.index }};
+{% elif depends_count > 3 %}
+classDef complex_{{ loop.index }} fill:#713f12,stroke:#facc15,color:#fff,stroke-width:2px;
+{{ domain }}:::complex_{{ loop.index }};
+{% else %}
+classDef normal_{{ loop.index }} fill:#1f2937,stroke:#4b5563,color:#fff;
+{{ domain }}:::normal_{{ loop.index }};
+{% endif %}
+{% for dep_domain, deps in (metrics.depends_on | default({}, true)).items() %}
+{{ domain }} --> {{ dep_domain }};
+{% endfor %}
+{% endfor %}
+          </div>
         </div>
       </div>
       

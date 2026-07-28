@@ -42,7 +42,7 @@ def run_build_project_analytics(
         raise FileNotFoundError(f"Workspace path not found: {discovery_dir}")
 
     strategy_dir = discovery_dir / "strategy"
-    compliance_flags, infra_usd_per_month, platform_count = gather_strategy_metrics(
+    compliance_flags, infra_usd_per_month, platforms = gather_strategy_metrics(
         strategy_dir
     )
     observability = gather_observability_metrics(strategy_dir)
@@ -107,7 +107,8 @@ def run_build_project_analytics(
             "flow_metrics": flow_metrics,
             "compliance_flags": compliance_flags,
             "infrastructure_usd_per_month": infra_usd_per_month,
-            "platform_count": platform_count,
+            "platforms": platforms,
+            "platform_count": len(platforms) if platforms else 0,
             "missing_mandatory_epics": missing_mandatory_epics,
             "global_metrics": compact_global_metrics(global_metrics),
             "observability": observability,
