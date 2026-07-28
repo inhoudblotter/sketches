@@ -21,6 +21,7 @@ from .core.builders import (
     build_tech,
     build_roadmap,
     build_errata,
+    build_actors,
 )
 from .core.analytics import (
     gather_strategy_metrics,
@@ -55,6 +56,7 @@ def run_build_project_analytics(
     tech = build_tech(strategy_dir) if strategy_dir.exists() else None
     roadmap = build_roadmap(strategy_dir) if strategy_dir.exists() else None
     errata = build_errata(discovery_dir / "errata" / "critical_errata.yaml")
+    actors = build_actors(discovery_dir)
 
     domains_dir = discovery_dir / "domains"
     if not domains_dir.exists() or not domains_dir.is_dir():
@@ -112,6 +114,15 @@ def run_build_project_analytics(
             "missing_mandatory_epics": missing_mandatory_epics,
             "global_metrics": compact_global_metrics(global_metrics),
             "observability": observability,
+            "actors_summary": (
+                {
+                    k: v
+                    for k, v in actors.items()
+                    if k not in ("personas", "machine_personas", "operational_actors")
+                }
+                if actors
+                else None
+            ),
         },
         "dashboard": dashboard,
         "tech_summary": compact_tech(tech),
@@ -132,6 +143,7 @@ def run_build_project_analytics(
         "global_metrics": global_metrics,
         "tech": tech,
         "roadmap": roadmap,
+        "actors": actors,
     }
 
     meta_dir = discovery_dir / "meta"

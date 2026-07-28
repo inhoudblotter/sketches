@@ -18,7 +18,7 @@ def check_boundaries(domains_dir: Path) -> dict:
     for domain_dir in domains_dir.iterdir():
         if not domain_dir.is_dir():
             continue
-        dict_file = domain_dir / "dictionary.yaml"
+        dict_file = domain_dir / "manifest.yaml"
         if dict_file.exists():
             data = load_yaml(dict_file)
             for ent in data.get("entities", []):

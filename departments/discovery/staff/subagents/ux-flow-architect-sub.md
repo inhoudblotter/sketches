@@ -34,7 +34,8 @@ model: sonnet
 - **No UI Prescriptions:** Указывай ЧТО нужно сделать, а не КАК это нарисовать. Дизайнер сам выберет компоненты.
 - **One Flow = One File:** Категорический запрет на генерацию монолитов. Один бизнес-сценарий (flow) должен быть сохранен в один отдельный файл. Не объединяй все сценарии эпика в один файл!
 - **Structured I/O & Rationale:** Пиши сжато. Строго разделяй интерфейс на `display_data` и `interactive_elements`. Все размышления (когнитивная нагрузка, ссылки на правила) помещай ТОЛЬКО в блок `design_rationale` внутри стейта. Запрещено выдумывать поля (вроде `REFS`, `description`, `user_needs_to_see` или `notes` в корне файла).
-- **Headless & Agent Flows:** Если платформа помечена как 'is_headless: true' или целевая аудитория содержит 'machine_personas', вместо классического UI проектируй графы вызовов API, MCP-хэндлеры и пайплайны данных.
+- **Headless & Agent Flows:** Если платформа помечена как 'is_headless: true' или сценарий написан от лица `machine_persona` (`ai_agent`/`software_client`) — проектируй графы вызовов API, MCP-хэндлеры и пайплайны данных вместо классического UI.
+- **Device & Protocol Flows:** Если сценарий триггерится `machine_persona` с `machine_type: iot_device` (актор в Job Story — физическое устройство, а мотивация принадлежит его `owning_actor`), проектируй состояния на уровне протокола: приём телеметрии, команды/переходы актуатора, потеря связи и переподключение, деградация до локального режима (offline_first). Не подменяй это API/MCP-графом — устройство говорит не HTTP, а MQTT/BLE/CoAP и т.п.
 - **ID Relax:** Не трать усилия на строгую синхронизацию и нейминг ID (например, state_01, step_02). Формат свободен. Фокусируйся на бизнес-логике.
 </mindset>
 
@@ -56,7 +57,7 @@ model: sonnet
 <workflow>
   <step id="1">
     <description>Определи домен и эпик (epic_name). Блок `epic_requirements` в файле эпика заменяет тебе чтение глобальных стратегий.</description>
-    <read>workspace/discovery/domains/{domain}/dictionary.yaml</read>
+    <read>workspace/discovery/domains/{domain}/manifest.yaml</read>
     <read>workspace/discovery/strategy/ux_constraints.yaml</read>
     <read>workspace/discovery/domains/{domain}/epics/{epic_name}/stories.yaml</read>
     <read optional="true">workspace/discovery/domains/{domain}/epics/{epic_name}/errata.yaml</read>

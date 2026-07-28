@@ -16,7 +16,7 @@ def get_exports(workspace_dir: Path, entity: str) -> dict:
 
 
 _SCOPE_FILES = {
-    "dictionary": ["dictionary.yaml"],
+    "dictionary": ["manifest.yaml"],
     "stories": [],
     "features": [],
     "glossary": ["summary.yaml"],
@@ -26,7 +26,7 @@ _SCOPE_FILES = {
 def _scoped_files_to_check(domain_dir: Path, scope: str) -> list:
     files_to_check = []
     if scope in ("all", "dictionary"):
-        files_to_check.append(domain_dir / "dictionary.yaml")
+        files_to_check.append(domain_dir / "manifest.yaml")
     if scope in ("all", "glossary"):
         files_to_check.append(domain_dir / "summary.yaml")
     if scope in ("all", "stories", "features"):

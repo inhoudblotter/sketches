@@ -1,6 +1,9 @@
-author_agent: 'audience-scout'
+author_agent: 'po-strategist'
 # Target Audience YAML Contract
-# Описание целевой аудитории и персон.
+# Только внешние потребители продукта (люди и машины).
+# Операционные акторы (операторы доменов) определяются в
+# domains_manifest.yaml → operational_actors и денормализуются
+# в domain_manifest.yaml каждого домена — НЕ здесь.
 
 personas:
   - id: '[Название персоны, например: regular_user]'
@@ -20,8 +23,16 @@ personas:
       - '[Новая социальная норма, которую продукт диктует обществу (Actor-Network Theory). Например: Навязывает культуру спонтанных встреч вместо долгих переписок]'
 
 machine_personas:
-  - id: '[Название агента, например: search_agent]'
-    name: '[Роль агента. Например: Агрегатор контента]'
-    consumption_method: '[Как потребляет данные. Например: MCP Server, REST API]'
+  # Небиологические потребители: программы, скрипты, AI-агенты, IoT/физические устройства.
+  # У machine_persona нет собственной мотивации — JTBD-ценность всегда принадлежит owning_actor
+  # (id из `personas` или `operational_actors`), устройство/агент — лишь канал реализации.
+  - id: '[Название агента/устройства, например: search_agent или warehouse_temp_sensor]'
+    name: '[Роль. Например: Агрегатор контента / Датчик температуры склада]'
+    machine_type: '[ai_agent | software_client | iot_device]'
+    owning_actor: '[id персоны или operational_actor, чью JTBD-ценность реализует этот machine_persona. Например: regular_user]'
+    consumption_method: '[Канал потребления. ai_agent/software_client: MCP Server, REST API. iot_device: протокол — MQTT, BLE GATT, CoAP, LoRaWAN]'
     data_requirements:
-      - '[Специфичные требования. Например: Нужна строгая типизация в JSON, без UI-элементов]'
+      - '[Специфичные требования к данным/командам. Например: Нужна строгая типизация в JSON, без UI-элементов]'
+    physical_constraints:
+      # Заполняется ТОЛЬКО для machine_type: iot_device. Для ai_agent/software_client — пустой список [].
+      - '[Например: автономное питание (батарея 2 года), offline-first, задержка команды < 200ms]'

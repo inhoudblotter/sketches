@@ -7,17 +7,25 @@ from ...logic.reports.exports import (
     get_trajectory,
     get_epic_requirements,
 )
-from ...logic.boundary import check_boundaries
 from ...logic.trace import trace_source, trace_feature
 from ...logic.orphans import get_orphans, get_coverage
+from ...logic.domain_consistency import check_domain_consistency
+from ...logic.team_functions import get_team_functions
 
 
-def _run_boundary_check(domains_dir: Path, print_yaml) -> None:
-    res = check_boundaries(domains_dir)
+def _run_domain_consistency(workspace: Path, print_yaml) -> None:
+    res = check_domain_consistency(workspace)
     if not res:
-        typer.echo("No boundary violations (duplicate entities) found.")
+        typer.echo("No duplicate entities or orphaned personas found.")
     else:
-        typer.echo("Found duplicate entities across domains:")
+        print_yaml(res)
+
+
+def _run_team_functions(workspace: Path, print_yaml) -> None:
+    res = get_team_functions(workspace)
+    if not res:
+        typer.echo("No FTE operational_actors found.")
+    else:
         print_yaml(res)
 
 
@@ -72,11 +80,17 @@ def register_discovery_queries(app: typer.Typer, print_yaml):
     ):
         print_yaml(search_index(workspace, query, scope))
 
-    @app.command("boundary-check")
-    def boundary_check(
-        domains_dir: Path = typer.Option(Path("workspace/discovery/domains"), "-d"),
+    @app.command("domain-consistency")
+    def domain_consistency(
+        workspace: Path = typer.Argument(Path("workspace/")),
     ):
-        _run_boundary_check(domains_dir, print_yaml)
+        _run_domain_consistency(workspace, print_yaml)
+
+    @app.command("team-functions")
+    def team_functions(
+        workspace: Path = typer.Argument(Path("workspace/")),
+    ):
+        _run_team_functions(workspace, print_yaml)
 
     @app.command("trajectory")
     def trajectory(

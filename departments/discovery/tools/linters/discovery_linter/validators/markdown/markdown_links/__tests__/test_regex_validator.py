@@ -62,11 +62,11 @@ def test_ordinary_prose_not_flagged():
 
 
 def test_missing_anchor_citation_is_flagged():
-    content = "See [dictionary.yaml] for the glossary."
+    content = "See [manifest.yaml] for the glossary."
     errors = validate_markdown_content(content)
     assert len(errors) == 1
     assert "Missing line/paragraph anchor" in errors[0]
-    assert "dictionary.yaml" in errors[0]
+    assert "manifest.yaml" in errors[0]
 
 
 def test_malformed_multi_ref_missing_filename_repeat_not_flagged():
@@ -80,7 +80,7 @@ def test_malformed_multi_ref_missing_filename_repeat_not_flagged():
 
 
 def test_generic_local_link_with_bad_anchor_is_flagged():
-    content = "See [glossary](dictionary.yaml) for detail."
+    content = "See [glossary](manifest.yaml) for detail."
     errors = validate_markdown_content(content)
     assert len(errors) == 1
     assert "Invalid generic URL format" in errors[0]

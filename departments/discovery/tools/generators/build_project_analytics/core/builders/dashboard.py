@@ -1,7 +1,7 @@
 import math
 from pathlib import Path
-from ..utils.common import load_strategy_yaml, extract_float, _sum_nested_floats
-from departments.discovery.tools.shared.text_utils import clean_links, clean_list
+from ...utils.common import load_strategy_yaml, extract_float, _sum_nested_floats
+from departments.discovery.tools.shared.text_utils import clean_links
 
 
 def _build_scenarios(scenario_bands: dict, cogs: float) -> list | None:
@@ -66,7 +66,12 @@ def build_dashboard(strategy_dir: Path) -> dict | None:
 
     cogs_dict = unit_data.get("cogs_per_user_usd", {})
     cogs = extract_float(unit_data.get("total_cogs_per_user_usd", 0))
-    fixed_monthly = _sum_nested_floats(cogs_dict.get("fixed_monthly_usd", {}))
+    fixed_monthly_dict = cogs_dict.get("fixed_monthly_usd", {})
+    operations_payroll_monthly = extract_float(
+        fixed_monthly_dict.get("operations_payroll", 0)
+    )
+    fixed_monthly = _sum_nested_floats(fixed_monthly_dict)
+    infra_fixed_monthly = fixed_monthly - operations_payroll_monthly
 
     var_per_user = cogs_dict.get("variable_per_user_usd", {})
     tokenomics_costs = (
@@ -150,6 +155,8 @@ def build_dashboard(strategy_dir: Path) -> dict | None:
             else "Negative Margin"
         ),
         "fixed_monthly": fixed_monthly,
+        "infra_fixed_monthly": infra_fixed_monthly,
+        "operations_payroll_monthly": operations_payroll_monthly,
         "mrr": mrr,
         "mau": mau,
         "streams": streams_list,
@@ -157,95 +164,3 @@ def build_dashboard(strategy_dir: Path) -> dict | None:
         "speculative_upside": speculative_upside,
         "grant_runway": grant_runway,
     }
-
-
-def build_tech(strategy_dir: Path) -> dict | None:
-    tech_path = strategy_dir / "tech_constraints.yaml"
-    if not tech_path.exists():
-        return None
-    tech_data = load_strategy_yaml(tech_path)
-    stack = tech_data.get("technology_stack", {})
-    growth_path = [
-        {
-            "component": clean_links(str(entry.get("component", ""))),
-            "trigger": clean_links(str(entry.get("trigger", ""))),
-            "action": clean_links(str(entry.get("action", ""))),
-            "rewrite_cost": clean_links(str(entry.get("rewrite_cost", ""))),
-        }
-        for entry in (tech_data.get("growth_path") or [])
-    ]
-    return {
-        "frontend": clean_links(stack.get("frontend", "Unknown")),
-        "backend": clean_links(stack.get("backend", "Unknown")),
-        "database": clean_links(stack.get("database", "Unknown")),
-        "infra": clean_links(stack.get("infrastructure", "Unknown")),
-        "p2p": clean_links(stack.get("p2p_network_layer", "")),
-        "insight": clean_links(tech_data.get("strategic_insight", "N/A")),
-        "growth_path": growth_path,
-        "maintainability": clean_links(tech_data.get("maintainability_notes", "")),
-    }
-
-
-def build_roadmap(strategy_dir: Path) -> dict | None:
-    roadmap_path = strategy_dir / "launch_roadmap.yaml"
-    if not roadmap_path.exists():
-        return None
-    data = load_strategy_yaml(roadmap_path)
-    phases = data.get("phases", {})
-    parsed_phases = [
-        {
-            "id": phase_id,
-            "description": clean_links(phase_data.get("description", "")),
-            "primary_growth_loop": clean_list(
-                phase_data.get("primary_growth_loop", [])
-            ),
-            "cold_start_tactics": clean_list(phase_data.get("cold_start_tactics", [])),
-            "friction_management": clean_list(
-                phase_data.get("friction_management", [])
-            ),
-            "ecosystem_symbiosis": clean_list(
-                phase_data.get("ecosystem_symbiosis", [])
-            ),
-            "defensibility_moats": clean_list(
-                phase_data.get("defensibility_moats", [])
-            ),
-            "unit_economics_validation": clean_links(
-                phase_data.get("unit_economics_validation", "N/A")
-            ),
-            "source_ref": phase_data.get("source_ref", ""),
-        }
-        for phase_id, phase_data in phases.items()
-    ]
-    return {"phases": parsed_phases}
-
-
-def build_errata(errata_path: Path) -> dict | None:
-    if not errata_path.exists():
-        return None
-    errata_data = load_strategy_yaml(errata_path)
-    blockers: list = []
-    if isinstance(errata_data, dict) and "critical_errata" in errata_data:
-        errata_node = errata_data["critical_errata"]
-        blockers = (
-            errata_node.get("actionable_blockers", [])
-            if isinstance(errata_node, dict)
-            else (errata_node if isinstance(errata_node, list) else [])
-        )
-    elif isinstance(errata_data, dict) and "actionable_blockers" in errata_data:
-        blockers = errata_data.get("actionable_blockers", [])
-    elif isinstance(errata_data, list):
-        blockers = errata_data
-
-    # MAGIC NUMBERS FIX: PLR2004
-    MAX_BLOCKERS = 4
-    parsed_blockers = []
-    for b in blockers[:MAX_BLOCKERS]:
-        source = b.get("source") or b.get("domain") or "Unknown"
-        issue = b.get("issue") or b.get("description") or str(b)
-        parsed_blockers.append(
-            {
-                "source": clean_links(str(source)),
-                "issue": clean_links(str(issue)),
-            }
-        )
-    return {"blockers": parsed_blockers}

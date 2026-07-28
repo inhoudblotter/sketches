@@ -26,11 +26,14 @@ def register_core_queries(app: typer.Typer, print_yaml):
         pain_level: str = typer.Option(None, "--pain-level", "-p"),
         priority: str = typer.Option(None, "--priority", "-r"),
         epic_type: str = typer.Option(None, "--epic-type", "-t"),
+        actor: str = typer.Option(
+            None, "--actor", "-a", help="Filter by story `actor_id` (see manifest.yaml)"
+        ),
         only_metrics: bool = typer.Option(False, "--only-metrics", "-m"),
     ):
         print_yaml(
             get_filtered_stories(
-                workspace, domain, pain_level, priority, epic_type, only_metrics
+                workspace, domain, pain_level, priority, epic_type, actor, only_metrics
             )
         )
 

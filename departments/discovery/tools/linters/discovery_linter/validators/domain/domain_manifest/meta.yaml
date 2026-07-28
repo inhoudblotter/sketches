@@ -1,0 +1,9 @@
+name: domain-manifest
+entrypoint: run_validation
+inputs:
+  - '**/manifest.yaml'
+outputs:
+  - stdout
+
+contract: departments/discovery/contracts/domain_manifest_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.domain.domain_manifest.DomainManifestSchema

@@ -1,0 +1,8 @@
+name: operations-team
+entrypoint: run_validation
+contract: departments/discovery/contracts/operations_team_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.strategy.operations_team.OperationsTeamSchema
+inputs:
+- '**/operations_team.yaml'
+outputs:
+- stdout

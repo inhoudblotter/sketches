@@ -13,7 +13,7 @@ _TEMPLATE_VAR_RE = re.compile(r"\{[^}]+\}")
 
 
 def _artifact_exists(path_str: str, project_root: Path) -> bool:
-    # Unresolved for_each templates (e.g. "domains/{domain}/dictionary.yaml")
+    # Unresolved for_each templates (e.g. "domains/{domain}/manifest.yaml")
     # never exist as a literal path — they only make sense as a glob over
     # whichever concrete instances (domains, epics, ...) are already on disk.
     # Checking the literal string would permanently BLOCK the agent even when

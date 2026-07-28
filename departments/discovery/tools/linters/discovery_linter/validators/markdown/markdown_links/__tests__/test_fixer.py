@@ -34,9 +34,9 @@ def test_fix_markdown_content_is_idempotent_over_real_workspace():
 
 
 def test_bare_filename_citation_gets_line_one_anchor_appended():
-    content = "See [dictionary.yaml] for the glossary."
+    content = "See [manifest.yaml] for the glossary."
     fixed = fix_markdown_content(content)
-    assert fixed == "See [dictionary.yaml#L1] for the glossary."
+    assert fixed == "See [manifest.yaml#L1] for the glossary."
     # Not wrapped into a markdown link.
     assert "](" not in fixed
 

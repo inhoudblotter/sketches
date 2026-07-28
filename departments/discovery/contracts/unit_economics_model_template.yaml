@@ -8,6 +8,7 @@ cogs_per_user_usd:
     compute: '[Базовая цена серверов. Например: 20.0]'
     database: '[Базовая цена БД. Например: 25.0]'
     p2p_infrastructure: '[Опционально: Базовая цена Relay-серверов. Например: 10.0]'
+    operations_payroll: '[Опционально: total_monthly_payroll_usd из operations_team.yaml, если файл есть. Например: 3000.0]'
   variable_per_user_usd:
     egress_traffic: '[Стоимость исходящего трафика на юзера. Например: 0.10]'
     tokenomics_costs: '[Опционально: Gas fees, стоимость деплоя смарт-контрактов на юзера. Например: 0.05]'

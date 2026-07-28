@@ -17,90 +17,103 @@ cli_name: query-discovery
 commands:
   rename-entity:
     outputs:
-      - "workspace/discovery/domains/*/dictionary.yaml"
-      - "workspace/discovery/domains/*/summary.yaml"
+      - 'workspace/discovery/domains/*/manifest.yaml'
+      - 'workspace/discovery/domains/*/summary.yaml'
   replace-term:
     outputs:
-      - "workspace/discovery/domains/**/*.yaml"
+      - 'workspace/discovery/domains/**/*.yaml'
   set-field:
     outputs:
-      - "workspace/discovery/domains/*/summary.yaml"
+      - 'workspace/discovery/domains/*/summary.yaml'
   reclassify-feature:
     outputs:
-      - "workspace/discovery/domains/*/epics/*/features.yaml"
+      - 'workspace/discovery/domains/*/epics/*/features.yaml'
   resolve-errata:
     outputs:
-      - "workspace/discovery/domains/*/domain_errata.yaml"
-      - "workspace/discovery/domains/*/epics/*/errata.yaml"
+      - 'workspace/discovery/domains/*/domain_errata.yaml'
+      - 'workspace/discovery/domains/*/epics/*/errata.yaml'
   toc:
     inputs:
-      - "workspace/discovery/domains/*/summary.yaml"
+      - 'workspace/discovery/domains/*/summary.yaml'
   stats:
     inputs:
-      - "workspace/discovery/domains/*/summary.yaml"
+      - 'workspace/discovery/domains/*/summary.yaml'
   get:
     inputs:
-      - "workspace/discovery/domains/*/summary.yaml"
-      - "workspace/discovery/domains/*/epics/*/stories.yaml"
+      - 'workspace/discovery/domains/*/summary.yaml'
+      - 'workspace/discovery/domains/*/epics/*/stories.yaml'
   stories:
     inputs:
-      - "workspace/discovery/domains/*/epics/*/stories.yaml"
-      # story_points/flags are merged in from estimation.yaml (may be empty pre-estimation).
-      - "workspace/discovery/domains/*/epics/*/estimation.yaml"
+      - 'workspace/discovery/domains/*/epics/*/stories.yaml'
+    # story_points/flags are merged in from estimation.yaml when present, but the
+    # command works fine without it (pre-estimation phases like ux-scout call this
+    # too) — must NOT be a hard `inputs` dependency or the graph wrongly BLOCKs
+    # every stories-caller on tech-estimator.
+    optional_inputs:
+      - 'workspace/discovery/domains/*/epics/*/estimation.yaml'
   features:
     inputs:
-      - "workspace/discovery/domains/*/epics/*/features.yaml"
+      - 'workspace/discovery/domains/*/epics/*/features.yaml'
       # --pain-level/--epic-type filters cross-reference linked_job_stories against
       # each story's pain_level/epic_type, both sourced from stories.yaml.
-      - "workspace/discovery/domains/*/epics/*/stories.yaml"
+      - 'workspace/discovery/domains/*/epics/*/stories.yaml'
   epics:
     inputs:
-      - "workspace/discovery/domains/*/summary.yaml"
+      - 'workspace/discovery/domains/*/summary.yaml'
       # is_standard_crud lives on summary.yaml's epic entries, but epic_type (used by
       # --epic-type) is only declared in the epic's own stories.yaml and merged in by
       # load_domain_snapshot.
-      - "workspace/discovery/domains/*/epics/*/stories.yaml"
+      - 'workspace/discovery/domains/*/epics/*/stories.yaml'
   data-model:
     inputs:
-      - "workspace/discovery/domains/*/dictionary.yaml"
+      - 'workspace/discovery/domains/*/manifest.yaml'
   flows:
     inputs:
-      - "workspace/discovery/domains/*/epics/*/flows/*.yaml"
+      - 'workspace/discovery/domains/*/epics/*/flows/*.yaml'
   estimation:
     inputs:
-      - "workspace/discovery/domains/*/epics/*/estimation.yaml"
+      - 'workspace/discovery/domains/*/epics/*/estimation.yaml'
   dependencies:
     inputs:
-      - "workspace/discovery/domains/*/summary.yaml"
+      - 'workspace/discovery/domains/*/summary.yaml'
   metrics:
     inputs:
-      - "workspace/discovery/domains/*/summary.yaml"
+      - 'workspace/discovery/domains/*/summary.yaml'
   exports:
     inputs:
-      - "workspace/discovery/domains/*/summary.yaml"
+      - 'workspace/discovery/domains/*/summary.yaml'
   search:
     inputs:
-      - "workspace/discovery/domains/**/*.yaml"
-  boundary-check:
+      - 'workspace/discovery/domains/**/*.yaml'
+  domain-consistency:
     inputs:
-      - "workspace/discovery/domains/*/dictionary.yaml"
+      - 'workspace/discovery/domains/*/manifest.yaml'
+      - 'workspace/discovery/strategy/target_audience.yaml'
+  team-functions:
+    inputs:
+      - 'workspace/discovery/meta/domains_manifest.yaml'
+      - 'workspace/discovery/domains/*/epics/*/stories.yaml'
+  cogs-calculate:
+    inputs:
+      - 'workspace/discovery/strategy/unit_economics_model.yaml'
+      - 'workspace/discovery/strategy/revenue_model.yaml'
   trajectory:
     inputs:
-      - "workspace/discovery/domains/*/summary.yaml"
+      - 'workspace/discovery/domains/*/summary.yaml'
   requirements:
     inputs:
-      - "workspace/discovery/domains/*/epics/*/stories.yaml"
+      - 'workspace/discovery/domains/*/epics/*/stories.yaml'
   trace:
     inputs:
-      - "workspace/discovery/domains/**/*.yaml"
+      - 'workspace/discovery/domains/**/*.yaml'
   orphans:
     inputs:
-      - "workspace/discovery/domains/*/dictionary.yaml"
-      - "workspace/discovery/domains/*/epics/*/stories.yaml"
+      - 'workspace/discovery/domains/*/manifest.yaml'
+      - 'workspace/discovery/domains/*/epics/*/stories.yaml'
   coverage:
     inputs:
-      - "workspace/discovery/domains/*/summary.yaml"
-      - "workspace/discovery/domains/*/epics/*/stories.yaml"
+      - 'workspace/discovery/domains/*/summary.yaml'
+      - 'workspace/discovery/domains/*/epics/*/stories.yaml'
   self-check:
     # One-shot orchestrator gate for po-strategist phase.
     # Scope: po-strategist zone only (errata-domain + patches-domain).
@@ -108,84 +121,89 @@ commands:
     # ux-flow-architect-sub in a later phase — including them here would create a
     # phase cycle po-strategist <-> ux-flow-architect.
     inputs:
-      - "workspace/discovery/domains/*/summary.yaml"
-      - "workspace/discovery/domains/*/epics/*/stories.yaml"
-      - "workspace/discovery/domains/*/dictionary.yaml"
-      - "workspace/discovery/domains/*/domain_errata.yaml"
-      - "workspace/discovery/domains/*/patches/*.yaml"
+      - 'workspace/discovery/domains/*/summary.yaml'
+      - 'workspace/discovery/domains/*/epics/*/stories.yaml'
+      - 'workspace/discovery/domains/*/manifest.yaml'
+      - 'workspace/discovery/strategy/target_audience.yaml'
+      - 'workspace/discovery/domains/*/domain_errata.yaml'
+      - 'workspace/discovery/domains/*/patches/*.yaml'
 
   flows-self-check:
     # One-shot orchestrator gate for ux-flow-architect Phase 2 Step 2.1: flows only.
     # Estimation completeness is a separate concern (see `estimation --global`).
     inputs:
-      - "workspace/discovery/domains/*/summary.yaml"
-      - "workspace/discovery/domains/*/epics/*/stories.yaml"
-      - "workspace/discovery/domains/*/epics/*/flows/*.yaml"
+      - 'workspace/discovery/domains/*/summary.yaml'
+      - 'workspace/discovery/domains/*/epics/*/stories.yaml'
+      - 'workspace/discovery/domains/*/epics/*/flows/*.yaml'
 
   # ── Errata commands (scoped by producer / data level) ─────────────────────
   errata-domain:
     # Scope: po-strategist zone. Producer: po-strategist-sub.
     # domain_errata.yaml only — no dependency on ux-flow-architect phase.
     inputs:
-      - "workspace/discovery/domains/*/domain_errata.yaml"
+      - 'workspace/discovery/domains/*/domain_errata.yaml'
   errata-epic:
     # Scope: ux-flow-architect zone. Producer: ux-flow-architect-sub.
     # epics/*/errata.yaml only — no dependency on po-strategist errata.
     inputs:
-      - "workspace/discovery/domains/*/epics/*/errata.yaml"
+      - 'workspace/discovery/domains/*/epics/*/errata.yaml'
   errata-global:
     # Aggregation phase only (errata-resolver, discovery-aggregator).
     # Reads both levels after all domain/epic phases are complete.
     # NOT for use by phase-specific orchestrators (would create phase cycles).
     optional_inputs:
-      - "workspace/discovery/domains/*/domain_errata.yaml"
-      - "workspace/discovery/domains/*/epics/*/errata.yaml"
+      - 'workspace/discovery/domains/*/domain_errata.yaml'
+      - 'workspace/discovery/domains/*/epics/*/errata.yaml'
 
   # ── Patch commands (scoped to discovery department) ───────────────────────
   patches-domain:
     # Orchestrator view: open patch directives in discovery domains.
     # For cross-department patch history use patch-manager (operations/tools).
     inputs:
-      - "workspace/discovery/domains/*/patches/*.yaml"
+      - 'workspace/discovery/domains/*/patches/*.yaml'
   patch-errata-domain:
     # Cross-reference: errata records linked to a specific discovery patch
     # (via patch_ref / errata_ref field). Reads both errata levels.
     inputs:
-      - "workspace/discovery/domains/*/patches/*.yaml"
-      - "workspace/discovery/domains/*/domain_errata.yaml"
-      - "workspace/discovery/domains/*/epics/*/errata.yaml"
+      - 'workspace/discovery/domains/*/patches/*.yaml'
+      - 'workspace/discovery/domains/*/domain_errata.yaml'
+      - 'workspace/discovery/domains/*/epics/*/errata.yaml'
 
 capabilities:
   read_queries:
-    - name: "Data Slicing"
-      description: "Точечные выборки (get, stories, features, epics, flows, estimation) с глубокой фильтрацией по доменам, эпикам, приоритетам и pain_level."
-    - name: "Summaries & Reports"
-      description: "Генерация агрегированных отчетов: toc, stats, metrics, trajectory, requirements."
-    - name: "Boundary & Dependency Analysis"
-      description: "Поиск кросс-доменных связей (exports, dependencies), поиск сиротских сущностей (orphans) и дублей границ (boundary-check)."
-    - name: "Data Model Metrics"
-      description: "Агрегация бизнес-модели данных (data-model): количество сущностей, агрегатов, value objects, атрибутов и связей из dictionary.yaml, по домену или глобально."
-    - name: "Traceability"
-      description: "Прямой и обратный поиск (trace) обоснований между фичами, сторями и стратегическим контекстом (markdown ссылками)."
-    - name: "Global Search"
-      description: "Полнотекстовый поиск с фильтрацией по scope (search)."
-    - name: "Self-Check Gate"
-      description: "Единый агрегированный снапшот для оркестраторского Tree Check (self-check). Включает toc, stats, coverage, boundary-check, open domain errata, open patches."
-    - name: "Flows Self-Check Gate"
-      description: "Агрегированный снапшот для Tree Check ux-flow-architect (flows-self-check), только по flows: эпики без flows, битые ссылки linked_job_stories, истории без покрытия flow, флоу без сигналов ошибок/телеметрии. Полнота estimation — отдельная проверка (estimation --global)."
-    - name: "Scoped Errata Access"
-      description: "Зонированный доступ к errata: errata-domain (po-strategist), errata-epic (ux-flow-architect), errata-global (aggregation only)."
-    - name: "Patch Management"
-      description: "Просмотр очереди патчей (patches-domain) и связанных errata (patch-errata-domain) в зоне discovery."
+    - name: 'Data Slicing'
+      description: 'Точечные выборки (get, stories, features, epics, flows, estimation) с глубокой фильтрацией по доменам, эпикам, приоритетам и pain_level.'
+    - name: 'Summaries & Reports'
+      description: 'Генерация агрегированных отчетов: toc, stats, metrics, trajectory, requirements.'
+    - name: 'Boundary & Dependency Analysis'
+      description: 'Поиск кросс-доменных связей (exports, dependencies), поиск сиротских сущностей (orphans) и консистентности доменов (domain-consistency: дубли сущностей + непокрытые персоны).'
+    - name: 'Team Functions'
+      description: 'Агрегированный снапшот по всем FTE operational_actors из domains_manifest.yaml вместе с их Job Stories, сматченными по полю actor_id (team-functions) — для ops-scout headcount-планирования.'
+    - name: 'COGS Pre-Write Calculator'
+      description: 'Пересчитывает total_cogs_per_user_usd/gross_margin_percent по черновому unit_economics_model.yaml той же формулой, что и хардгейт discovery-linter economics (cogs-calculate) — для cogs-scout, чтобы не считать вручную/через python3 -c.'
+    - name: 'Data Model Metrics'
+      description: 'Агрегация бизнес-модели данных (data-model): количество сущностей, агрегатов, value objects, атрибутов и связей из manifest.yaml, по домену или глобально.'
+    - name: 'Traceability'
+      description: 'Прямой и обратный поиск (trace) обоснований между фичами, сторями и стратегическим контекстом (markdown ссылками).'
+    - name: 'Global Search'
+      description: 'Полнотекстовый поиск с фильтрацией по scope (search).'
+    - name: 'Self-Check Gate'
+      description: 'Единый агрегированный снапшот для оркестраторского Tree Check (self-check). Включает toc, stats, coverage, boundary-check, open domain errata, open patches.'
+    - name: 'Flows Self-Check Gate'
+      description: 'Агрегированный снапшот для Tree Check ux-flow-architect (flows-self-check), только по flows: эпики без flows, битые ссылки linked_job_stories, истории без покрытия flow, флоу без сигналов ошибок/телеметрии. Полнота estimation — отдельная проверка (estimation --global).'
+    - name: 'Scoped Errata Access'
+      description: 'Зонированный доступ к errata: errata-domain (po-strategist), errata-epic (ux-flow-architect), errata-global (aggregation only).'
+    - name: 'Patch Management'
+      description: 'Просмотр очереди патчей (patches-domain) и связанных errata (patch-errata-domain) в зоне discovery.'
 
   mutations:
-    - name: "Safe Bulk Edits"
+    - name: 'Safe Bulk Edits'
       description: "Безопасные массовые правки (replace-term, rename-entity, set-field, reclassify-feature) с автоматическим Rollback'ом через TransactionManager."
-    - name: "Errata Management"
-      description: "Разрешение ошибок линтера и ручное подтверждение исправления архитектурных конфликтов (resolve-errata)."
+    - name: 'Errata Management'
+      description: 'Разрешение ошибок линтера и ручное подтверждение исправления архитектурных конфликтов (resolve-errata).'
 
 safeguards:
-  - "Все мутации запускаются в режиме Dry Run без явного флага --apply."
-  - "Транзакционность (Atomicity): запись изменений во временный слепок."
-  - "Автоматическая валидация: после применения вызывает validate-workspace (автофикс включён по умолчанию)."
-  - "Откат (Rollback): возврат файлов к оригинальному состоянию при падении линтера."
+  - 'Все мутации запускаются в режиме Dry Run без явного флага --apply.'
+  - 'Транзакционность (Atomicity): запись изменений во временный слепок.'
+  - 'Автоматическая валидация: после применения вызывает validate-workspace (автофикс включён по умолчанию).'
+  - 'Откат (Rollback): возврат файлов к оригинальному состоянию при падении линтера.'

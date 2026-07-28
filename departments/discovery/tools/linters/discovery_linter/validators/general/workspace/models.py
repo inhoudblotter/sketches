@@ -39,9 +39,9 @@ def _issue_message(issue: CrossDomainIssue) -> str:
     if issue.problem == "domain_not_found":
         return f"домен '{issue.from_domain}' не найден в workspace"
     if issue.problem == "entity_not_in_dictionary":
-        return f"сущность не найдена в dictionary.yaml домена '{issue.from_domain}'"
+        return f"сущность не найдена в manifest.yaml домена '{issue.from_domain}'"
     if issue.problem == "entity_not_exported":
-        return f"сущность найдена в dictionary.yaml, но не объявлена в exports[] summary.yaml домена '{issue.from_domain}'"
+        return f"сущность найдена в manifest.yaml, но не объявлена в exports[] summary.yaml домена '{issue.from_domain}'"
     return issue.problem
 
 

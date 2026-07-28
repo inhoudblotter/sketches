@@ -8,7 +8,7 @@ import yaml
 class ValidateEntityGraphInput(BaseModel):
     domains_dir: Path = Field(
         ...,
-        description="Path to the domains directory containing dictionary.yaml and epics/*/flows/*.yaml files",
+        description="Path to the domains directory containing manifest.yaml and epics/*/flows/*.yaml files",
     )
 
 
@@ -88,7 +88,7 @@ def run_validate_entity_graph(
         )
 
     known_entities: Set[str] = set()
-    for dict_path in input_data.domains_dir.rglob("dictionary.yaml"):
+    for dict_path in input_data.domains_dir.rglob("manifest.yaml"):
         try:
             dict_data = yaml.safe_load(dict_path.read_text(encoding="utf-8")) or {}
         except Exception:

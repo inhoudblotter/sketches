@@ -31,7 +31,7 @@ def make_domain(
     domain_dir = workspace / "discovery" / "domains" / domain
 
     write_yaml(
-        domain_dir / "dictionary.yaml",
+        domain_dir / "manifest.yaml",
         {
             "domain": domain,
             "entities": [

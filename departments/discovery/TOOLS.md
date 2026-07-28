@@ -6,8 +6,8 @@
 | `Discovery Linter` | — |
 | `↳ business-observability` | po-strategist |
 | `↳ domain` | po-strategist-sub |
-| `↳ domain-dictionary` | po-strategist |
 | `↳ domain-exports` | po-strategist |
+| `↳ domain-manifest` | po-strategist |
 | `↳ domain-orphans` | — |
 | `↳ domain-summary` | — |
 | `↳ domains-manifest` | — |
@@ -24,6 +24,7 @@
 | `↳ markdown-headings` | ai-data-scout, compliance-scout, devops-scout, discovery-pitcher, growth-hacker-scout, marketing-scout, product-scout, tech-scout, tech-synthesizer, ux-scout |
 | `↳ markdown-links` | — |
 | `↳ market-context` | business-synthesizer |
+| `↳ operations-team` | ops-scout |
 | `↳ patch` | business-synthesizer, po-strategist, tech-synthesizer, ux-flow-architect |
 | `↳ pitch-deck` | discovery-pitcher |
 | `↳ platform-coverage` | — |
@@ -41,10 +42,11 @@
 | `Extract Bounded Contexts` | tech-lead |
 | `Generate Pitch Deck` | discovery-pitcher |
 | `Query Discovery` | — |
-| `↳ boundary-check` | po-strategist |
+| `↳ cogs-calculate` | cogs-scout |
 | `↳ coverage` | discovery-pitcher, tech-lead |
 | `↳ data-model` | discovery-pitcher |
 | `↳ dependencies` | discovery-pitcher |
+| `↳ domain-consistency` | po-strategist |
 | `↳ epics` | ai-data-scout, devops-scout, tech-lead, tech-scout, ux-flow-architect |
 | `↳ errata-domain` | po-strategist |
 | `↳ errata-epic` | ux-flow-architect |
@@ -67,9 +69,10 @@
 | `↳ search` | — |
 | `↳ self-check` | po-strategist |
 | `↳ set-field` | — |
-| `↳ stats` | tech-lead, tech-scout, ux-flow-architect |
-| `↳ stories` | discovery-pitcher, ux-scout |
-| `↳ toc` | po-strategist, tech-lead, ux-flow-architect |
+| `↳ stats` | ops-scout, tech-lead, tech-scout, ux-flow-architect |
+| `↳ stories` | discovery-pitcher, ops-scout, ux-scout |
+| `↳ team-functions` | ops-scout |
+| `↳ toc` | ops-scout, po-strategist, tech-lead, ux-flow-architect |
 | `↳ trace` | — |
 | `↳ trajectory` | — |
 

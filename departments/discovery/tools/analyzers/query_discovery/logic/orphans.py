@@ -55,7 +55,7 @@ def _entity_referenced(entity: str, story_text: str, story_text_lower: str) -> b
 
 
 def _get_domain_entities(domain_dir: Path) -> list:
-    dict_file = domain_dir / "dictionary.yaml"
+    dict_file = domain_dir / "manifest.yaml"
     if not dict_file.exists():
         return []
     d_data = load_yaml(dict_file)

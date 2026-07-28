@@ -1,0 +1,16 @@
+author_agent: 'ops-scout'
+# Operations Team YAML Contract
+# Описание операционной команды, необходимой для поддержки и развития продукта, и её ФОТ (Фонд Оплаты Труда).
+
+roles:
+  - id: '[Идентификатор роли. Например: l1_support]'
+    title: '[Название должности. Например: Специалист первой линии поддержки]'
+    type: 'fte' # fte | retainer. Юридические/compliance-функции на ранней стадии — ВСЕГДА retainer, не fte (No FTE for Externals).
+    headcount_formula: '[Формула расчета количества людей в зависимости от метрик. Например: 1 на 10,000 MAU]'
+    estimated_headcount: '[Расчетное количество человек при целевом MAU из revenue_model.yaml]'
+    salary_usd: '[Средняя ЗП в USD в месяц (на основе поиска в web/HH.ru). Например: 1500]'
+    responsibilities:
+      - '[Функция 1, извлеченная из Job Stories бэкофиса]'
+      - '[Функция 2]'
+
+total_monthly_payroll_usd: '[Итоговая сумма ФОТ в месяц, которая будет добавлена к fixed_monthly_usd в COGS]'

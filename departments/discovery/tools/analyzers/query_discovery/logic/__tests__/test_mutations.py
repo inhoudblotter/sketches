@@ -32,7 +32,7 @@ def test_rename_entity_updates_dictionary_and_summary(tmp_path: Path) -> None:
     modified = rename_entity(tmp_path, "Invoice", "Bill")
 
     modified_paths = {p.name for p, _ in modified}
-    assert "dictionary.yaml" in modified_paths
+    assert "manifest.yaml" in modified_paths
     assert "summary.yaml" in modified_paths
     for _path, content in modified:
         assert "Invoice" not in content
@@ -62,7 +62,7 @@ def test_replace_term_applies_replacement(tmp_path: Path) -> None:
 
     assert len(modified) == 1
     path, content = modified[0]
-    assert path.name == "dictionary.yaml"
+    assert path.name == "manifest.yaml"
     assert "Gadget" in content
     assert "Widget" not in content
 

@@ -1,6 +1,6 @@
 # Discovery Department Report
 
-**Generated:** 2026-07-28T11:59:14.842381+00:00
+**Generated:** 2026-07-28T19:41:53.409852+00:00
 **Agents dir:** `departments/discovery/staff`
 **Workspace dir:** `workspace/discovery`
 
@@ -15,10 +15,10 @@
 | 🔴 BLOCKED | 5 |
 | 🟠 ESCALATED | 0 |
 | ⬜ UNKNOWN | 0 |
-| **Subagents** | **16** |
+| **Subagents** | **17** |
 | **Completion** | **0.0%** |
 | **Contract coverage** | **100.0%** |
-| **Output Contract Coverage** | **97.7%** |
+| **Output Contract Coverage** | **97.8%** |
 
 ---
 
@@ -43,7 +43,8 @@
 | `↳ devops-scout` | sonnet | 0.5 | BLOCKED | po-strategist, revenue-scout, business-synthesizer, po-strategist-sub | — |
 | `↳ ai-data-scout` | sonnet | 0.5 | BLOCKED | po-strategist, revenue-scout, po-strategist-sub | — |
 | `↳ compliance-scout` | sonnet | 0.5 | BLOCKED | po-strategist, business-synthesizer, po-strategist-sub | — |
-| `↳ ux-scout` | sonnet | 0.5 | BLOCKED | po-strategist, po-strategist-sub, tech-estimator | — |
+| `↳ ux-scout` | sonnet | 0.5 | BLOCKED | po-strategist, po-strategist-sub | — |
+| `↳ ops-scout` | sonnet | 0.5 | BLOCKED | revenue-scout, tech-synthesizer, po-strategist-sub, po-strategist | — |
 | `↳ cogs-scout` | sonnet | 0.5 | BLOCKED | revenue-scout, tech-synthesizer, po-strategist | — |
 | `ux-flow-architect` | sonnet | 0.5 | BLOCKED | po-strategist, tech-synthesizer, po-strategist-sub | — |
 | `↳ ux-flow-architect-sub` | sonnet | 0.5 | BLOCKED | po-strategist, tech-synthesizer, po-strategist-sub | — |
@@ -62,28 +63,29 @@
 
 | Agent | Skills | Skills KB | Contracts KB | Artifacts KB (p90) | Tool Output KB | Own Write KB | Total KB | Risk |
 |---|---|---|---|---|---|---|---|---|
-| `po-strategist` | 11 | 80.47 | 9.85 | 14.64 | 0.29 | 9.85 | 105.25~ | 🟢 OK |
-| `↳ revenue-scout` | 8 | 134.28 | 7.33 | 9.78 | 0.0 | 7.33 | 151.39~ | 🟡 WATCH |
-| `↳ po-strategist-sub` | 2 | 7.96 | 8.52 | 5.8 | 0.0 | 6.33 | 20.09~ | 🟢 OK |
+| `po-strategist` | 12 | 87.58 | 15.31 | 15.16 | 0.32 | 15.31 | 118.37~ | 🟢 OK |
+| `↳ revenue-scout` | 8 | 139.06 | 7.85 | 11.21 | 0.0 | 7.85 | 158.12~ | 🟡 WATCH |
+| `↳ po-strategist-sub` | 2 | 8.6 | 8.69 | 4.33 | 0.0 | 6.5 | 19.43~ | 🟢 OK |
 | `discovery-pitcher` | 9 | 68.3 | 19.22 | 7.29 | 0.0 | 19.22 | 94.81~ | 🟢 OK |
-| `business-synthesizer` | 7 | 68.2 | 10.69 | 16.19 | 0.0 | 8.38 | 92.77~ | 🟢 OK |
-| `↳ revenue-scout` | 8 | 134.28 | 7.33 | 9.78 | 0.0 | 7.33 | 151.39~ | 🟡 WATCH |
+| `business-synthesizer` | 7 | 68.2 | 10.69 | 17.62 | 0.0 | 8.38 | 94.2~ | 🟢 OK |
+| `↳ revenue-scout` | 8 | 139.06 | 7.85 | 11.21 | 0.0 | 7.85 | 158.12~ | 🟡 WATCH |
 | `↳ product-scout` | 7 | 57.91 | 6.19 | 0.39 | 0.0 | 6.19 | 64.49 | 🟢 OK |
 | `↳ marketing-scout` | 5 | 34.68 | 1.48 | 0.39 | 0.0 | 1.48 | 36.55 | 🟢 OK |
-| `↳ audience-scout` | 5 | 30.91 | 2.47 | 0.39 | 0.0 | 2.47 | 33.77 | 🟢 OK |
+| `↳ audience-scout` | 5 | 30.91 | 3.9 | 0.39 | 0.0 | 3.9 | 35.2 | 🟢 OK |
 | `↳ geopolitics-scout` | 4 | 25.66 | 3.17 | 0.39 | 0.0 | 3.17 | 29.22 | 🟢 OK |
 | `↳ growth-hacker-scout` | 3 | 21.41 | 2.49 | 0.39 | 0.0 | 2.49 | 24.29 | 🟢 OK |
-| `tech-synthesizer` | 5 | 38.05 | 6.24 | 15.89 | 0.0 | 3.93 | 57.87~ | 🟢 OK |
-| `↳ devops-scout` | 8 | 109.22 | 2.7 | 18.14 | 0.17 | 2.7 | 130.23~ | 🟢 OK |
-| `↳ cogs-scout` | 7 | 102.78 | 1.56 | 17.92 | 0.0 | 1.56 | 122.26~ | 🟢 OK |
-| `↳ tech-scout` | 8 | 54.76 | 1.19 | 14.55 | 0.15 | 1.19 | 70.65~ | 🟢 OK |
-| `↳ ux-scout` | 5 | 30.75 | 1.85 | 5.42 | 0.15 | 1.85 | 38.17~ | 🟢 OK |
-| `↳ ai-data-scout` | 4 | 19.46 | 0.59 | 10.28 | 0.15 | 0.59 | 30.48~ | 🟢 OK |
+| `tech-synthesizer` | 5 | 38.05 | 6.24 | 16.41 | 0.0 | 3.93 | 58.39~ | 🟢 OK |
+| `↳ devops-scout` | 8 | 113.49 | 2.7 | 18.66 | 0.17 | 2.7 | 135.02~ | 🟢 OK |
+| `↳ cogs-scout` | 7 | 107.05 | 1.71 | 18.44 | 0.0 | 1.71 | 127.2~ | 🟢 OK |
+| `↳ ops-scout` | 4 | 93.26 | 1.35 | 10.3 | 0.03 | 1.35 | 104.94~ | 🟢 OK |
+| `↳ tech-scout` | 8 | 54.76 | 1.19 | 15.07 | 0.15 | 1.19 | 71.17~ | 🟢 OK |
+| `↳ ux-scout` | 5 | 30.75 | 1.85 | 6.85 | 0.15 | 1.85 | 39.6~ | 🟢 OK |
+| `↳ ai-data-scout` | 4 | 19.46 | 0.59 | 10.8 | 0.15 | 0.59 | 31.0~ | 🟢 OK |
 | `↳ compliance-scout` | 4 | 21.95 | 0.49 | 4.41 | 0.17 | 0.49 | 27.02~ | 🟢 OK |
-| `ux-flow-architect` | 3 | 21.6 | 2.31 | 3.26 | 0.23 | 0.0 | 25.09~ | 🟢 OK |
-| `↳ ux-flow-architect-sub` | 4 | 31.63 | 8.41 | 4.92 | 0.0 | 6.22 | 42.77~ | 🟢 OK |
+| `ux-flow-architect` | 3 | 21.6 | 2.31 | 4.14 | 0.23 | 0.0 | 25.97~ | 🟢 OK |
+| `↳ ux-flow-architect-sub` | 4 | 31.63 | 8.41 | 8.24 | 0.0 | 6.22 | 46.09~ | 🟢 OK |
 | `tech-lead` | 0 | 0.0 | 0.0 | 1.74 | 0.33 | 0.0 | 2.07~ | 🟢 OK |
-| `↳ tech-estimator` | 1 | 19.7 | 1.32 | 11.3 | 0.0 | 1.32 | 32.32~ | 🟢 OK |
+| `↳ tech-estimator` | 1 | 19.7 | 1.32 | 11.47 | 0.0 | 1.32 | 32.49~ | 🟢 OK |
 | `↳ errata-resolver` | 1 | 5.04 | 2.19 | 0.0 | 0.02 | 2.19 | 7.25 | 🟢 OK |
 `~` = часть входных файлов ещё не сгенерирована (upstream не отработал) — Total KB для этой строки включает оценку по шаблону контракта, а не только уже существующие файлы.
 
@@ -97,18 +99,19 @@ Per-`<call_tool>` breakdown behind the "Tool Output KB" column above. Identical 
 |---|---|---|---|---|---|---|---|
 | `tech-lead` | `Query Discovery` | flows-self-check | single | 1 | 1 | 0.19 | `query-discovery flows-self-check --counts-only workspace/` |
 | `ux-flow-architect` | `Query Discovery` | flows-self-check | single | 1 | 1 | 0.19 | `query-discovery flows-self-check workspace/` |
+| `po-strategist` | `Query Discovery` | self-check | single | 1 | 1 | 0.16 | `query-discovery self-check workspace/` |
 | `ai-data-scout` | `Query Discovery` | requirements | single | 1 | 1 | 0.15 | `query-discovery requirements --global workspace/` |
 | `compliance-scout` | `Query Discovery` | requirements | single | 1 | 1 | 0.15 | `query-discovery requirements --global workspace/` |
 | `devops-scout` | `Query Discovery` | requirements | single | 1 | 1 | 0.15 | `query-discovery requirements --global workspace/` |
 | `tech-scout` | `Query Discovery` | requirements | single | 1 | 1 | 0.15 | `query-discovery requirements --global workspace/` |
 | `ux-scout` | `Query Discovery` | requirements | single | 1 | 1 | 0.15 | `query-discovery requirements --global workspace/` |
-| `po-strategist` | `Query Discovery` | self-check | single | 1 | 1 | 0.13 | `query-discovery self-check workspace/` |
 | `tech-lead` | `Query Discovery` | estimation | single | 1 | 1 | 0.11 | `query-discovery estimation --global workspace/` |
-| `po-strategist` | `Query Discovery` | boundary-check | single | 1 | 1 | 0.05 | `query-discovery boundary-check` |
+| `po-strategist` | `Query Discovery` | domain-consistency | single | 1 | 1 | 0.05 | `query-discovery domain-consistency workspace/` |
 | `po-strategist` | `Query Discovery` | errata-domain | single | 2 | 2 | 0.04 | `query-discovery errata-domain --status open workspace/` |
 | `ux-flow-architect` | `Query Discovery` | errata-epic | single | 2 | 2 | 0.04 | `query-discovery errata-epic --status open workspace/` |
 | `po-strategist` | `Query Discovery` | orphans | single | 1 | 1 | 0.03 | `query-discovery orphans workspace/` |
 | `tech-lead` | `Query Discovery` | coverage | single | 1 | 1 | 0.03 | `query-discovery coverage --check workspace/` |
+| `ops-scout` | `Query Discovery` | team-functions | single | 1 | 1 | 0.03 | `query-discovery team-functions workspace/` |
 | `po-strategist` | `Query Discovery` | metrics | single | 1 | 1 | 0.02 | `query-discovery metrics --global --type kpi workspace/` |
 | `po-strategist` | `Query Discovery` | metrics | single | 1 | 1 | 0.02 | `query-discovery metrics --global --type event workspace/` |
 | `compliance-scout` | `Query Discovery` | metrics | single | 1 | 1 | 0.02 | `query-discovery metrics --type event --global workspace/` |
@@ -123,7 +126,10 @@ Per-`<call_tool>` breakdown behind the "Tool Output KB" column above. Identical 
 | `ux-flow-architect` | `Query Discovery` | stats | single | 1 | 1 | 0.0 | `query-discovery stats workspace/` |
 | `ai-data-scout` | `Query Discovery` | epics | single | 1 | 1 | 0.0 | `query-discovery epics --complex-only workspace/` |
 | `ai-data-scout` | `Query Discovery` | features | single | 1 | 1 | 0.0 | `query-discovery features --priority mvp_mandatory workspace/` |
+| `cogs-scout` | `Query Discovery` | cogs-calculate | single | 1 | 1 | 0.0 | `query-discovery cogs-calculate workspace/discovery/strategy/unit_economics_model.yaml` |
 | `devops-scout` | `Query Discovery` | epics | single | 1 | 1 | 0.0 | `query-discovery epics --complex-only workspace/` |
+| `ops-scout` | `Query Discovery` | toc | single | 1 | 1 | 0.0 | `query-discovery toc workspace/` |
+| `ops-scout` | `Query Discovery` | stats | single | 1 | 1 | 0.0 | `query-discovery stats workspace/` |
 | `tech-scout` | `Query Discovery` | epics | single | 1 | 1 | 0.0 | `query-discovery epics --complex-only workspace/` |
 | `tech-scout` | `Query Discovery` | stats | single | 1 | 1 | 0.0 | `query-discovery stats workspace/` |
 | `ux-scout` | `Query Discovery` | features | single | 1 | 1 | 0.0 | `query-discovery features --priority mvp_mandatory workspace/` |
@@ -157,6 +163,7 @@ Per-`<call_tool>` breakdown behind the "Tool Output KB" column above. Identical 
 | `↳ ai-data-scout` | 1 | 0.0 | 0.0 | 0.0 |
 | `↳ compliance-scout` | 1 | 0.0 | 0.0 | 0.0 |
 | `↳ ux-scout` | 1 | 0.0 | 0.0 | 0.0 |
+| `↳ ops-scout` | 1 | 0.0 | 0.0 | 0.0 |
 | `↳ cogs-scout` | 1 | 0.0 | 0.0 | 0.0 |
 | `ux-flow-architect` | 0 | 0.0 | 0.0 | 0.0 |
 | `↳ ux-flow-architect-sub` | 0 | 0.0 | 0.0 | 0.0 |
@@ -196,7 +203,7 @@ Per-`<call_tool>` breakdown behind the "Tool Output KB" column above. Identical 
 
 | Model | Agents |
 |---|---|
-| sonnet | 22 |
+| sonnet | 23 |
 
 ---
 

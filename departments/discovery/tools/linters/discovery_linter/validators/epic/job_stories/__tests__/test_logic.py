@@ -28,6 +28,7 @@ VALID_STORY = {
             "situation": "Situation",
             "motivation": "Motivation",
             "outcome": "Outcome",
+            "actor_id": "regular_user",
             "pain_level": "High",
             "metrics": ["metric"],
         }

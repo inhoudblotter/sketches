@@ -1,0 +1,68 @@
+# Domain Manifest YAML Contract
+# Полный контекст домена, пред-дигестированный оркестратором (po-strategist).
+# Субагент (po-strategist-sub) доверяет этому файлу и не читает глобальные файлы.
+#
+# ЗАПРЕЩЕНО использовать технические типы данных (UUID, varchar, boolean).
+# Используй семантические типы (Identifier, Text, Status Flag).
+
+domain: 'название_домена'
+
+# ─── 1. UBIQUITOUS LANGUAGE ──────────────────────────────────────────────────
+# Бизнес-сущности и глоссарий домена. Субагент использует ТОЛЬКО эти сущности
+# при написании Job Stories (guardrail: Actor Source of Truth).
+
+entities:
+  - name: 'EntityName'
+    description: 'Описание бизнес-смысла сущности.'
+    type: 'AggregateRoot'  # или Entity, ValueObject
+    attributes:
+      - name: 'attribute_name'
+        semantic_type: 'Identifier'  # Не UUID!
+        description: 'Для чего используется в бизнесе'
+        is_required: true
+    relationships:
+      - type: 'has_many'  # belongs_to, has_one
+        target: '[domain].OtherEntity'  # реальный домен, например 'billing.Invoice'
+        description: 'Бизнес-смысл связи'
+
+glossary:
+  - term: 'Специфичный термин'
+    definition: 'Объяснение термина на языке бизнеса'
+
+# ─── 2. ПРЕД-ДИГЕСТ ОТ ОРКЕСТРАТОРА ─────────────────────────────────────────
+# Эти секции заполняет po-strategist при написании файла (шаг 1.3).
+# Субагент НЕ дополняет и НЕ изменяет эти секции.
+
+personas_in_scope:
+  # Персоны из target_audience.yaml, боли которых касаются этого домена.
+  # Субагент использует pain_summary для Pain Quantification в Job Stories.
+  - id: '[id из target_audience.yaml. Например: regular_user]'
+    type: 'human'  # human | machine
+    pain_summary: '[Ключевые боли, релевантные для этого домена]'
+    # Поля ниже заполняются ТОЛЬКО когда type: machine (денормализация из
+    # target_audience.yaml → machine_personas). У machine-персоны нет собственной
+    # мотивации — Job Story пишется от лица owning_actor, устройство/агент — лишь канал.
+    machine_type: '[ai_agent | software_client | iot_device]'
+    owning_actor: '[id персоны/operational_actor из этого же дигеста, чью ценность реализует машина]'
+    physical_constraints:
+      - '[Только для iot_device. Например: offline-first, задержка команды < 200ms]'
+
+platforms:
+  # Платформы для этого домена — выдержка из platform_strategy.yaml.
+  # Субагент использует для заполнения epic_requirements.platforms.
+  - '[web_admin / mobile / api / ...]'
+
+operational_actors:
+  # Операторы домена + Zero-Admin оценка.
+  # Денормализовано из domains_manifest.yaml[domain].operational_actors.
+  # Пустой список [] — домен без человеко-управляемых операторов (Zero-Admin домен).
+  - id: '[Идентификатор. Например: support_l1]'
+    name: '[Название роли]'
+    responsibilities:
+      - '[Зона ответственности]'
+    jtbd_motivations:
+      - '[JTBD мотив. Например: Я хочу быстро видеть историю транзакций]'
+    coverage:
+      mode: '[fte | ai_agent | dao_delegate | workflow | algorithm]'
+      by: '[Чем конкретно покрывается (если не fte)]'
+      justification: '[Почему FTE обязателен или почему автоматизация возможна]'

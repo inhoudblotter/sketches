@@ -67,7 +67,7 @@ def _validate_flow_file(
         )
         if missing_entities_clean:
             err_msgs.append(
-                f"Invalid entities: {missing_entities_clean} (Not found in dictionary.yaml)"
+                f"Invalid entities: {missing_entities_clean} (Not found in manifest.yaml)"
             )
 
     if err_msgs:
@@ -85,7 +85,7 @@ def run_validate_flows_batch(batch_dir: Path, fix: bool = True):
     epic_dir = batch_dir.parent
     domain_dir = epic_dir.parents[1]
 
-    valid_entities = _load_valid_entities(domain_dir / "dictionary.yaml")
+    valid_entities = _load_valid_entities(domain_dir / "manifest.yaml")
     valid_stories = _load_valid_stories(epic_dir / "stories.yaml")
     covered_stories = set()
 

@@ -24,6 +24,7 @@ def _filter_stories_in_epic(
     d_name: str,
     pain_level: Optional[str],
     priority: Optional[str],
+    actor: Optional[str],
     only_metrics: bool,
     story_priorities: Dict[str, Set[str]],
 ) -> list:
@@ -36,6 +37,8 @@ def _filter_stories_in_epic(
     for s in e.get("stories", []):
         pl = s.get("pain_level", "unknown")
         if pain_level and pl.lower() != pain_level.lower():
+            continue
+        if actor and s.get("actor_id") != actor:
             continue
         if priority:
             s_id = s.get("id")
@@ -69,6 +72,7 @@ def get_filtered_stories(
     pain_level: Optional[str] = None,
     priority: Optional[str] = None,
     epic_type: Optional[str] = None,
+    actor: Optional[str] = None,
     only_metrics: bool = False,
 ) -> list:
     idx = load_domain_snapshot(workspace_dir)
@@ -83,7 +87,13 @@ def get_filtered_stories(
                 continue
             res.extend(
                 _filter_stories_in_epic(
-                    e, d_name, pain_level, priority, only_metrics, story_priorities
+                    e,
+                    d_name,
+                    pain_level,
+                    priority,
+                    actor,
+                    only_metrics,
+                    story_priorities,
                 )
             )
     return res

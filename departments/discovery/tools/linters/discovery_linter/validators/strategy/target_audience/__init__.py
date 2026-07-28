@@ -2,7 +2,7 @@ from departments.discovery.tools.linters.discovery_linter.validators.shared.vali
     validate_yaml_file,
 )
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Literal
 import yaml
 from pathlib import Path
 from typing import Any, Dict
@@ -23,8 +23,11 @@ class Persona(BaseModel):
 class MachinePersona(BaseModel):
     id: str
     name: str
+    machine_type: Literal["ai_agent", "software_client", "iot_device"]
+    owning_actor: str
     consumption_method: str
     data_requirements: List[str]
+    physical_constraints: List[str] = Field(default_factory=list)
 
 
 class TargetAudienceSchema(BaseModel):

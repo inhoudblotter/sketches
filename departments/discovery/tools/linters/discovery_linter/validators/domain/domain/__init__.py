@@ -1,6 +1,6 @@
 from pathlib import Path
-from departments.discovery.tools.linters.discovery_linter.validators.domain.domain_dictionary import (
-    run_validation as run_validate_domain_dictionary,
+from departments.discovery.tools.linters.discovery_linter.validators.domain.domain_manifest import (
+    run_validation as run_validate_domain_manifest,
 )
 from departments.discovery.tools.linters.discovery_linter.validators.domain.domain_summary import (
     run_validation as run_validate_domain_summary,
@@ -23,18 +23,18 @@ from departments.discovery.tools.linters.discovery_linter.validators.epic.errata
 from departments.discovery.tools.shared.epic_utils import iter_epic_dirs
 
 
-def _validate_dictionary(domain_dir: Path, fix: bool) -> tuple[list[str], list[str]]:
+def _validate_manifest(domain_dir: Path, fix: bool) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
-    dictionary_file = domain_dir / "dictionary.yaml"
-    if not dictionary_file.exists():
+    manifest_file = domain_dir / "manifest.yaml"
+    if not manifest_file.exists():
         if fix:
-            warnings.append("[WARN] dictionary.yaml missing — skipped in --fix mode")
+            warnings.append("[WARN] manifest.yaml missing — skipped in --fix mode")
         return errors, warnings
     try:
-        run_validate_domain_dictionary(dictionary_file)
+        run_validate_domain_manifest(manifest_file)
     except Exception as e:
-        errors.append(f"dictionary.yaml: {e}")
+        errors.append(f"manifest.yaml: {e}")
     return errors, warnings
 
 
@@ -151,9 +151,9 @@ def run_validate_domain(domain_dir: Path, fix: bool = True):
     warnings = []
     epics_dir = domain_dir / "epics"
 
-    dict_errors, dict_warnings = _validate_dictionary(domain_dir, fix)
-    errors.extend(dict_errors)
-    warnings.extend(dict_warnings)
+    manifest_errors, manifest_warnings = _validate_manifest(domain_dir, fix)
+    errors.extend(manifest_errors)
+    warnings.extend(manifest_warnings)
 
     summary_errors, summary_warnings, summary_schema = _validate_summary(
         domain_dir, fix

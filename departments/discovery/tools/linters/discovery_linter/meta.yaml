@@ -7,192 +7,197 @@ cli_name: discovery-linter
 commands:
   domain-orphans:
     inputs:
-    - '**/domains/{domain}/**'
+      - '**/domains/{domain}/**'
     outputs:
-    - stdout
+      - stdout
   job-stories-content:
     inputs:
-    - '**/domains/{domain}/epics/**/stories.yaml'
+      - '**/domains/{domain}/epics/**/stories.yaml'
     outputs:
-    - stdout
+      - stdout
 
   business-observability:
     inputs:
-    - '**/business_observability.yaml'
+      - '**/business_observability.yaml'
     outputs:
-    - stdout
+      - stdout
   domain:
     inputs:
-    - '**/domains/{domain}/**'
+      - '**/domains/{domain}/**'
     outputs:
-    - stdout
-  domain-dictionary:
+      - stdout
+  domain-manifest:
     inputs:
-    - '**/dictionary.yaml'
+      - '**/manifest.yaml'
     outputs:
-    - stdout
+      - stdout
   domain-exports:
     inputs:
-    - workspace/discovery/domains/*/summary.yaml
+      - workspace/discovery/domains/*/summary.yaml
     outputs:
-    - stdout
+      - stdout
   domain-summary:
     inputs:
-    - '**/summary.yaml'
+      - '**/summary.yaml'
     outputs:
-    - stdout
+      - stdout
   domains-manifest:
     inputs:
-    - '**/domains_manifest.yaml'
+      - '**/domains_manifest.yaml'
     outputs:
-    - stdout
+      - stdout
   economics:
     inputs:
-    - '**/strategy/revenue_model.yaml'
-    - '**/strategy/unit_economics_model.yaml'
+      - '**/strategy/revenue_model.yaml'
+      - '**/strategy/unit_economics_model.yaml'
     outputs:
-    - stdout
+      - stdout
   stress-test:
     inputs:
-    - '**/strategy/revenue_model.yaml'
-    - '**/strategy/unit_economics_model.yaml'
+      - '**/strategy/revenue_model.yaml'
+      - '**/strategy/unit_economics_model.yaml'
     outputs:
-    - stdout
+      - stdout
   entity-graph:
     inputs:
-    - domains/**/dictionary.yaml
-    - domains/**/epics/*/flows/*.yaml
+      - domains/**/manifest.yaml
+      - domains/**/epics/*/flows/*.yaml
     outputs:
-    - stdout
+      - stdout
   errata:
     inputs:
-    - workspace/discovery/domains/*/domain_errata.yaml
-    - workspace/discovery/domains/*/epics/*/errata.yaml
-    - workspace/discovery/errata/critical_errata.yaml
+      - workspace/discovery/domains/*/domain_errata.yaml
+      - workspace/discovery/domains/*/epics/*/errata.yaml
+      - workspace/discovery/errata/critical_errata.yaml
     outputs:
-    - stdout
+      - stdout
   estimation:
     inputs:
-    - workspace/discovery/domains/*/epics/*/estimation.yaml
+      - workspace/discovery/domains/*/epics/*/estimation.yaml
     outputs:
-    - stdout
+      - stdout
   features:
     inputs:
-    - '**/features.yaml'
+      - '**/features.yaml'
     outputs:
-    - stdout
+      - stdout
   flows-batch:
     inputs:
-    - workspace/discovery/domains/*/epics/*/flows/*.yaml
+      - workspace/discovery/domains/*/epics/*/flows/*.yaml
     outputs:
-    - stdout
+      - stdout
   geopolitics:
     inputs:
-    - '**/geopolitical_draft.yaml'
+      - '**/geopolitical_draft.yaml'
     outputs:
-    - stdout
+      - stdout
   job-stories:
     inputs:
-    - '**/stories.yaml'
+      - '**/stories.yaml'
     outputs:
-    - stdout
+      - stdout
   launch-roadmap:
     inputs:
-    - '**/launch_roadmap.yaml'
+      - '**/launch_roadmap.yaml'
     outputs:
-    - stdout
+      - stdout
   markdown-headings:
     inputs:
-    - workspace/discovery/research/business-context/market_dossier.md
-    - workspace/discovery/research/business-context/gtm_strategy.md
-    - workspace/discovery/research/business-context/growth_draft.md
-    - workspace/discovery/strategy/investment_memo.md
-    - workspace/discovery/strategy/tech_conflict_log.md
-    - workspace/discovery/research/technical-context/tech_benchmarks.md
-    - workspace/discovery/research/technical-context/deployment_strategy.md
-    - workspace/discovery/research/technical-context/algorithm_benchmarks.md
-    - workspace/discovery/research/technical-context/compliance_constraints.md
-    - workspace/discovery/research/technical-context/ux_research.md
+      - workspace/discovery/research/business-context/market_dossier.md
+      - workspace/discovery/research/business-context/gtm_strategy.md
+      - workspace/discovery/research/business-context/growth_draft.md
+      - workspace/discovery/strategy/investment_memo.md
+      - workspace/discovery/strategy/tech_conflict_log.md
+      - workspace/discovery/research/technical-context/tech_benchmarks.md
+      - workspace/discovery/research/technical-context/deployment_strategy.md
+      - workspace/discovery/research/technical-context/algorithm_benchmarks.md
+      - workspace/discovery/research/technical-context/compliance_constraints.md
+      - workspace/discovery/research/technical-context/ux_research.md
     outputs:
-    - stdout
+      - stdout
   markdown-links:
     inputs:
-    - '**/*.md'
+      - '**/*.md'
     outputs:
-    - stdout
-    - '**/*.md'
+      - stdout
+      - '**/*.md'
   market-context:
     inputs:
-    - workspace/discovery/strategy/market_context.md
+      - workspace/discovery/strategy/market_context.md
     outputs:
-    - stdout
+      - stdout
+  operations-team:
+    inputs:
+      - '**/operations_team.yaml'
+    outputs:
+      - stdout
   patch:
     inputs:
-    - workspace/discovery/**/patches/*.yaml
+      - workspace/discovery/**/patches/*.yaml
     outputs:
-    - stdout
+      - stdout
   pitch-deck:
     inputs:
-    - '**/pitch_deck.yaml'
+      - '**/pitch_deck.yaml'
     outputs:
-    - stdout
+      - stdout
   platform-coverage:
     inputs:
-    - '**/strategy/platform_strategy.yaml'
-    - '**/meta/domains_manifest.yaml'
+      - '**/strategy/platform_strategy.yaml'
+      - '**/meta/domains_manifest.yaml'
     outputs:
-    - stdout
+      - stdout
   platform-strategy:
     inputs:
-    - '**/platform_strategy.yaml'
+      - '**/platform_strategy.yaml'
     outputs:
-    - stdout
+      - stdout
   revenue-model:
     inputs:
-    - '**/revenue_model.yaml'
+      - '**/revenue_model.yaml'
     outputs:
-    - stdout
+      - stdout
   strategy:
     inputs:
-    - '**/strategy/*.yaml'
-    - '**/meta/domains_manifest.yaml'
+      - '**/strategy/*.yaml'
+      - '**/meta/domains_manifest.yaml'
     outputs:
-    - stdout
+      - stdout
   target-audience:
     inputs:
-    - '**/target_audience.yaml'
-    - '**/audience_draft.yaml'
+      - '**/target_audience.yaml'
+      - '**/audience_draft.yaml'
     outputs:
-    - stdout
+      - stdout
   tech-constraints:
     inputs:
-    - '**/tech_constraints.yaml'
+      - '**/tech_constraints.yaml'
     outputs:
-    - stdout
+      - stdout
   tech-market-brief:
     inputs:
-    - workspace/discovery/strategy/tech_market_brief.yaml
+      - workspace/discovery/strategy/tech_market_brief.yaml
     outputs:
-    - stdout
+      - stdout
   tech-synthesis:
     inputs:
-    - '**/tech_constraints.yaml'
-    - '**/ux_constraints.yaml'
-    - '**/ux_vision.md'
+      - '**/tech_constraints.yaml'
+      - '**/ux_constraints.yaml'
+      - '**/ux_vision.md'
     outputs:
-    - stdout
+      - stdout
   user-flows:
     inputs:
-    - workspace/discovery/domains/*/epics/*/flows/*.yaml
+      - workspace/discovery/domains/*/epics/*/flows/*.yaml
     outputs:
-    - stdout
+      - stdout
   ux-constraints:
     inputs:
-    - '**/ux_constraints.yaml'
+      - '**/ux_constraints.yaml'
     outputs:
-    - stdout
+      - stdout
   workspace:
     inputs:
-    - workspace/discovery/**
+      - workspace/discovery/**
     outputs:
-    - stdout
+      - stdout

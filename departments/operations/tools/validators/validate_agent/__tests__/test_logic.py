@@ -31,7 +31,7 @@ max_steps: 10
     <description>Read something</description>
     <read>workspace/discovery/meta/bounded_contexts.yaml</read>
     <for_each collection="workspace/discovery/domains/*" item="domain" execution="parallel" max_concurrent="5">
-      <read>workspace/discovery/domains/{domain}/dictionary.yaml</read>
+      <read>workspace/discovery/domains/{domain}/manifest.yaml</read>
     </for_each>
   </step>
 </workflow>

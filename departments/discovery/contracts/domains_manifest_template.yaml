@@ -1,13 +1,25 @@
 # Domains Manifest YAML Contract
 # Реестр всех бизнес-доменов продукта.
-strategic_insight: '[Свободное поле для стратегических инсайтов или ограничений. Например: Это CRUD-утилита, флоу не нужны]'
+# Каноническое место определения операционных акторов домена.
+strategic_insight: '[Стратегические инсайты или ограничения. Например: Zero-Admin MVP, флоу не нужны]'
 
 domains:
   - id: '[Название домена. Например: billing]'
     name: '[Человекочитаемое название. Например: Управление подписками]'
     description: '[Краткая суть домена. Например: Обработка оплат и генерация инвойсов]'
     data_residency: '[Где хранятся данные. Например: Client-Only (Local-first), Federated Node, Cloud]'
-    target_roles:
-      - '[Целевая роль. Например: Администратор]'
     key_entities:
       - '[Сущность. Например: Invoice]'
+    operational_actors:
+      # Операторы домена. Пустой список [] = Zero-Admin домен (нет FTE-операторов).
+      # Обязателен Zero-Admin Assessment для каждого актора (см. skill-automation-filter.md).
+      - id: '[Идентификатор. Например: support_l1]'
+        name: '[Название роли]'
+        responsibilities:
+          - '[Зона ответственности]'
+        jtbd_motivations:
+          - '[JTBD мотив. Например: Я хочу быстро видеть историю транзакций]'
+        coverage:
+          mode: '[fte | ai_agent | dao_delegate | workflow | algorithm]'
+          by: '[Чем конкретно покрывается (если не fte)]'
+          justification: '[Почему FTE обязателен или почему автоматизация возможна]'

@@ -107,10 +107,10 @@ def test_still_self_commits_but_parallel(staff_dir):
     """A sub-agent self-commits, but the orchestrator invokes it inside a parallel for_each."""
     sub_workflow = """
   <step id="1">
-    <write contract="some/contract.yaml">workspace/testdept/domains/{domain}/dictionary.yaml</write>
+    <write contract="some/contract.yaml">workspace/testdept/domains/{domain}/manifest.yaml</write>
   </step>
   <step id="2">
-    <action><call_tool name="git">git add workspace/testdept/domains/{domain}/dictionary.yaml && git commit -m "feat: sub"</call_tool></action>
+    <action><call_tool name="git">git add workspace/testdept/domains/{domain}/manifest.yaml && git commit -m "feat: sub"</call_tool></action>
   </step>
 """
     write_agent(staff_dir, "sub-worker", sub_workflow, subagents_dir=True)

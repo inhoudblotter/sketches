@@ -26,6 +26,9 @@ inputs:
   - 'workspace/discovery/strategy/revenue_model.yaml'
   - 'workspace/discovery/strategy/launch_roadmap.yaml'
   - 'workspace/discovery/errata/critical_errata.yaml'
+  - 'workspace/discovery/strategy/target_audience.yaml'
+  - 'workspace/discovery/meta/domains_manifest.yaml'
+  - 'workspace/discovery/strategy/operations_team.yaml'
 outputs:
   - 'workspace/discovery/meta/project_analytics.yaml'
   - 'workspace/discovery/meta/project_analytics_detail.yaml'

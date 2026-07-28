@@ -7,7 +7,7 @@ from ...logic.patches import get_patches, get_patch_errata
 from ...logic.queries.flows import get_flows_self_check, get_flows_self_check_summary
 from ...logic.reports.core import get_toc, get_stats
 from ...logic.orphans import get_coverage
-from ...logic.boundary import check_boundaries
+from ...logic.domain_consistency import check_domain_consistency
 
 
 def _print_or_empty(res: dict, print_yaml, empty_message: str) -> None:
@@ -30,12 +30,13 @@ def _filter_by_epic(res: dict, epic: str) -> dict:
 
 
 def _build_self_check_report(workspace: Path) -> dict:
-    domains_dir = workspace / "discovery" / "domains"
     stats = get_stats(workspace)
     global_epic_types: Dict[str, int] = {}
     for d_stats in stats.values():
         for et, count in d_stats.get("epic_types", {}).items():
             global_epic_types[et] = global_epic_types.get(et, 0) + count
+
+    domain_consistency = check_domain_consistency(workspace)
 
     return {
         "toc": get_toc(workspace, cast(str, None)),
@@ -44,7 +45,8 @@ def _build_self_check_report(workspace: Path) -> dict:
         "missing_mandatory_epics": get_coverage(workspace).get(
             "missing_mandatory_epics", {}
         ),
-        "boundary_violations": check_boundaries(domains_dir),
+        "duplicate_entities": domain_consistency.get("duplicate_entities", {}),
+        "orphaned_personas": domain_consistency.get("orphaned_personas", []),
         "open_errata": get_errata(workspace, "open", scope="domain"),
         "open_patches": get_patches(
             workspace, domain=cast(str, None), status="pending"

@@ -3,6 +3,7 @@ from typing import List
 import yaml
 from pathlib import Path
 from .. import RevenueModel, UnitEconomicsModel
+from departments.discovery.tools.shared.economics_calc import calc_fixed_sum
 
 
 class ScenarioResult(BaseModel):
@@ -69,8 +70,14 @@ def run_stress_test(revenue_file: Path, economics_file: Path) -> StressTestOutpu
     fixed_per_user: float = 0.0
     if fixed is not None:
         fixed_per_user = (
-            fixed.compute + fixed.database + (fixed.p2p_infrastructure or 0)
-        ) / target_mau
+            calc_fixed_sum(
+                fixed.compute,
+                fixed.database,
+                fixed.p2p_infrastructure,
+                fixed.operations_payroll,
+            )
+            / target_mau
+        )
 
     var_egress = var.egress_traffic if var else 0
     var_apis = (

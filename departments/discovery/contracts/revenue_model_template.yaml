@@ -51,7 +51,11 @@ non_arpu_funding:
   # масштабируется с MAU) и НЕ смягчает budget_constraint_usd/margin-гейт (продлевает
   # runway при плохой unit-экономике, а не делает её хорошей).
   - id: '[Уникальный ID, например: gitcoin_rpgf_round_20]'
-    type: grant # grant | treasury_allocation | quadratic_funding | rpgf | accelerator
+    type: grant # grant | treasury_allocation | quadratic_funding | rpgf | accelerator | philanthropic_grant | corporate_sponsorship_lumpsum
+    # philanthropic_grant / corporate_sponsorship_lumpsum — разовое неповторяющееся финансирование
+    # (фонд/меценат/корпоративный CSR-чек). НЕ путать с recurring "Донаты"/"Спонсорство" из
+    # skill-revenue-scout.md §5 (Patreon-конверсия, нишевой CPM) — те масштабируются с MAU и
+    # живут в revenue_streams, а не здесь.
     source: '[Кто выдаёт: фонд/DAO/программа]'
     total_amount_usd: '[Общая сумма. Например: 30000]'
     runway_months: '[На сколько месяцев хватает. Например: 6]'

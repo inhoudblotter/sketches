@@ -6,10 +6,12 @@ from .schemas import GeneratePitchDeckInput, GeneratePitchDeckOutput
 from departments.discovery.tools.shared.text_utils import clean_links, clean_list
 from departments.discovery.tools.shared.file_utils import load_yaml
 
-REQUIRED_NARRATIVE_SLIDES = [
+NARRATIVE_SLIDES_BEFORE_ACTORS = [
     ("problem", "Проблема (The Problem)"),
     ("solution", "Решение (The Solution)"),
     ("market_and_competition", "Рынок и Конкуренты (Market & Competition)"),
+]
+NARRATIVE_SLIDES_AFTER_ACTORS = [
     ("go_to_market", "Go-to-Market Стратегия"),
 ]
 
@@ -43,18 +45,29 @@ def _build_narrative_slide(
     }
 
 
-def _build_narrative_section(pitch_data: dict) -> tuple[list[dict], int]:
-    mandatory = pitch_data.get("mandatory_slides", {})
-    slides_count = 0
-
+def _build_narrative_slides(
+    mandatory: dict, slide_specs: list[tuple[str, str]]
+) -> list[dict]:
     narrative_slides = []
-    for key, display_title in REQUIRED_NARRATIVE_SLIDES:
+    for key, display_title in slide_specs:
         slide = _build_narrative_slide(mandatory, key, display_title)
         if slide:
             narrative_slides.append(slide)
-            slides_count += 1
+    return narrative_slides
 
-    # 3.5 Optional Web3 Slides
+
+def _build_narrative_section(pitch_data: dict) -> tuple[list[dict], list[dict], int]:
+    mandatory = pitch_data.get("mandatory_slides", {})
+
+    slides_before_actors = _build_narrative_slides(
+        mandatory, NARRATIVE_SLIDES_BEFORE_ACTORS
+    )
+    slides_after_actors = _build_narrative_slides(
+        mandatory, NARRATIVE_SLIDES_AFTER_ACTORS
+    )
+
+    # 3.5 Optional Web3 Slides — appended after Go-to-Market, still part of the
+    # opening pitch narrative.
     optional = pitch_data.get("optional_slides", {})
     if "network_effects_and_decentralization" in optional:
         opt_content = optional["network_effects_and_decentralization"].get(
@@ -62,15 +75,21 @@ def _build_narrative_section(pitch_data: dict) -> tuple[list[dict], int]:
         )
         if opt_content.strip():
             clean_opt_content = clean_links(opt_content.strip())
-            narrative_slides.append(
+            slides_after_actors.append(
                 {
                     "title": "Сетевые Эффекты и Децентрализация",
                     "content_html": markdown.markdown(clean_opt_content),
                 }
             )
-            slides_count += 1
 
-    return narrative_slides, slides_count
+    slides_count = len(slides_before_actors) + len(slides_after_actors)
+    return slides_before_actors, slides_after_actors, slides_count
+
+
+def _build_actors(analytics_data: dict, detail_data: dict) -> dict | None:
+    return detail_data.get("actors") or analytics_data.get("project_analytics", {}).get(
+        "actors_summary"
+    )
 
 
 def _build_scope_analytics(analytics_data: dict, detail_data: dict) -> dict:
@@ -140,11 +159,19 @@ def run_generate_pitch_deck(
     if dashboard_included:
         slides_count += 3 if context["dashboard"].get("scenarios") else 2
 
-    # 3. Mandatory Narrative Slides
+    # 3. Mandatory Narrative Slides, split around the Actors slide (placed right
+    # after Market & Competition — who we serve, concretely, before GTM).
     mandatory = pitch_data.get("mandatory_slides", {})
-    narrative_slides, narrative_slides_count = _build_narrative_section(pitch_data)
-    context["narrative_slides"] = narrative_slides
+    slides_before_actors, slides_after_actors, narrative_slides_count = (
+        _build_narrative_section(pitch_data)
+    )
+    context["narrative_slides_before_actors"] = slides_before_actors
+    context["narrative_slides_after_actors"] = slides_after_actors
     slides_count += narrative_slides_count
+
+    # 3.1 Actors Slide (personas, machine personas, operational actors/coverage)
+    context["actors"] = _build_actors(analytics_data, detail_data)
+    slides_count += bool(context["actors"])
 
     # Risks is a narrative slide too, but placed at the end of the deck (right
     # before financials) rather than in the opening pitch — see storytelling

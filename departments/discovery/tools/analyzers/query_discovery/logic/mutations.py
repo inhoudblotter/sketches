@@ -18,7 +18,7 @@ def rename_entity(workspace_dir: Path, from_entity: str, to_entity: str) -> list
         if not domain_dir.is_dir():
             continue
 
-        dict_file = domain_dir / "dictionary.yaml"
+        dict_file = domain_dir / "manifest.yaml"
         if dict_file.exists():
             with open(dict_file, "r", encoding="utf-8") as f:
                 content = f.read()
@@ -36,7 +36,7 @@ def rename_entity(workspace_dir: Path, from_entity: str, to_entity: str) -> list
 
     if not modified_files:
         raise ValueError(
-            f"Entity '{from_entity}' was not found in any dictionary.yaml or "
+            f"Entity '{from_entity}' was not found in any manifest.yaml or "
             f"summary.yaml file under {domains_dir}."
         )
 
@@ -46,7 +46,7 @@ def rename_entity(workspace_dir: Path, from_entity: str, to_entity: str) -> list
 def _get_files_for_replace_term(domain_dir: Path, scope: str) -> list:
     files = []
     if scope in ("dictionary", "all"):
-        files.append(domain_dir / "dictionary.yaml")
+        files.append(domain_dir / "manifest.yaml")
     if scope in ("stories", "all"):
         epics_dir = domain_dir / "epics"
         if epics_dir.exists() and epics_dir.is_dir():

@@ -8,8 +8,20 @@
     </div>
   </div>
 
-  {# 1. Opening pitch: problem, solution, market, GTM #}
-  {% for slide in narrative_slides %}
+  {# 1. Opening pitch: problem, solution, market #}
+  {% for slide in narrative_slides_before_actors %}
+    {% set title = slide.title %}
+    {% set content_html = slide.content_html %}
+    {% include "slides/markdown_slide.html.j2" %}
+  {% endfor %}
+
+  {# 1.1 Actors: who we serve, concretely — right after Market & Competition #}
+  {% if actors %}
+    {% include "slides/actors.html.j2" %}
+  {% endif %}
+
+  {# 1.2 GTM (+ optional Web3 slide) #}
+  {% for slide in narrative_slides_after_actors %}
     {% set title = slide.title %}
     {% set content_html = slide.content_html %}
     {% include "slides/markdown_slide.html.j2" %}

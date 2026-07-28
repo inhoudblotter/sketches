@@ -12,7 +12,7 @@ FLAG_RE = re.compile(r"(?<!\S)-{1,2}[A-Za-z][\w-]*")
 # legitimate <call_tool> targets (see skill-agent-crafting.md, "Системные
 # исключения в <call_tool>"). Keep this list to the Git Sync convention's own
 # operations — not a general shell escape hatch.
-SYSTEM_TOOL_NAMES = {"git", "EnterWorktree"}
+SYSTEM_TOOL_NAMES = {"git", "EnterWorktree", "WebSearch"}
 
 # Calibrated against actual usage at the time this check was added: the longest
 # real <call_tool> body was 143 chars with at most 1 flag. These give headroom

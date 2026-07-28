@@ -67,6 +67,11 @@ model: sonnet
     <description>Commit Scouts' Artifacts (Reduce): все параллельные саб-агенты завершены — теперь коммить их артефакты одним общим коммитом.</description>
     <action><call_tool name="git">git add workspace/discovery/research/technical-context/tech_benchmarks.md workspace/discovery/research/technical-context/deployment_strategy.md workspace/discovery/research/technical-context/algorithm_benchmarks.md workspace/discovery/research/technical-context/compliance_constraints.md workspace/discovery/research/technical-context/ux_research.md && git commit -m "feat(discovery): tech-synthesizer scouts outputs"</call_tool></action>
   </step>
+  <step id="2.5">
+    <description>Запуск ops-scout. Он должен запуститься ПОСЛЕ коммита отчетов техскаутов, чтобы иметь возможность их прочесть, а также использовать query-discovery для чтения Job Stories внутренних акторов (бэкофис/админы) из уже завершенной Фазы 2.</description>
+    <action><call_agent name="ops-scout">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Conduct Operations Research</call_agent></action>
+    <instruction>Дождись завершения работы ops-scout. Он закоммитит свой артефакт (operations_team.yaml) сам.</instruction>
+  </step>
   <step id="3">
     <description>Сбор контекста (Reduce): бюджетный лимит и отчёты скаутов нужны одновременно для кросс-доменного анализа на Шаге 4.</description>
     <description>revenue_model.yaml задает жесткий бюджетный лимит (budget_constraint_usd); business_observability.yaml — аналитический стек и инфраструктуру мониторинга.</description>

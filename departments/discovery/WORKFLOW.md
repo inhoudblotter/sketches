@@ -2,7 +2,7 @@
 
 > Автоматически сгенерировано `pipeline-analysis` из frontmatter агентов (`departments/discovery/staff`). Не редактируйте руками — правьте агентов и перегенерируйте файл (`pipeline-analysis discovery`). Философия и назначение отдела: см. [README.md](README.md).
 
-**Generated:** 2026-07-28T11:59:14.842381+00:00
+**Generated:** 2026-07-28T19:41:53.409852+00:00
 
 ---
 
@@ -19,7 +19,7 @@
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 84.4 (~, часть входов ещё не сгенерирована) |
+| Context KB | 85.8 (~, часть входов ещё не сгенерирована) |
 | Status | READY |
 **Required skills:** 7
 **Uses tools:** 11
@@ -135,7 +135,7 @@ Geopolitics & Censorship Scout. Исследует межгосударстве�
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 144.1 (~, часть входов ещё не сгенерирована) |
+| Context KB | 150.3 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 8
 **Uses tools:** 2
 
@@ -157,9 +157,9 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 95.4 (~, часть входов ещё не сгенерирована) |
+| Context KB | 103.1 (~, часть входов ещё не сгенерирована) |
 | Status | BLOCKED |
-**Required skills:** 11
+**Required skills:** 12
 **Uses tools:** 28
 **Delegates to:** 2
 **Blocked on:** 1
@@ -175,7 +175,7 @@ Product Strategist (Генератор смыслов). Разрабатывае
   - `{patch_name}.yaml`
   - `platform_strategy.yaml`
   - `domains_manifest.yaml`
-  - `dictionary.yaml`
+  - `manifest.yaml`
   - `{patch_name}.yaml`
   - `business_observability.yaml`
 
@@ -186,7 +186,7 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 144.1 (~, часть входов ещё не сгенерирована) |
+| Context KB | 150.3 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 8
 **Uses tools:** 2
 
@@ -206,16 +206,13 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 13.8 (~, часть входов ещё не сгенерирована) |
+| Context KB | 12.9 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 2
 **Uses tools:** 2
 
 **Reads (Inputs):**
   - `{patch_name}.yaml`
-  - `target_audience.yaml`
-  - `platform_strategy.yaml`
-  - `domains_manifest.yaml`
-  - `dictionary.yaml`
+  - `manifest.yaml`
 
 **Writes (Outputs):**
   - `stories.yaml`
@@ -232,11 +229,11 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 53.9 (~, часть входов ещё не сгенерирована) |
+| Context KB | 54.5 (~, часть входов ещё не сгенерирована) |
 | Status | BLOCKED |
 **Required skills:** 5
 **Uses tools:** 11
-**Delegates to:** 6
+**Delegates to:** 7
 **Blocked on:** 2
 
 **Reads (Inputs):**
@@ -262,7 +259,7 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 69.5 (~, часть входов ещё не сгенерирована) |
+| Context KB | 70.0 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 8
 **Uses tools:** 4
 
@@ -284,7 +281,7 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 127.5 (~, часть входов ещё не сгенерирована) |
+| Context KB | 132.3 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 8
 **Uses tools:** 4
 
@@ -306,7 +303,7 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 29.9 (~, часть входов ещё не сгенерирована) |
+| Context KB | 30.4 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 4
 **Uses tools:** 4
 
@@ -346,7 +343,7 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 36.3 (~, часть входов ещё не сгенерирована) |
+| Context KB | 37.8 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 5
 **Uses tools:** 4
 
@@ -359,6 +356,27 @@ Product Strategist (Генератор смыслов). Разрабатывае
 **Writes (Outputs):**
   - `ux_research.md`
 
+##### `ops-scout` _(subagent)_
+Operations & HR Scout (Рекрутер и Операционный архитектор). Формирует минимально жизнеспособную команду (Headcount) и бюджет ФОТ на основе Job Stories, целевой аудитории и метрик нагрузки (MAU). Результат передаётся в cogs-scout как статья fixed_monthly_usd.
+
+| Field | Value |
+|---|---|
+| Model | sonnet |
+| Temperature | 0.5 |
+| Context KB | 103.6 (~, часть входов ещё не сгенерирована) |
+**Required skills:** 4
+**Uses tools:** 8
+
+**Reads (Inputs):**
+  - `{patch_name}.yaml`
+  - `revenue_model.yaml`
+  - `tech_constraints.yaml`
+  - `deployment_strategy.md`
+  - `compliance_constraints.md`
+
+**Writes (Outputs):**
+  - `operations_team.yaml`
+
 ##### `cogs-scout` _(subagent)_
 Финансовый аналитик (Расходы). Подбивает итоговую юнит-экономику, рассчитывая себестоимость инфраструктуры (COGS) на основе технических ограничений и сравнивая ее с доходами.
 
@@ -366,14 +384,15 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 120.7 (~, часть входов ещё не сгенерирована) |
+| Context KB | 125.5 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 7
-**Uses tools:** 2
+**Uses tools:** 3
 
 **Reads (Inputs):**
   - `revenue_model.yaml`
   - `tech_constraints.yaml`
   - `business_observability.yaml`
+  - `operations_team.yaml`
   - `{patch_name}.yaml`
   - `pricing_oracle.yaml`
   - `compliance_constraints.md`
@@ -390,7 +409,7 @@ UX Flow Architect (Проектировщик путей). Планирует п
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 25.1 (~, часть входов ещё не сгенерирована) |
+| Context KB | 26.0 (~, часть входов ещё не сгенерирована) |
 | Status | BLOCKED |
 **Required skills:** 3
 **Uses tools:** 17
@@ -412,12 +431,12 @@ UX Flow Architect (Проектировщик путей). Планирует п
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 36.5 (~, часть входов ещё не сгенерирована) |
+| Context KB | 39.9 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 4
 **Uses tools:** 2
 
 **Reads (Inputs):**
-  - `dictionary.yaml`
+  - `manifest.yaml`
   - `ux_constraints.yaml`
   - `stories.yaml`
   - `{patch_name}.yaml`
@@ -452,7 +471,7 @@ Technical Estimator. Анализирует сгенерированные Job S
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 31.0 (~, часть входов ещё не сгенерирована) |
+| Context KB | 31.2 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 1
 **Uses tools:** 1
 

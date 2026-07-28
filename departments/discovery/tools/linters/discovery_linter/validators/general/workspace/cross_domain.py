@@ -23,7 +23,7 @@ def build_domain_index(domains_dir: Path) -> Dict[str, dict]:
         name = domain_dir.name
 
         entities: Set[str] = set()
-        dict_data = load_yaml(domain_dir / "dictionary.yaml")
+        dict_data = load_yaml(domain_dir / "manifest.yaml")
         if dict_data:
             for entity in dict_data.get("entities", []):
                 if isinstance(entity, dict) and entity.get("name"):

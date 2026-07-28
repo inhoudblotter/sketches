@@ -1,0 +1,43 @@
+<div class="embla__slide">
+  <div class="slide-content">
+    <h2>Кто это использует (Actors)</h2>
+    <p style="color: #aaa; margin-bottom: 20px;">Целевая аудитория и операционные роли, обеспечивающие работу продукта.</p>
+
+    {% if actors.personas %}
+    <div class="dashboard-grid" style="margin-bottom: 30px;">
+      {% for p in actors.personas %}
+      <div class="metric-card" style="text-align: left;">
+        <div class="metric-label" style="font-size: 18px; color: #fff; margin-bottom: 10px;">{{ p.name }}</div>
+        {% if p.pain_points %}
+        <div class="metric-sub">Боль: {{ p.pain_points[0] }}</div>
+        {% endif %}
+        {% if p.magnet_features %}
+        <div class="metric-sub" style="color: #4ade80;">Magnet: {{ p.magnet_features[0] }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if actors.machine_personas %}
+    <p style="color: #aaa; margin-bottom: 10px;"><strong>Machine Personas</strong> (небиологические потребители)</p>
+    <ul style="margin-bottom: 20px;">
+      {% for mp in actors.machine_personas %}
+      <li>{{ mp.name }} <span style="color: #888;">({{ mp.machine_type }}, от лица {{ mp.owning_actor }})</span></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if actors.operational_actors_count %}
+    <p style="color: #aaa; margin-bottom: 10px;">
+      <strong>Операционный бэкофис:</strong> {{ actors.operational_actors_count }} ролей на {{ actors.zero_admin_domains_count }} Zero-Admin доменов
+      {% if actors.coverage_mode_breakdown %}
+      —
+      {% for mode, count in actors.coverage_mode_breakdown.items() %}
+        {{ count }}× {{ mode }}{% if not loop.last %}, {% endif %}
+      {% endfor %}
+      {% endif %}
+    </p>
+    {% endif %}
+  </div>
+</div>

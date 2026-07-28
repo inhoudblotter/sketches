@@ -178,7 +178,7 @@ def get_data_model_metrics(
         ):
             continue
 
-        dict_data = load_yaml(domain_dir / "dictionary.yaml")
+        dict_data = load_yaml(domain_dir / "manifest.yaml")
         entities = dict_data.get("entities", [])
         if not entities:
             continue

@@ -53,6 +53,7 @@ model: sonnet
     <read>workspace/discovery/strategy/revenue_model.yaml</read>
     <read>workspace/discovery/strategy/tech_constraints.yaml</read>
     <read>workspace/discovery/strategy/business_observability.yaml</read>
+    <read optional="true">workspace/discovery/strategy/operations_team.yaml</read>
     <read optional="true">workspace/discovery/research/technical-context/patches/{patch_name}.yaml</read>
     <action>Если в `invocation_contract` передан `PATCH` — это Patch Run: НЕ делай исследование с нуля, адресуй только `gap_type` из указанного файла патча, обнови свой артефакт, затем `<write>` тот же файл патча обратно с `status: applied` или `status: failed` и заполненным `result_note` (файл не удалять), и сразу заверши работу — остальной workflow не выполняется.</action>
     <read>departments/discovery/playbooks/pricing_oracle.yaml</read>
@@ -61,14 +62,19 @@ model: sonnet
     <action>Если в `revenue_streams` есть поток типа Data Licensing с `commitment_status: committed` — это разрешено только тебе (revenue-scout физически не мог это проверить, см. `skill-revenue-scout.md` §5, Hard Gate). Сверь его с `compliance_constraints.md`: если раздел "Known Pitfalls & Critique" или "Regulatory Requirements" указывает на блокирующий риск агрегации/анонимизации данных для этой юрисдикции — эскалируй (не понижай `commitment_status` сам, это решение po-strategist через Patch Protocol). Если `compliance_constraints.md` отсутствует или потоков Data Licensing нет — пропусти проверку.</action>
   </step>
   <step id="2">
-    <action>Напиши блок `<thinking>`, в котором постатейно посчитаешь COGS на пользователя. Раздели `fixed_monthly_usd` (амортизируй на `target_mau`) и `variable_per_user_usd`. Сложение статей и деление на `target_mau` выполняй через `python3 -c "..."` (см. `skill-quantitative-integrity.md`), вставляя в артефакт буквальный вывод, а не пересчитанное вручную число.</action>
+    <action>Напиши блок `<thinking>`, в котором постатейно определишь COGS на пользователя: цены из `pricing_oracle.yaml`/`search_web`, квоты из `tech_constraints.yaml`, Pessimistic Calculations (тяжёлые пользователи, скрытые комиссии). Раздели `fixed_monthly_usd` и `variable_per_user_usd`. Само сложение и деление на `target_mau` — это не твоя зона суждения (см. Шаг 3), не считай это вручную и не через `python3 -c`.</action>
+    <action>ОБЯЗАТЕЛЬНО включи данные из `operations_team.yaml` (если файл есть): перенеси общую сумму ФОТ (`total_monthly_payroll_usd`) буквально в поле `fixed_monthly_usd.operations_payroll`. Не подмешивай эту сумму в `compute`/`database`/`p2p_infrastructure` — это отдельная статья расходов.</action>
     <action>Если в `revenue_model.yaml` заполнен `non_arpu_funding` — можешь упомянуть его в `<thinking>` как контекст (например: "маржа отрицательна, но N месяцев runway от гранта X смягчают срочность"), но ЗАПРЕЩЕНО использовать его для оправдания более высокого `budget_constraint_usd` или снижения требуемой маржи. Margin Enforcer применяет 30%-порог одинаково независимо от наличия гранта.</action>
   </step>
   <step id="3">
+    <description>Черновая запись и расчёт: сначала пишешь строки расходов (`cogs_per_user_usd`), затем считаешь итог тулом — не вручную.</description>
     <write contract="departments/discovery/contracts/unit_economics_model_template.yaml">workspace/discovery/strategy/unit_economics_model.yaml</write>
+    <action>`total_cogs_per_user_usd` на этом шаге — временное значение (например `0`), оно будет перезаписано следующим действием. Вызови <call_tool name="query_discovery">query-discovery cogs-calculate workspace/discovery/strategy/unit_economics_model.yaml</call_tool> — тул читает `cogs_per_user_usd` из только что записанного файла и `revenue_model.yaml` рядом с ним, сам считает `fixed_sum_usd`/`variable_sum_per_user_usd`/`total_cogs_per_user_usd`/`gross_margin_percent`, и сразу говорит `margin_ok`/`budget_ok`. Это ТА ЖЕ формула, которую независимо пересчитает `discovery-linter economics` на Шаге 4 — числа обязаны совпасть.</action>
+    <action>Перезапиши `unit_economics_model.yaml`, подставив `total_cogs_per_user_usd` буквально из вывода тула (`total_cogs_per_user_usd`), и укажи `gross_margin_percent`/выводы в `rationale`, если это уместно для traceability.</action>
+    <action condition="margin_ok=false или budget_ok=false из вывода cogs-calculate">Это не ошибка формата — это реальная убыточная архитектура. Не пытайся подогнать числа: зафиксируй в `<thinking>` Critique и либо пересмотри статьи расходов (Zero-Cost MVP), либо эскалируй, если расходы объективно не сжимаются.</action>
   </step>
   <step id="4">
-    <action>Запусти CLI-валидатор: <call_tool name="discovery-linter">discovery-linter economics workspace/discovery/strategy/</call_tool>. Валидатор ничего не исправляет сам — при ошибке (Exit Code 1) вручную перепиши `unit_economics_model.yaml` по тексту ошибки и запусти валидатор снова.</action>
+    <action>Запусти CLI-валидатор: <call_tool name="discovery-linter">discovery-linter economics workspace/discovery/strategy/</call_tool>. Валидатор — финальный хардгейт (Margin Enforcer, Budget Constraint, Stress Test), он не доверяет числу из Шага 3 и пересчитывает заново. При ошибке (Exit Code 1) вручную перепиши `unit_economics_model.yaml` по тексту ошибки (или перезапусти `cogs-calculate` после правки статей расходов) и запусти валидатор снова.</action>
   </step>
   <step id="5">
     <action><call_tool name="git">git add workspace/discovery/strategy/unit_economics_model.yaml && git commit -m "feat(discovery): cogs-scout unit_economics_model"</call_tool></action>

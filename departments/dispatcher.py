@@ -48,15 +48,15 @@ def domain():
     )
 
 
-def domain_dictionary():
-    run_command(
-        "departments.discovery.tools.linters.discovery_linter.validators.domain.domain_dictionary.command"
-    )
-
-
 def domain_exports():
     run_command(
         "departments.discovery.tools.linters.discovery_linter.validators.domain.domain_exports.command"
+    )
+
+
+def domain_manifest():
+    run_command(
+        "departments.discovery.tools.linters.discovery_linter.validators.domain.domain_manifest.command"
     )
 
 
@@ -163,6 +163,12 @@ def markdown_links():
 def market_context():
     run_command(
         "departments.discovery.tools.linters.discovery_linter.validators.strategy.market_context.command"
+    )
+
+
+def operations_team():
+    run_command(
+        "departments.discovery.tools.linters.discovery_linter.validators.strategy.operations_team.command"
     )
 
 

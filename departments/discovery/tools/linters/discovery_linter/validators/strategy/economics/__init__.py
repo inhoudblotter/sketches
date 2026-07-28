@@ -4,10 +4,17 @@ import yaml
 import sys
 from pathlib import Path
 
+from departments.discovery.tools.shared.economics_calc import (
+    calc_fixed_sum,
+    calc_variable_sum,
+    calc_total_cogs,
+    calc_gross_margin_percent,
+    MIN_GROSS_MARGIN_PERCENT,
+    STRESS_ARPU_FACTOR,
+    STRESS_COGS_FACTOR,
+)
+
 ROUNDING_TOLERANCE_USD = 0.01
-MIN_GROSS_MARGIN_PERCENT = 30
-STRESS_ARPU_FACTOR = 0.8
-STRESS_COGS_FACTOR = 1.4
 
 
 class RevenueStream(BaseModel):
@@ -40,6 +47,7 @@ class FixedMonthly(BaseModel):
     compute: float
     database: float
     p2p_infrastructure: Optional[float] = None
+    operations_payroll: Optional[float] = None
 
 
 class VariablePerUser(BaseModel):
@@ -96,27 +104,24 @@ def _calculate_cogs(
             "Invalid COGS structure. Must provide fixed_monthly_usd and variable_per_user_usd."
         )
 
-    target_mau = (
-        rev_model.target_mau
-        if rev_model.target_mau and rev_model.target_mau > 0
-        else 1.0
-    )
-
     fixed = cogs_per_user.fixed_monthly_usd
-    fixed_sum = fixed.compute + fixed.database
-    if fixed.p2p_infrastructure:
-        fixed_sum += fixed.p2p_infrastructure
+    fixed_sum = calc_fixed_sum(
+        fixed.compute,
+        fixed.database,
+        fixed.p2p_infrastructure,
+        fixed.operations_payroll,
+    )
 
     var = cogs_per_user.variable_per_user_usd
-    var_sum = var.egress_traffic
-    if var.tokenomics_costs:
-        var_sum += var.tokenomics_costs
-    var_sum += sum(api.cost for api in var.external_apis)
-    var_sum += (
-        var.operational.maintenance_and_support + var.operational.payment_gateway_fees
+    var_sum = calc_variable_sum(
+        var.egress_traffic,
+        sum(api.cost for api in var.external_apis),
+        var.operational.maintenance_and_support,
+        var.operational.payment_gateway_fees,
+        var.tokenomics_costs,
     )
 
-    calculated_cogs = (fixed_sum / target_mau) + var_sum
+    calculated_cogs = calc_total_cogs(fixed_sum, var_sum, rev_model.target_mau)
     return calculated_cogs, var_sum
 
 
@@ -135,11 +140,8 @@ def _validate_cogs_total(
 def _validate_gross_margin(
     rev_model: RevenueModel, cogs_model: UnitEconomicsModel
 ) -> None:
-    gross_margin_usd = rev_model.blended_arpu_usd - cogs_model.total_cogs_per_user_usd
-    gross_margin_percent = (
-        (gross_margin_usd / rev_model.blended_arpu_usd) * 100
-        if rev_model.blended_arpu_usd > 0
-        else 0
+    gross_margin_percent = calc_gross_margin_percent(
+        rev_model.blended_arpu_usd, cogs_model.total_cogs_per_user_usd
     )
 
     if gross_margin_percent < MIN_GROSS_MARGIN_PERCENT:
