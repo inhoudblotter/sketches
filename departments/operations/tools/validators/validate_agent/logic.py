@@ -148,7 +148,7 @@ def validate_file(path: Path) -> LintResult:
     errors.extend(check_frontmatter(frontmatter))
 
     # 2. XML Sections
-    errors.extend(check_xml_sections(body, is_subagent, path.name))
+    errors.extend(check_xml_sections(body, is_subagent))
 
     workflow_block = extract_xml_block(body, "workflow")
     invocation_contract = extract_xml_block(body, "invocation_contract")

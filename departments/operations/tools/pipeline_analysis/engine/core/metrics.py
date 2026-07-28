@@ -62,6 +62,7 @@ def compute(
     # build_agent_subgraph already resolves that back through the delegating
     # orchestrator and drops the resulting self-loop.
     has_cycles = not nx.is_directed_acyclic_graph(agent_graph)
+    cycles = list(nx.simple_cycles(agent_graph)) if has_cycles else []
 
     # A cycle in the raw agent graph (usually a false-positive scheduling
     # dependency, e.g. a subagent's tool call declaring an input that its
@@ -140,6 +141,7 @@ def compute(
         orphaned_artifacts=orphaned_artifacts,
         missing_inputs=missing_inputs,
         has_cycles=has_cycles,
+        cycles=cycles,
         escalated_agents=escalated_agents,
         external_inputs=external_inputs,
         external_outputs=external_outputs,

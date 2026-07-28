@@ -2,7 +2,7 @@
 
 > Автоматически сгенерировано `pipeline-analysis` из frontmatter агентов (`departments/discovery/staff`). Не редактируйте руками — правьте агентов и перегенерируйте файл (`pipeline-analysis discovery`). Философия и назначение отдела: см. [README.md](README.md).
 
-**Generated:** 2026-07-21T23:13:40.036374+00:00
+**Generated:** 2026-07-28T11:59:14.842381+00:00
 
 ---
 
@@ -19,7 +19,7 @@
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 84.0 (~, часть входов ещё не сгенерирована) |
+| Context KB | 84.4 (~, часть входов ещё не сгенерирована) |
 | Status | READY |
 **Required skills:** 7
 **Uses tools:** 11
@@ -45,7 +45,7 @@
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 57.9 |
+| Context KB | 58.3 |
 **Required skills:** 7
 **Uses tools:** 1
 
@@ -63,7 +63,7 @@
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 34.7 |
+| Context KB | 35.1 |
 **Required skills:** 5
 **Uses tools:** 1
 
@@ -81,7 +81,7 @@
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 21.4 |
+| Context KB | 21.8 |
 **Required skills:** 3
 **Uses tools:** 1
 
@@ -99,7 +99,7 @@
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 30.9 |
+| Context KB | 31.3 |
 **Required skills:** 5
 **Uses tools:** 1
 
@@ -117,7 +117,7 @@ Geopolitics & Censorship Scout. Исследует межгосударстве�
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 25.7 |
+| Context KB | 26.1 |
 **Required skills:** 4
 **Uses tools:** 1
 
@@ -135,7 +135,7 @@ Geopolitics & Censorship Scout. Исследует межгосударстве�
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 80.9 (~, часть входов ещё не сгенерирована) |
+| Context KB | 144.1 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 8
 **Uses tools:** 2
 
@@ -157,7 +157,7 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 95.0 (~, часть входов ещё не сгенерирована) |
+| Context KB | 95.4 (~, часть входов ещё не сгенерирована) |
 | Status | BLOCKED |
 **Required skills:** 11
 **Uses tools:** 28
@@ -186,7 +186,7 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 80.9 (~, часть входов ещё не сгенерирована) |
+| Context KB | 144.1 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 8
 **Uses tools:** 2
 
@@ -284,7 +284,7 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 64.7 (~, часть входов ещё не сгенерирована) |
+| Context KB | 127.5 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 8
 **Uses tools:** 4
 
@@ -306,8 +306,8 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 27.1 (~, часть входов ещё не сгенерирована) |
-**Required skills:** 3
+| Context KB | 29.9 (~, часть входов ещё не сгенерирована) |
+**Required skills:** 4
 **Uses tools:** 4
 
 **Reads (Inputs):**
@@ -366,7 +366,7 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 57.9 (~, часть входов ещё не сгенерирована) |
+| Context KB | 120.7 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 7
 **Uses tools:** 2
 

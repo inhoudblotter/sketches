@@ -49,11 +49,13 @@
           </tr>
           {% if agent.delegates_to %}{% for sub_name in agent.delegates_to %}{% set sub = agent_by_name.get(sub_name) %}{% if sub %}
           <tr class="border-b border-gray-900">
+            {% set sub_blocked_agents = [] %}{% set sub_blocked_ext = [] %}
+            {% for b in sub.blocked_on %}{% if b in write_index %}{% set _ = sub_blocked_agents.append(write_index[b]) %}{% else %}{% set _ = sub_blocked_ext.append(b.split('/')[-2:] | join('/') if '*' in b else b.split('/')[-1]) %}{% endif %}{% endfor %}
             <td class="p-2.5 text-gray-500 font-mono pl-6">↳ {{ sub.name }}</td>
             <td class="p-2.5 text-gray-500">{{ sub.model }}</td>
-            <td class="p-2.5 text-gray-600 italic">internal</td>
-            <td class="p-2.5 text-gray-600">—</td>
-            <td class="p-2.5 text-gray-600">—</td>
+            <td class="p-2.5 text-gray-500">{{ ui.status_pill(sub.status) }}</td>
+            <td class="p-2.5 text-gray-500">{{ sub_blocked_agents | unique | list | join(", ") if sub_blocked_agents else "—" }}</td>
+            <td class="p-2.5 text-gray-500">{{ sub_blocked_ext | unique | list | join(", ") if sub_blocked_ext else "—" }}</td>
           </tr>
           {% endif %}{% endfor %}{% endif %}
           {% endfor %}

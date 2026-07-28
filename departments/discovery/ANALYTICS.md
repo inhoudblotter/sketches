@@ -1,6 +1,6 @@
 # Discovery Department Report
 
-**Generated:** 2026-07-21T23:13:40.036374+00:00
+**Generated:** 2026-07-28T11:59:14.842381+00:00
 **Agents dir:** `departments/discovery/staff`
 **Workspace dir:** `workspace/discovery`
 
@@ -17,7 +17,7 @@
 | ⬜ UNKNOWN | 0 |
 | **Subagents** | **16** |
 | **Completion** | **0.0%** |
-| **Contract coverage** | **96.9%** |
+| **Contract coverage** | **100.0%** |
 | **Output Contract Coverage** | **97.7%** |
 
 ---
@@ -29,27 +29,27 @@
 | Agent | Model | Temp | Status | Blocked on Agents | Blocked on External |
 |---|---|---|---|---|---|
 | `business-synthesizer` | sonnet | 0.5 | READY | — | — |
-| `↳ product-scout` | sonnet | 0.5 | _internal_ | — | — |
-| `↳ marketing-scout` | sonnet | 0.5 | _internal_ | — | — |
-| `↳ growth-hacker-scout` | sonnet | 0.5 | _internal_ | — | — |
-| `↳ audience-scout` | sonnet | 0.5 | _internal_ | — | — |
-| `↳ geopolitics-scout` | sonnet | 0.5 | _internal_ | — | — |
-| `↳ revenue-scout` | sonnet | 0.5 | _internal_ | — | — |
+| `↳ product-scout` | sonnet | 0.5 | READY | — | — |
+| `↳ marketing-scout` | sonnet | 0.5 | READY | — | — |
+| `↳ growth-hacker-scout` | sonnet | 0.5 | READY | — | — |
+| `↳ audience-scout` | sonnet | 0.5 | READY | — | — |
+| `↳ geopolitics-scout` | sonnet | 0.5 | READY | — | — |
+| `↳ revenue-scout` | sonnet | 0.5 | BLOCKED | business-synthesizer, audience-scout | — |
 | `po-strategist` | sonnet | 0.5 | BLOCKED | business-synthesizer | — |
-| `↳ revenue-scout` | sonnet | 0.5 | _internal_ | — | — |
-| `↳ po-strategist-sub` | sonnet | 0.5 | _internal_ | — | — |
+| `↳ revenue-scout` | sonnet | 0.5 | BLOCKED | business-synthesizer, audience-scout | — |
+| `↳ po-strategist-sub` | sonnet | 0.5 | BLOCKED | po-strategist | — |
 | `tech-synthesizer` | sonnet | 0.5 | BLOCKED | revenue-scout, po-strategist | — |
-| `↳ tech-scout` | sonnet | 0.5 | _internal_ | — | — |
-| `↳ devops-scout` | sonnet | 0.5 | _internal_ | — | — |
-| `↳ ai-data-scout` | sonnet | 0.5 | _internal_ | — | — |
-| `↳ compliance-scout` | sonnet | 0.5 | _internal_ | — | — |
-| `↳ ux-scout` | sonnet | 0.5 | _internal_ | — | — |
-| `↳ cogs-scout` | sonnet | 0.5 | _internal_ | — | — |
+| `↳ tech-scout` | sonnet | 0.5 | BLOCKED | po-strategist, revenue-scout, business-synthesizer, po-strategist-sub | — |
+| `↳ devops-scout` | sonnet | 0.5 | BLOCKED | po-strategist, revenue-scout, business-synthesizer, po-strategist-sub | — |
+| `↳ ai-data-scout` | sonnet | 0.5 | BLOCKED | po-strategist, revenue-scout, po-strategist-sub | — |
+| `↳ compliance-scout` | sonnet | 0.5 | BLOCKED | po-strategist, business-synthesizer, po-strategist-sub | — |
+| `↳ ux-scout` | sonnet | 0.5 | BLOCKED | po-strategist, po-strategist-sub, tech-estimator | — |
+| `↳ cogs-scout` | sonnet | 0.5 | BLOCKED | revenue-scout, tech-synthesizer, po-strategist | — |
 | `ux-flow-architect` | sonnet | 0.5 | BLOCKED | po-strategist, tech-synthesizer, po-strategist-sub | — |
-| `↳ ux-flow-architect-sub` | sonnet | 0.5 | _internal_ | — | — |
+| `↳ ux-flow-architect-sub` | sonnet | 0.5 | BLOCKED | po-strategist, tech-synthesizer, po-strategist-sub | — |
 | `tech-lead` | sonnet | 0.5 | BLOCKED | po-strategist, po-strategist-sub, ux-flow-architect-sub | — |
-| `↳ tech-estimator` | sonnet | 0.5 | _internal_ | — | — |
-| `↳ errata-resolver` | sonnet | 0.5 | _internal_ | — | — |
+| `↳ tech-estimator` | sonnet | 0.5 | BLOCKED | tech-synthesizer, po-strategist-sub, ux-flow-architect-sub | — |
+| `↳ errata-resolver` | sonnet | 0.5 | READY | — | — |
 | `discovery-pitcher` | sonnet | 0.5 | BLOCKED | tech-lead, business-synthesizer, tech-synthesizer, po-strategist | — |
 
 ---
@@ -62,25 +62,25 @@
 
 | Agent | Skills | Skills KB | Contracts KB | Artifacts KB (p90) | Tool Output KB | Own Write KB | Total KB | Risk |
 |---|---|---|---|---|---|---|---|---|
-| `po-strategist` | 11 | 80.47 | 7.54 | 14.26 | 0.29 | 7.54 | 102.56~ | 🟢 OK |
-| `↳ revenue-scout` | 8 | 71.48 | 7.33 | 9.4 | 0.0 | 7.33 | 88.21~ | 🟢 OK |
+| `po-strategist` | 11 | 80.47 | 9.85 | 14.64 | 0.29 | 9.85 | 105.25~ | 🟢 OK |
+| `↳ revenue-scout` | 8 | 134.28 | 7.33 | 9.78 | 0.0 | 7.33 | 151.39~ | 🟡 WATCH |
 | `↳ po-strategist-sub` | 2 | 7.96 | 8.52 | 5.8 | 0.0 | 6.33 | 20.09~ | 🟢 OK |
 | `discovery-pitcher` | 9 | 68.3 | 19.22 | 7.29 | 0.0 | 19.22 | 94.81~ | 🟢 OK |
-| `business-synthesizer` | 7 | 68.2 | 8.38 | 15.81 | 0.0 | 8.38 | 92.39~ | 🟢 OK |
-| `↳ revenue-scout` | 8 | 71.48 | 7.33 | 9.4 | 0.0 | 7.33 | 88.21~ | 🟢 OK |
-| `↳ product-scout` | 7 | 57.91 | 6.19 | 0.01 | 0.0 | 6.19 | 64.11 | 🟢 OK |
-| `↳ marketing-scout` | 5 | 34.68 | 1.48 | 0.01 | 0.0 | 1.48 | 36.17 | 🟢 OK |
-| `↳ audience-scout` | 5 | 30.91 | 2.47 | 0.01 | 0.0 | 2.47 | 33.39 | 🟢 OK |
-| `↳ geopolitics-scout` | 4 | 25.66 | 3.17 | 0.01 | 0.0 | 3.17 | 28.84 | 🟢 OK |
-| `↳ growth-hacker-scout` | 3 | 21.41 | 2.49 | 0.01 | 0.0 | 2.49 | 23.91 | 🟢 OK |
-| `tech-synthesizer` | 5 | 38.05 | 3.93 | 15.89 | 0.0 | 3.93 | 57.87~ | 🟢 OK |
+| `business-synthesizer` | 7 | 68.2 | 10.69 | 16.19 | 0.0 | 8.38 | 92.77~ | 🟢 OK |
+| `↳ revenue-scout` | 8 | 134.28 | 7.33 | 9.78 | 0.0 | 7.33 | 151.39~ | 🟡 WATCH |
+| `↳ product-scout` | 7 | 57.91 | 6.19 | 0.39 | 0.0 | 6.19 | 64.49 | 🟢 OK |
+| `↳ marketing-scout` | 5 | 34.68 | 1.48 | 0.39 | 0.0 | 1.48 | 36.55 | 🟢 OK |
+| `↳ audience-scout` | 5 | 30.91 | 2.47 | 0.39 | 0.0 | 2.47 | 33.77 | 🟢 OK |
+| `↳ geopolitics-scout` | 4 | 25.66 | 3.17 | 0.39 | 0.0 | 3.17 | 29.22 | 🟢 OK |
+| `↳ growth-hacker-scout` | 3 | 21.41 | 2.49 | 0.39 | 0.0 | 2.49 | 24.29 | 🟢 OK |
+| `tech-synthesizer` | 5 | 38.05 | 6.24 | 15.89 | 0.0 | 3.93 | 57.87~ | 🟢 OK |
+| `↳ devops-scout` | 8 | 109.22 | 2.7 | 18.14 | 0.17 | 2.7 | 130.23~ | 🟢 OK |
+| `↳ cogs-scout` | 7 | 102.78 | 1.56 | 17.92 | 0.0 | 1.56 | 122.26~ | 🟢 OK |
 | `↳ tech-scout` | 8 | 54.76 | 1.19 | 14.55 | 0.15 | 1.19 | 70.65~ | 🟢 OK |
-| `↳ devops-scout` | 8 | 46.42 | 2.7 | 18.14 | 0.17 | 2.7 | 67.43~ | 🟢 OK |
-| `↳ cogs-scout` | 7 | 39.98 | 1.56 | 17.92 | 0.0 | 1.56 | 59.46~ | 🟢 OK |
 | `↳ ux-scout` | 5 | 30.75 | 1.85 | 5.42 | 0.15 | 1.85 | 38.17~ | 🟢 OK |
-| `↳ ai-data-scout` | 3 | 16.65 | 0.59 | 10.28 | 0.15 | 0.59 | 27.67~ | 🟢 OK |
+| `↳ ai-data-scout` | 4 | 19.46 | 0.59 | 10.28 | 0.15 | 0.59 | 30.48~ | 🟢 OK |
 | `↳ compliance-scout` | 4 | 21.95 | 0.49 | 4.41 | 0.17 | 0.49 | 27.02~ | 🟢 OK |
-| `ux-flow-architect` | 3 | 21.6 | 0.0 | 3.26 | 0.23 | 0.0 | 25.09~ | 🟢 OK |
+| `ux-flow-architect` | 3 | 21.6 | 2.31 | 3.26 | 0.23 | 0.0 | 25.09~ | 🟢 OK |
 | `↳ ux-flow-architect-sub` | 4 | 31.63 | 8.41 | 4.92 | 0.0 | 6.22 | 42.77~ | 🟢 OK |
 | `tech-lead` | 0 | 0.0 | 0.0 | 1.74 | 0.33 | 0.0 | 2.07~ | 🟢 OK |
 | `↳ tech-estimator` | 1 | 19.7 | 1.32 | 11.3 | 0.0 | 1.32 | 32.32~ | 🟢 OK |

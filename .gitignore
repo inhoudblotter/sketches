@@ -2,6 +2,13 @@ temp
 .claude
 departments/discovery/DASHBOARD.html
 
+departments/operations/contracts
+departments/operations/playbooks/skill-agent-crafting.md
+departments/operations/playbooks/skill-agentic-pitfalls.md
+departments/operations/playbooks/skill-playbook-engineering.md
+departments/operations/playbooks/skill-quality-assurance.md
+departments/operations/playbooks/tool-standardization.md
+
 # Python
 *.py[cod]
 *$py.class

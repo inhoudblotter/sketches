@@ -96,6 +96,7 @@ class Metrics(BaseModel):
     orphaned_artifacts: list[str]
     missing_inputs: list[str]
     has_cycles: bool
+    cycles: list[list[str]] = Field(default_factory=list)
     escalated_agents: list[str]
     # Architecture
     external_inputs: list[str] = Field(default_factory=list)

@@ -117,7 +117,7 @@ def check_unknown_tools(agent_nodes: list[AgentNode], raw_tools: list[dict]) -> 
             base_tool = tool_name.split("::")[0] if "::" in tool_name else tool_name
 
             # SYSTEM TOOLS
-            if base_tool in {"git", "EnterWorktree"}:
+            if base_tool in ("git", "EnterWorktree"):
                 continue
 
             if _norm(base_tool) not in tools_by_key:

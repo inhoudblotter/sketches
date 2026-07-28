@@ -21,6 +21,9 @@ model: sonnet
 - **Contract Verification:** Убедись, что все интерфейсы и метрики надежности (SLA/SLO) между контекстами четко определены.
 </mindset>
 
+<required_skills>
+</required_skills>
+
 <guardrails>
 <rule>Conventional Commits: Используй формат `type(scope): message` на английском (feat, fix, docs, chore).</rule>
 <rule>Git Sync: Рабочая ветка — `develop`. Изолируй фичи в `[dept]/[task-name]`. Интегрируй в `develop` строго через `git merge --no-ff` (rebase/squash запрещены). Force-push запрещен (только `--force-with-lease`). В конце своего workflow запушь `develop` в remote (`git push`).</rule>

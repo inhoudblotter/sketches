@@ -56,9 +56,7 @@ def check_balanced_xml_tags(body: str) -> list[LintError]:
     return errors
 
 
-def check_xml_sections(
-    body: str, is_subagent: bool, file_name: str = ""
-) -> list[LintError]:
+def check_xml_sections(body: str, is_subagent: bool) -> list[LintError]:
     errors = []
 
     required_sections = [
@@ -71,8 +69,6 @@ def check_xml_sections(
     ]
 
     for sec in required_sections:
-        if sec == "required_skills" and file_name == "tech-lead.md":
-            continue
         if not re.search(rf"<{sec}>", body):
             errors.append(
                 LintError(
