@@ -1,0 +1,28 @@
+# Patch — точечная директива от оркестратора к саб-агенту.
+#
+# Место хранения: workspace/{dept}/{scope}/patches/{patch_name}.yaml
+#                  {scope}      — поддиректория, зафиксированная в системном промпте
+#                                 саб-агента-получателя (например: domains/{domain},
+#                                 research/technical-context, research/business-context).
+#                  {patch_name} = смысл директивы (kebab-case, одно действие), а не
+#                                 обязательно имя скаута/агента.
+#                  Пример: add-monitoring-epic.yaml, tech-scout-quorum-conflict.yaml
+#
+# Пишет:   оркестратор (после [SUCCESS] домена/скаута при обнаружении точечного пробела)
+# Читает:  саб-агент (Patch Run — см. skill-patch-protocol.md)
+# История: собирается автоматически через patch-manager (departments/operations/tools)
+#
+# Жизненный цикл: pending → applied | failed
+# Сброс (failed → pending): выполняется оркестратором через patch-manager reset.
+
+gap_type: "[missing_epic_type|orphan_entity|errata_resolution|insufficient_coverage|pivot_refine|commitment_decision]"
+authored_by: "[имя агента-оркестратора, например: po-strategist]"
+target_agent: "[имя саб-агента-исполнителя, например: po-strategist-sub]"
+created_at: "[ISO 8601, например: 2026-07-13T14:00:00Z]"
+status: pending   # pending | applied | failed
+detail: >-
+  [Конкретное описание. Один файл = одно действие.
+  Пример: Домен не содержит эпика с epic_type: monitoring.
+  Добавь эпик, покрывающий admin-дашборды и аудит-логи.]
+errata_ref: "[ID errata-записи из domain_errata.yaml — опционально, если патч создан для резолюции errata]"
+result_note: "[заполняет саб-агент при завершении: кратко что сделал или причина failed]"
