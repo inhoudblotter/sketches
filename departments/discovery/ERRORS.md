@@ -1,13 +1,13 @@
 # ERRORS & WARNINGS: Отдел Discovery
 
 > Автоматически сгенерировано `pipeline-analysis` из графа агентов (`departments/discovery/staff`).
-**Generated:** 2026-07-28T19:41:53.409852+00:00
+**Generated:** 2026-08-01T13:41:07.021043+00:00
 
 ---
 
 
 ## ✅ Tool Tests Passed
-- `139 passed in 4.23s`
+- `139 passed in 4.36s`
 
 
 

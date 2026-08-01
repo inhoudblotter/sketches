@@ -2,7 +2,7 @@
 
 > Автоматически сгенерировано `pipeline-analysis` из frontmatter агентов (`departments/discovery/staff`). Не редактируйте руками — правьте агентов и перегенерируйте файл (`pipeline-analysis discovery`). Философия и назначение отдела: см. [README.md](README.md).
 
-**Generated:** 2026-07-28T19:41:53.409852+00:00
+**Generated:** 2026-08-01T13:41:07.021043+00:00
 
 ---
 
@@ -135,7 +135,7 @@ Geopolitics & Censorship Scout. Исследует межгосударстве�
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 150.3 (~, часть входов ещё не сгенерирована) |
+| Context KB | 154.1 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 8
 **Uses tools:** 2
 
@@ -186,7 +186,7 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 150.3 (~, часть входов ещё не сгенерирована) |
+| Context KB | 154.1 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 8
 **Uses tools:** 2
 
@@ -222,18 +222,83 @@ Product Strategist (Генератор смыслов). Разрабатывае
 
 ### Phase 3
 
-#### `tech-synthesizer`
-Синтезатор технического контекста. Объединяет данные от tech, ux, devops, compliance скаутов и формирует технические ограничения для архитекторов (ux-flow-architect и system-design-architect).
+#### `ux-flow-architect`
+UX Flow Architect (Проектировщик путей). Планирует полный список пользовательских сценариев через State Machines на основе Job Stories и платформ, затем проверяет полноту результата.
 
 | Field | Value |
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 54.5 (~, часть входов ещё не сгенерирована) |
+| Context KB | 24.9 (~, часть входов ещё не сгенерирована) |
+| Status | BLOCKED |
+**Required skills:** 3
+**Uses tools:** 21
+**Delegates to:** 2
+**Blocked on:** 4
+
+**Reads (Inputs):**
+  - `domains_manifest.yaml`
+  - `platform_strategy.yaml`
+
+**Writes (Outputs):**
+  - `ux_constraints.yaml`
+  - `ux_vision.md`
+  - `{patch_name}.yaml`
+
+##### `ux-scout` _(subagent)_
+Исследователь пользовательского опыта и эргономики. Собирает паттерны взаимодействия, адаптированные под среду использования и устройства.
+
+| Field | Value |
+|---|---|
+| Model | sonnet |
+| Temperature | 0.5 |
+| Context KB | 53.3 (~, часть входов ещё не сгенерирована) |
+**Required skills:** 5
+**Uses tools:** 4
+
+**Reads (Inputs):**
+  - `platform_strategy.yaml`
+  - `target_audience.yaml`
+  - `business_observability.yaml`
+  - `{patch_name}.yaml`
+
+**Writes (Outputs):**
+  - `ux_research.yaml`
+
+##### `ux-flow-architect-sub` _(subagent)_
+Вспомогательный UX Flow Architect. Фокусируется на генерации Машин Состояний (State Machines) для группы Job Stories, детально прописывая бизнес-логику, информационные контракты и Edge Cases в YAML.
+
+| Field | Value |
+|---|---|
+| Model | sonnet |
+| Temperature | 0.5 |
+| Context KB | 39.5 (~, часть входов ещё не сгенерирована) |
+**Required skills:** 4
+**Uses tools:** 3
+
+**Reads (Inputs):**
+  - `manifest.yaml`
+  - `stories.yaml`
+  - `{patch_name}.yaml`
+
+**Writes (Outputs):**
+  - `{flow_id}.yaml`
+  - `errata.yaml`
+
+### Phase 4
+
+#### `tech-synthesizer`
+Синтезатор технического контекста. Объединяет данные от tech, devops, ai-data, compliance скаутов и формирует технические ограничения для архитекторов (system-design-architect). UX-контекст (ux-scout, ux_research.yaml/ux_constraints.yaml/ux_vision.md) — зона ux-flow-architect, который теперь запускается раньше tech-synthesizer.
+
+| Field | Value |
+|---|---|
+| Model | sonnet |
+| Temperature | 0.5 |
+| Context KB | 52.5 (~, часть входов ещё не сгенерирована) |
 | Status | BLOCKED |
 **Required skills:** 5
 **Uses tools:** 11
-**Delegates to:** 7
+**Delegates to:** 6
 **Blocked on:** 2
 
 **Reads (Inputs):**
@@ -243,14 +308,11 @@ Product Strategist (Генератор смыслов). Разрабатывае
   - `deployment_strategy.md`
   - `algorithm_benchmarks.md`
   - `compliance_constraints.md`
-  - `ux_research.md`
 
 **Writes (Outputs):**
   - `{patch_name}.yaml`
   - `tech_conflict_log.md`
-  - `ux_vision.md`
   - `tech_constraints.yaml`
-  - `ux_constraints.yaml`
 
 ##### `tech-scout` _(subagent)_
 Исследователь технологических бенчмарков. Ищет в интернете лучшие практики, открытые библиотеки и известные проблемы для реализации заявленных функций.
@@ -261,7 +323,7 @@ Product Strategist (Генератор смыслов). Разрабатывае
 | Temperature | 0.5 |
 | Context KB | 70.0 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 8
-**Uses tools:** 4
+**Uses tools:** 5
 
 **Reads (Inputs):**
   - `platform_strategy.yaml`
@@ -281,9 +343,9 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 132.3 (~, часть входов ещё не сгенерирована) |
+| Context KB | 138.1 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 8
-**Uses tools:** 4
+**Uses tools:** 5
 
 **Reads (Inputs):**
   - `platform_strategy.yaml`
@@ -303,9 +365,9 @@ Product Strategist (Генератор смыслов). Разрабатывае
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 30.4 (~, часть входов ещё не сгенерирована) |
+| Context KB | 30.5 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 4
-**Uses tools:** 4
+**Uses tools:** 6
 
 **Reads (Inputs):**
   - `platform_strategy.yaml`
@@ -325,7 +387,7 @@ Product Strategist (Генератор смыслов). Разрабатывае
 | Temperature | 0.5 |
 | Context KB | 26.5 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 4
-**Uses tools:** 3
+**Uses tools:** 4
 
 **Reads (Inputs):**
   - `platform_strategy.yaml`
@@ -336,26 +398,6 @@ Product Strategist (Генератор смыслов). Разрабатывае
 **Writes (Outputs):**
   - `compliance_constraints.md`
 
-##### `ux-scout` _(subagent)_
-Исследователь пользовательского опыта и эргономики. Собирает паттерны взаимодействия, адаптированные под среду использования и устройства.
-
-| Field | Value |
-|---|---|
-| Model | sonnet |
-| Temperature | 0.5 |
-| Context KB | 37.8 (~, часть входов ещё не сгенерирована) |
-**Required skills:** 5
-**Uses tools:** 4
-
-**Reads (Inputs):**
-  - `platform_strategy.yaml`
-  - `target_audience.yaml`
-  - `business_observability.yaml`
-  - `{patch_name}.yaml`
-
-**Writes (Outputs):**
-  - `ux_research.md`
-
 ##### `ops-scout` _(subagent)_
 Operations & HR Scout (Рекрутер и Операционный архитектор). Формирует минимально жизнеспособную команду (Headcount) и бюджет ФОТ на основе Job Stories, целевой аудитории и метрик нагрузки (MAU). Результат передаётся в cogs-scout как статья fixed_monthly_usd.
 
@@ -363,7 +405,7 @@ Operations & HR Scout (Рекрутер и Операционный архите
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 103.6 (~, часть входов ещё не сгенерирована) |
+| Context KB | 108.3 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 4
 **Uses tools:** 8
 
@@ -384,7 +426,7 @@ Operations & HR Scout (Рекрутер и Операционный архите
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 125.5 (~, часть входов ещё не сгенерирована) |
+| Context KB | 130.2 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 7
 **Uses tools:** 3
 
@@ -399,51 +441,6 @@ Operations & HR Scout (Рекрутер и Операционный архите
 
 **Writes (Outputs):**
   - `unit_economics_model.yaml`
-
-### Phase 4
-
-#### `ux-flow-architect`
-UX Flow Architect (Проектировщик путей). Планирует полный список пользовательских сценариев через State Machines на основе Job Stories и платформ, затем проверяет полноту результата.
-
-| Field | Value |
-|---|---|
-| Model | sonnet |
-| Temperature | 0.5 |
-| Context KB | 26.0 (~, часть входов ещё не сгенерирована) |
-| Status | BLOCKED |
-**Required skills:** 3
-**Uses tools:** 17
-**Delegates to:** 1
-**Blocked on:** 5
-
-**Reads (Inputs):**
-  - `domains_manifest.yaml`
-  - `platform_strategy.yaml`
-  - `ux_constraints.yaml`
-
-**Writes (Outputs):**
-  - `{patch_name}.yaml`
-
-##### `ux-flow-architect-sub` _(subagent)_
-Вспомогательный UX Flow Architect. Фокусируется на генерации Машин Состояний (State Machines) для группы Job Stories, детально прописывая бизнес-логику, информационные контракты и Edge Cases в YAML.
-
-| Field | Value |
-|---|---|
-| Model | sonnet |
-| Temperature | 0.5 |
-| Context KB | 39.9 (~, часть входов ещё не сгенерирована) |
-**Required skills:** 4
-**Uses tools:** 2
-
-**Reads (Inputs):**
-  - `manifest.yaml`
-  - `ux_constraints.yaml`
-  - `stories.yaml`
-  - `{patch_name}.yaml`
-
-**Writes (Outputs):**
-  - `{flow_id}.yaml`
-  - `errata.yaml`
 
 ### Phase 5
 
@@ -471,7 +468,7 @@ Technical Estimator. Анализирует сгенерированные Job S
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 31.2 (~, часть входов ещё не сгенерирована) |
+| Context KB | 32.7 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 1
 **Uses tools:** 1
 
@@ -507,7 +504,7 @@ Discovery Auditor (Red Teamer). Анализирует собранную стр
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 75.6 (~, часть входов ещё не сгенерирована) |
+| Context KB | 76.4 (~, часть входов ещё не сгенерирована) |
 | Status | BLOCKED |
 **Required skills:** 9
 **Uses tools:** 11

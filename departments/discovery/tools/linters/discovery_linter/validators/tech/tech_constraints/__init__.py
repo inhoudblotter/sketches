@@ -6,15 +6,17 @@ from typing import List, Optional, Union
 import yaml
 from pathlib import Path
 
+StackField = Union[str, List[str]]
+
 
 class TechnologyStack(BaseModel):
-    frontend: str
-    backend: Optional[str] = None
-    database: Optional[str] = None
-    infrastructure: str
-    p2p_network_layer: Optional[str] = None
-    data_replication_model: Optional[str] = None
-    cryptographic_identity: Optional[str] = None
+    frontend: Optional[StackField] = None
+    backend: Optional[StackField] = None
+    database: Optional[StackField] = None
+    infrastructure: Optional[StackField] = None
+    p2p_network_layer: Optional[StackField] = None
+    data_replication_model: Optional[StackField] = None
+    cryptographic_identity: Optional[StackField] = None
 
 
 class ExternalApiCall(BaseModel):

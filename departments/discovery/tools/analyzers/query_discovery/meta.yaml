@@ -70,6 +70,12 @@ commands:
   flows:
     inputs:
       - 'workspace/discovery/domains/*/epics/*/flows/*.yaml'
+  telemetry-events:
+    # Global aggregation of telemetry_events.frequency_class across every flow —
+    # sizing signal for devops-scout (batching/indexing/retention), not a
+    # traceability catalog (see logic/queries/flows/telemetry.py).
+    inputs:
+      - 'workspace/discovery/domains/*/epics/*/flows/*.yaml'
   estimation:
     inputs:
       - 'workspace/discovery/domains/*/epics/*/estimation.yaml'
@@ -169,6 +175,20 @@ commands:
       - 'workspace/discovery/domains/*/domain_errata.yaml'
       - 'workspace/discovery/domains/*/epics/*/errata.yaml'
 
+  # ── UX commands (ux-flow-architect zone) ───────────────────────────────────
+  ux-constraints:
+    # Mechanical --domain filter over ux_research.yaml/ux_constraints.yaml by
+    # platform (manifest.yaml) and job_story_refs (stories.yaml) — PIT-17,
+    # no LLM re-synthesis. Same-agent-family self-reference: ux-flow-architect
+    # writes both files in its own Step 1.15 before delegating to
+    # ux-flow-architect-sub, which calls this command per epic.
+    inputs:
+      - 'workspace/discovery/domains/*/manifest.yaml'
+      - 'workspace/discovery/domains/*/summary.yaml'
+      - 'workspace/discovery/domains/*/epics/*/stories.yaml'
+      - 'workspace/discovery/research/technical-context/ux_research.yaml'
+      - 'workspace/discovery/strategy/ux_constraints.yaml'
+
 capabilities:
   read_queries:
     - name: 'Data Slicing'
@@ -191,6 +211,8 @@ capabilities:
       description: 'Единый агрегированный снапшот для оркестраторского Tree Check (self-check). Включает toc, stats, coverage, boundary-check, open domain errata, open patches.'
     - name: 'Flows Self-Check Gate'
       description: 'Агрегированный снапшот для Tree Check ux-flow-architect (flows-self-check), только по flows: эпики без flows, битые ссылки linked_job_stories, истории без покрытия flow, флоу без сигналов ошибок/телеметрии. Полнота estimation — отдельная проверка (estimation --global).'
+    - name: 'Telemetry Volume Aggregation'
+      description: 'Глобальная агрегация telemetry_events.frequency_class по всем flows (telemetry-events --global): счётчики по классам + only-деduped список high_frequency событий — сигнал объёма для devops-scout (батчинг/индексация/retention), не каталог трассировки.'
     - name: 'Scoped Errata Access'
       description: 'Зонированный доступ к errata: errata-domain (po-strategist), errata-epic (ux-flow-architect), errata-global (aggregation only).'
     - name: 'Patch Management'

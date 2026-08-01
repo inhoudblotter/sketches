@@ -1,11 +1,14 @@
 # Tech Constraints YAML Contract
 # Синтезируется Tech Synthesizer'ом на основе исследований DevOps и Tech Scout.
 
+# Каждое поле — строка ИЛИ список строк (когда компонент реально состоит из
+# нескольких технологий, например Postgres + Redis, или web/mobile на разных
+# фреймворках). Не разбивай на список то, что по факту одна технология.
 technology_stack:
-  frontend: '[Language/Framework]'
+  frontend: '[Language/Framework, может быть null, если продукт headless — потребители только machine_personas (ai_agent/software_client/iot_device), UI отсутствует. Список — если несколько клиентов]'
   backend: '[Language/Framework, может быть null для Local-First]'
-  database: '[DB Type, e.g., PostgreSQL, Redis, может быть null для P2P]'
-  infrastructure: '[Hosting/Deployment, e.g., Vercel, AWS EKS, VPS]'
+  database: '[DB Type, e.g., PostgreSQL, Redis, может быть null для P2P. Список — если используется несколько СУБД]'
+  infrastructure: '[Hosting/Deployment, e.g., Vercel, AWS EKS, VPS. Может быть null для чистого Local-First/P2P без серверной инфраструктуры — тогда см. p2p_network_layer]'
   p2p_network_layer: '[Опционально: Описание Gossip, реле, Federated Trackers]'
   data_replication_model: '[Опционально: CRDT, Event Sourcing, SQLite In-Memory]'
   cryptographic_identity: '[Опционально: Zero-Trust аутентификация, Ed25519]'

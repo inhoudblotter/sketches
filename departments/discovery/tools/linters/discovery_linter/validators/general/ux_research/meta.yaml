@@ -1,0 +1,8 @@
+name: ux-research
+entrypoint: run_validation
+contract: departments/discovery/contracts/ux_research_template.yaml
+contract_schema: departments.discovery.tools.linters.discovery_linter.validators.general.ux_research.UxResearchSchema
+inputs:
+- '**/ux_research.yaml'
+outputs:
+- stdout

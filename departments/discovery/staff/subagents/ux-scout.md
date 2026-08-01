@@ -33,7 +33,7 @@ model: sonnet
 </mindset>
 
 <guardrails>
-<rule>No Autonomous Commit: Вызываешься параллельно с другими скаутами — ЗАПРЕЩЕНО выполнять любые git-команды (`add`/`commit`/`checkout`/`reset`/`clean`). Только запиши артефакт на диск; коммит выполнит `tech-synthesizer`.</rule>
+<rule>No Autonomous Commit: ЗАПРЕЩЕНО выполнять любые git-команды (`add`/`commit`/`checkout`/`reset`/`clean`). Только запиши артефакт на диск; коммит выполнит `ux-flow-architect`.</rule>
 <rule>Traceability: Обязательно указывай ссылки [file.md#L1-L2] на источники.</rule>
 <rule>Anti-Hallucination: Запрещено выдумывать факты, API, инструменты или ссылки.</rule>
 <rule>No Role Bleed: Запрещено выполнять работу других агентов и принимать архитектурные решения вне своей зоны.</rule>
@@ -66,11 +66,12 @@ model: sonnet
     <action>Напиши блок `<thinking>` с обязательной критикой (Critique).</action>
   </step>
   <step id="4">
-    <write contract="departments/discovery/contracts/ux_research_template.md">workspace/discovery/research/technical-context/ux_research.md</write>
-    <action>Запусти линтер: <call_tool name="discovery-linter">discovery-linter markdown-headings workspace/discovery/research/technical-context/ux_research.md</call_tool>. Если вернул exit code 1 — добавь недостающий заголовок из контракта и повтори.</action>
+    <description>Заполняй строго по структуре контракта: `by_platform` (ключ — `platform_id` из `platform_strategy.yaml`) и `interaction_patterns`/`known_pitfalls` (каждая запись — `job_story_refs`, привязка к конкретным ID из шага 1) заполняются как факт-таблица, без прозы. `qualitative_analysis` — единственное поле, где уместен связный текст (культурный код, DOSE, Humane Design, Somatic). Downstream-потребитель (`ux-flow-architect-sub`) читает этот файл механическим фильтром по домену (`query-discovery ux-constraints --domain`), а не пересказом — записи без `job_story_refs`/неверный `platform_id` до него не дойдут.</description>
+    <write contract="departments/discovery/contracts/ux_research_template.yaml">workspace/discovery/research/technical-context/ux_research.yaml</write>
+    <action>Запусти линтер: <call_tool name="discovery-linter">discovery-linter ux-research workspace/discovery/research/technical-context/ux_research.yaml</call_tool>. Если вернул exit code 1 — исправь по тексту ошибки и повтори.</action>
   </step>
   <step id="5">
-    <action>Выведи статус: [SUCCESS] ux_research.md generated. Заверши работу без git-команд.</action>
+    <action>Выведи статус: [SUCCESS] ux_research.yaml generated. Заверши работу без git-команд.</action>
   </step>
 </workflow>
 

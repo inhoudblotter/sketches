@@ -1,16 +1,19 @@
 # UX & Flow Constraints YAML Contract
-# Формируется Tech Synthesizer на основе UX Research и Technical Benchmarks для UX Flow Architect.
+# НЕ пересказ ux_research.yaml — то, что там уже лежит готовой структурой (by_platform,
+# interaction_patterns, known_pitfalls), читается напрямую через `query-discovery
+# ux-constraints --domain {domain}`. Сюда пишется ТОЛЬКО результат реального арбитража —
+# конфликт между платформами/приоритетами, который потребовал решения, а не просто перенос
+# факта. Пустые списки ниже — легитимный результат при отсутствии конфликтов, не недоработка.
 
-flags:
-  offline_first: '[true/false]'
-  is_self_hosted: '[true/false]'
+author_agent: 'ux-flow-architect'
 
-architect_note: '[Краткая выжимка архитектурных и платформенных решений: например, "Использовать Calm Tech, без геймификации, требуется оффлайн-режим и локальное кэширование"]'
+overrides:
+  - job_story_refs: ['[ID Job Story, затронутой конфликтом]']
+    conflict: '[В чём конкретно противоречие. Например: curator_web требует WCAG 2.1 AA, artist_mobile — высокую контрастность вместо формального WCAG, оба варианта нельзя применить к общему компоненту ввода]'
+    resolution: '[Принятое решение и почему. Например: приоритет artist_mobile-профилю, т.к. домен estimation — MVP mandatory, curator-версия компонента — nice-to-have]'
+    source: '[Ссылка на источники конфликта, например: ux_research.yaml#by_platform.artist_mobile, ux_research.yaml#by_platform.curator_web]'
 
-friction_management:
-  intentional_friction: '[Где мы намеренно замедляем пользователя? Например: Окно подтверждения перед отправкой]'
-  cognitive_load: '[Ожидаемый уровень когнитивной нагрузки и меры снижения. Например: Не более 3 полей на экран]'
-
-device_specifics:
-  primary_input: '[Например: Touchscreen, Keyboard-only, Voice]'
-  accessibility_level: '[Требования к доступности, например: WCAG 2.1 AA]'
+# Опционально: обоснование, когда решение затрагивает несколько платформ/доменов одновременно
+# и не сводится к одной записи overrides (например, стратегический компромисс уровня всего
+# продукта). Свободный текст — только когда overrides недостаточно, не подменяет его.
+architect_note: '[Опционально. Только кросс-доменные компромиссы, не пересказ ux_research.yaml.]'

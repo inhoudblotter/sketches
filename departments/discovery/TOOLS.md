@@ -21,7 +21,7 @@
 | `↳ job-stories` | — |
 | `↳ job-stories-content` | — |
 | `↳ launch-roadmap` | discovery-pitcher |
-| `↳ markdown-headings` | ai-data-scout, compliance-scout, devops-scout, discovery-pitcher, growth-hacker-scout, marketing-scout, product-scout, tech-scout, tech-synthesizer, ux-scout |
+| `↳ markdown-headings` | ai-data-scout, compliance-scout, devops-scout, discovery-pitcher, growth-hacker-scout, marketing-scout, product-scout, tech-scout, tech-synthesizer, ux-flow-architect |
 | `↳ markdown-links` | — |
 | `↳ market-context` | business-synthesizer |
 | `↳ operations-team` | ops-scout |
@@ -37,7 +37,8 @@
 | `↳ tech-market-brief` | business-synthesizer |
 | `↳ tech-synthesis` | tech-synthesizer |
 | `↳ user-flows` | — |
-| `↳ ux-constraints` | — |
+| `↳ ux-constraints` | ux-flow-architect |
+| `↳ ux-research` | ux-flow-architect, ux-scout |
 | `↳ workspace` | — |
 | `Extract Bounded Contexts` | tech-lead |
 | `Generate Pitch Deck` | discovery-pitcher |
@@ -54,7 +55,7 @@
 | `↳ estimation` | tech-lead |
 | `↳ exports` | — |
 | `↳ features` | ai-data-scout, discovery-pitcher, ux-scout |
-| `↳ flows` | discovery-pitcher, tech-lead |
+| `↳ flows` | ai-data-scout, compliance-scout, discovery-pitcher, tech-lead, tech-scout |
 | `↳ flows-self-check` | tech-lead, ux-flow-architect |
 | `↳ get` | — |
 | `↳ metrics` | compliance-scout, devops-scout, discovery-pitcher, po-strategist |
@@ -72,9 +73,11 @@
 | `↳ stats` | ops-scout, tech-lead, tech-scout, ux-flow-architect |
 | `↳ stories` | discovery-pitcher, ops-scout, ux-scout |
 | `↳ team-functions` | ops-scout |
+| `↳ telemetry-events` | ai-data-scout, devops-scout |
 | `↳ toc` | ops-scout, po-strategist, tech-lead, ux-flow-architect |
 | `↳ trace` | — |
 | `↳ trajectory` | — |
+| `↳ ux-constraints` | ux-flow-architect-sub |
 
 ## Python Code Quality
 

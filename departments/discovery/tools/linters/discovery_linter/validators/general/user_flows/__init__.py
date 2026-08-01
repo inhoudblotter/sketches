@@ -31,6 +31,10 @@ class SharedRules(BaseModel):
 class TelemetryEvent(BaseModel):
     event_name: str
     trigger_state: Optional[str] = None
+    # Свободная строка, не Literal — базовые значения (session/interaction/
+    # high_frequency, см. skill-user-flows.md) рекомендованы, но не единственные
+    # допустимые: кастомное значение обязано пройти валидацию, а не упасть.
+    frequency_class: Optional[str] = None
     model_config = ConfigDict(extra="allow")
 
 

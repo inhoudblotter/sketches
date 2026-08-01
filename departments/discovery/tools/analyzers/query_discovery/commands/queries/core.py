@@ -7,7 +7,7 @@ from ...logic.queries.core import (
     get_filtered_features,
     get_filtered_epics,
 )
-from ...logic.queries.flows import get_filtered_flows
+from ...logic.queries.flows import get_filtered_flows, get_telemetry_events_global
 
 
 def register_core_queries(app: typer.Typer, print_yaml):
@@ -69,3 +69,14 @@ def register_core_queries(app: typer.Typer, print_yaml):
         only_sla: bool = typer.Option(False, "--only-sla", "-s"),
     ):
         print_yaml(get_filtered_flows(workspace, domain, epic, only_sla))
+
+    @app.command("telemetry-events")
+    def telemetry_events(
+        workspace: Path = typer.Argument(Path("workspace/")),
+        is_global: bool = typer.Option(
+            False, "--global", "-g", help="Aggregate across all domains"
+        ),
+    ):
+        if not is_global:
+            raise typer.BadParameter("telemetry-events currently requires --global")
+        print_yaml(get_telemetry_events_global(workspace))

@@ -21,12 +21,23 @@ def get_filtered_flows(
                 continue
             for flow in e.get("flows", []):
                 if only_sla:
+                    # Most flows leave `sla` all-null (it's optional) — those
+                    # carry zero benchmarkable signal, so drop them entirely
+                    # instead of returning noise at project scale. Within a
+                    # kept flow, also strip individually-null sla fields.
+                    sla = {
+                        k: v
+                        for k, v in (flow.get("sla") or {}).items()
+                        if v is not None
+                    }
+                    if not sla:
+                        continue
                     res.append(
                         {
                             "flow_id": flow.get("flow_id"),
                             "_domain": d_name,
                             "_epic": epic_id,
-                            "sla": flow.get("sla", {}),
+                            "sla": sla,
                             "linked_job_stories": flow.get("linked_job_stories", []),
                         }
                     )

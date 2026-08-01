@@ -1,0 +1,44 @@
+author_agent: 'ux-scout'
+# UX Research YAML Contract
+# Формат — гибрид: структурированные списки для фактов, которые напрямую потребляет
+# user_flows_template.yaml (через query-discovery ux-constraints --domain, механически,
+# без LLM-пересказа), и свободный текст там, где исследование — связное рассуждение,
+# а не факт-таблица (qualitative_analysis).
+
+# Ключ верхнего уровня — platform_id из platform_strategy.yaml.platforms[].id.
+# Заполняется только для платформ, реально входящих в scope исследования (MVP Mandatory).
+by_platform:
+  '[platform_id, например: artist_mobile]':
+    environmental_context: '[Среда использования: освещение, шум, занятость рук, связь. Например: удалённый объект без устойчивой связи, яркое солнце, одна рука занята инструментом]'
+    device_constraints: '[Сенсоры, жесты, ограничения экрана, специфика ввода. Например: capacitive-friendly зоны ≥44×44px для работы в перчатках]'
+    perceptual_thresholds:
+      - interaction_class: '[Например: critical_confirmation, background_sync, initial_load]'
+        tolerance_ms: '[Число. Порог терпения пользователя в этом контексте, не общий закон UX, а нишевой/контекстный]'
+        source: '[URL]'
+    accessibility_level: '[Например: WCAG 2.1 AA — либо контекстное обоснование отклонения от формального стандарта, как в device_constraints]'
+
+# Паттерны на уровне бизнес-состояний и переходов (совместимости, конфликт-резолюции,
+# восстановления, подтверждения) — НЕ UI-виджеты (кнопки/экраны/дизайн-системы), т.к.
+# user_flows_template.yaml запрещает UI-словарь (No UI Vocabulary). Прямой вход для
+# states/shared_states/design_rationale конкретных флоу.
+interaction_patterns:
+  - job_story_refs: ['[ID Job Story или feature, к которым относится паттерн]']
+    pattern: '[Паттерн на языке бизнес-состояний. Например: явный выбор "моя версия vs версия сервера" при конфликте офлайн/онлайн правки, вместо тихого last-write-wins]'
+    source: '[URL]'
+
+# Известные причины оттока/ошибок в этой нише — прямой вход для Edge Cases (шаг 3
+# skill-user-flows.md).
+known_pitfalls:
+  - job_story_refs: ['[ID]']
+    pitfall: '[Что именно идёт не так]'
+    consequence: '[Бизнес-последствие. Например: отток, дублирующий ввод, репутационный риск]'
+    source: '[URL]'
+
+# Связное рассуждение, которое не сводится к факт-таблице: культурный/эмоциональный код
+# аудитории, нейрохимическая модель (DOSE), Humane Design/Stopping Cues, Somatic/Haptics.
+# Не разбивается на искусственные поля — синтезатор ссылается на конкретные абзацы через
+# обычный Tracer Pattern [ux_research.yaml#qualitative_analysis].
+qualitative_analysis: >-
+  [Свободный текст: культурные/эмоциональные коды целевой аудитории, применимость DOSE-модели
+  (дофамин/окситоцин/серотонин/эндорфин), Humane Design и stopping cues, соматическая
+  интеграция (haptics) — только там, где это реально обосновано найденными источниками.]

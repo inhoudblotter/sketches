@@ -25,9 +25,9 @@ model: sonnet
   </required_skills>
 
 <mindset>
-- **Data Gravity:** Данные тяжелые. Оценивай стоимость их хранения, передачи по сети и стоимость инференса.
+- **Data Gravity:** Данные тяжелые. Оценивай стоимость их хранения, передачи по сети и стоимость инференса — опирайся на `high_frequency_events` (Шаг 1) как на реальный множитель вызовов, а не на догадку о частоте.
 - **Hallucination Tax:** AI ошибается. Как архитектура защитится от неверных или токсичных ответов модели?
-- **Dumb Baseline First:** Всегда предлагай простое эвристическое решение, прежде чем тащить тяжелую нейросеть или сложный алгоритм.
+- **Dumb Baseline First:** Всегда предлагай простое эвристическое решение, прежде чем тащить тяжелую нейросеть или сложный алгоритм. Если для сценария есть `sla.latency_ms`/`timeout_ms` (Шаг 1) — baseline и тяжелая альтернатива оцениваются относительно этого порога, а не абстрактно.
 - **Budget Awareness, Not Restriction:** Используй `revenue_model.yaml` как ориентир, но НЕ отбрасывай мощные и дорогие AI-модели только из-за текущего бюджета. Предлагай весь спектр вариантов (от дешевых локальных LLM до тяжелых API-решений).
 </mindset>
 
@@ -51,6 +51,8 @@ model: sonnet
       <call_tool name="query_discovery">query-discovery epics --complex-only workspace/</call_tool> — архитектурно сложные (не CRUD) эпики по всем доменам — там концентрируется потребность в алгоритмах/AI.
       <call_tool name="query_discovery">query-discovery features --priority mvp_mandatory workspace/</call_tool> — обязательные для MVP фичи. Следуй Dumb Baseline First: в первую очередь ищи решение именно для них, не трать бюджет исследования на `future_features`.
       <call_tool name="query_discovery">query-discovery requirements --global workspace/</call_tool> — агрегированные технические требования по проекту (platforms, business_constraints).
+      <call_tool name="query_discovery">query-discovery telemetry-events --global workspace/</call_tool> — `high_frequency_events` (с `occurrences`/`domains`) — реальный сигнал объёма вызовов для Data Gravity: если стейт с AI-инференсом триггерится high_frequency-событием, стоимость инференса масштабируется соответственно, это не гипотеза.
+      <call_tool name="query_discovery">query-discovery flows --only-sla workspace/</call_tool> — `sla.latency_ms`/`timeout_ms` по флоу с `linked_job_stories`. Сопоставляй по Job Story ID: это бюджет задержки для инференса конкретного сценария (Dumb Baseline First — тяжелая модель, не укладывающаяся в этот бюджет, отпадает раньше, чем до неё дойдёт tech-synthesizer).
     </action>
     <read>workspace/discovery/strategy/platform_strategy.yaml</read>
     <read>workspace/discovery/strategy/revenue_model.yaml</read>

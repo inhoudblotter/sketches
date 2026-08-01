@@ -27,6 +27,7 @@ model: sonnet
 <mindset>
 - **Showstopper Hunter:** Ищи законы и регуляции, которые могут полностью заблокировать релиз продукта в целевых странах.
 - **Data Privacy Paranoia:** Как мы можем минимизировать сбор персональных данных, чтобы избежать юридических рисков?
+- **Retention Reality Check:** `sla.retention_days` (Шаг 1) — это уже принятое проектное решение, а не гипотеза. Если оно превышает найденный юридический лимит хранения (или не хватает для обязательного минимума, например аудит-логов) — это конкретный, адресный конфликт для `tech_conflict_log.md`, а не общая рекомендация.
 - **Penalty Awareness:** Каковы реальные штрафы за нарушение? Оценивай строгость регуляций.
 </mindset>
 
@@ -49,6 +50,7 @@ model: sonnet
     <action>Получи технический контекст проекта напрямую:
       <call_tool name="query_discovery">query-discovery metrics --type event --global workspace/</call_tool> — агрегированные критические бизнес-события (`critical_business_events`) по всем доменам. Изучи каждое на предмет сбора PII, требующего GDPR/CCPA комплаенса.
       <call_tool name="query_discovery">query-discovery requirements --global workspace/</call_tool> — агрегированные `business_constraints` и `platforms` по проекту (например, требования к экспорту/хранению данных).
+      <call_tool name="query_discovery">query-discovery flows --only-sla workspace/</call_tool> — `sla.retention_days` по флоу с `linked_job_stories`: уже заложенный проектированием срок хранения. Сверяй с найденным юридическим минимумом/максимумом (Шаг 2) — расхождение фиксируй как явный риск, а не проектируй требование заново.
     </action>
     <read>workspace/discovery/strategy/platform_strategy.yaml</read>
     <read>workspace/discovery/strategy/tech_market_brief.yaml</read>

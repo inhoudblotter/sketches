@@ -3,6 +3,13 @@ from ...utils.common import load_strategy_yaml
 from departments.discovery.tools.shared.text_utils import clean_links
 
 
+def _stack_field(stack: dict, key: str) -> str:
+    value = stack.get(key)
+    if isinstance(value, list):
+        value = ", ".join(str(v) for v in value)
+    return clean_links(str(value)) if value else ""
+
+
 def build_tech(strategy_dir: Path) -> dict | None:
     tech_path = strategy_dir / "tech_constraints.yaml"
     if not tech_path.exists():
@@ -19,11 +26,11 @@ def build_tech(strategy_dir: Path) -> dict | None:
         for entry in (tech_data.get("growth_path") or [])
     ]
     return {
-        "frontend": clean_links(stack.get("frontend", "Unknown")),
-        "backend": clean_links(stack.get("backend", "Unknown")),
-        "database": clean_links(stack.get("database", "Unknown")),
-        "infra": clean_links(stack.get("infrastructure", "Unknown")),
-        "p2p": clean_links(stack.get("p2p_network_layer", "")),
+        "frontend": _stack_field(stack, "frontend"),
+        "backend": _stack_field(stack, "backend"),
+        "database": _stack_field(stack, "database"),
+        "infra": _stack_field(stack, "infrastructure"),
+        "p2p": _stack_field(stack, "p2p_network_layer"),
         "insight": clean_links(tech_data.get("strategic_insight", "N/A")),
         "growth_path": growth_path,
         "maintainability": clean_links(tech_data.get("maintainability_notes", "")),

@@ -19,6 +19,13 @@ def run_safe(func, *args, **kwargs):
             typer.echo('{"status": "ok"}')
         else:
             typer.echo(json.dumps(result, indent=2))
+        # Validators that report failure via a returned `is_valid: bool` field
+        # instead of raising (e.g. composite validators whose callers inspect
+        # .is_valid/.errors directly) must still fail the CLI — otherwise a
+        # standalone `discovery-linter <cmd>` run always exits 0 regardless of
+        # the reported result, and agents checking "exit code 1" never see it.
+        if getattr(result, "is_valid", True) is False:
+            sys.exit(1)
         sys.exit(0)
     except ValidationError as e:
         typer.echo(f"Validation Error:\n{e}", err=True)

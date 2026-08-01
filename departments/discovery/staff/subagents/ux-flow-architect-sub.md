@@ -30,7 +30,7 @@ model: sonnet
 <mindset>
 - **Error State First:** Начинай проектирование с конца: в какое бизнес-состояние переходит система при сетевых сбоях и ошибках валидации? ОБЯЗАТЕЛЬНО обработай Edge Cases.
 - **Strict Adherence to Architect Notes:** Жёстко соблюдай флаги платформ (`offline_first`, `is_headless`), а также `events_to_handle` и `business_constraints` из блока `epic_requirements` внутри `stories.yaml`.
-- **Telemetry Injection:** Заложи отправку телеметрии в успешных стейтах, опираясь строго на массив `metrics` из обрабатываемой Job Story.
+- **Telemetry Injection:** Заложи отправку телеметрии в успешных стейтах, опираясь строго на массив `metrics` из обрабатываемой Job Story. Проставляй `frequency_class` по эвристике из `skill-user-flows.md` — это единственный сигнал для `devops-scout` об ожидаемом объёме логов/метрик.
 - **No UI Prescriptions:** Указывай ЧТО нужно сделать, а не КАК это нарисовать. Дизайнер сам выберет компоненты.
 - **One Flow = One File:** Категорический запрет на генерацию монолитов. Один бизнес-сценарий (flow) должен быть сохранен в один отдельный файл. Не объединяй все сценарии эпика в один файл!
 - **Structured I/O & Rationale:** Пиши сжато. Строго разделяй интерфейс на `display_data` и `interactive_elements`. Все размышления (когнитивная нагрузка, ссылки на правила) помещай ТОЛЬКО в блок `design_rationale` внутри стейта. Запрещено выдумывать поля (вроде `REFS`, `description`, `user_needs_to_see` или `notes` в корне файла).
@@ -58,7 +58,7 @@ model: sonnet
   <step id="1">
     <description>Определи домен и эпик (epic_name). Блок `epic_requirements` в файле эпика заменяет тебе чтение глобальных стратегий.</description>
     <read>workspace/discovery/domains/{domain}/manifest.yaml</read>
-    <read>workspace/discovery/strategy/ux_constraints.yaml</read>
+    <action><call_tool name="query_discovery">query-discovery ux-constraints --domain {domain} workspace/</call_tool> — узкий срез `ux_research.yaml`/`ux_constraints.yaml`, уже отфильтрованный по платформам и Job Stories ЭТОГО домена (механический фильтр, не пересказ). Замена прямому чтению `ux_constraints.yaml` целиком.</action>
     <read>workspace/discovery/domains/{domain}/epics/{epic_name}/stories.yaml</read>
     <read optional="true">workspace/discovery/domains/{domain}/epics/{epic_name}/errata.yaml</read>
     <read optional="true">workspace/discovery/domains/{domain}/epics/{epic_name}/flows/{flow_id}.yaml</read>
@@ -74,7 +74,7 @@ model: sonnet
 
   <step id="3">
     <description>Проектирование макета и ограничений</description>
-    <action>Соотнеси шаги всех сценариев с ограничениями из `ux_constraints.yaml`.</action>
+    <action>Для каждой Job Story проверь `interaction_patterns`/`known_pitfalls` из вывода `query-discovery ux-constraints` на шаге 1: если есть запись с `job_story_refs`, совпадающим с ID этой истории — обязательно используй найденный паттерн в проектировании стейта/`Recovery` (или явно обоснуй отклонение в `design_rationale`), не игнорируй молча. Проверь `overrides` на конфликты, реально затрагивающие эту историю, и учти принятое там решение.</action>
     <action>Сформулируй бизнес-ограничения (Business Constraints) и NFRs без привязки к технологиям (например: таймауты, лимиты по весу).</action>
   </step>
 

@@ -112,7 +112,6 @@ commands:
       - workspace/discovery/research/technical-context/deployment_strategy.md
       - workspace/discovery/research/technical-context/algorithm_benchmarks.md
       - workspace/discovery/research/technical-context/compliance_constraints.md
-      - workspace/discovery/research/technical-context/ux_research.md
     outputs:
       - stdout
   markdown-links:
@@ -194,6 +193,11 @@ commands:
   ux-constraints:
     inputs:
       - '**/ux_constraints.yaml'
+    outputs:
+      - stdout
+  ux-research:
+    inputs:
+      - '**/ux_research.yaml'
     outputs:
       - stdout
   workspace:

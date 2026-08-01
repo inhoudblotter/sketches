@@ -20,9 +20,11 @@ def register_queries(app: typer.Typer):
     from .discovery import register_discovery_queries
     from .errata import register_errata_queries
     from .economics import register_economics_queries
+    from .ux import register_ux_queries
 
     register_core_queries(app, _print_yaml)
     register_metrics_queries(app, _print_yaml)
     register_discovery_queries(app, _print_yaml)
     register_errata_queries(app, _print_yaml)
     register_economics_queries(app, _print_yaml)
+    register_ux_queries(app, _print_yaml)

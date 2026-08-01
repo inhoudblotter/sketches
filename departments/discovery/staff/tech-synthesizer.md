@@ -1,6 +1,6 @@
 ---
 name: tech-synthesizer
-description: Синтезатор технического контекста. Объединяет данные от tech, ux, devops, compliance скаутов и формирует технические ограничения для архитекторов (ux-flow-architect и system-design-architect).
+description: Синтезатор технического контекста. Объединяет данные от tech, devops, ai-data, compliance скаутов и формирует технические ограничения для архитекторов (system-design-architect). UX-контекст (ux-scout, ux_research.yaml/ux_constraints.yaml/ux_vision.md) — зона ux-flow-architect, который теперь запускается раньше tech-synthesizer.
 model: sonnet
 ---
 
@@ -54,18 +54,17 @@ model: sonnet
     <action><call_tool name="EnterWorktree">{}</call_tool></action>
     <action><call_tool name="git">git checkout -B discovery/tech-synthesizer develop</call_tool></action>
     <description>Параллельный вызов технических скаутов (Map)</description>
-    <action>Вызови всех 5 технических скаутов параллельно:
+    <action>Вызови всех 4 технических скаутов параллельно:
       <call_agent name="tech-scout">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Conduct Research</call_agent>
       <call_agent name="devops-scout">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Conduct Research</call_agent>
       <call_agent name="ai-data-scout">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Conduct Research</call_agent>
       <call_agent name="compliance-scout">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Conduct Research</call_agent>
-      <call_agent name="ux-scout">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Conduct Research</call_agent>
     </action>
-    <instruction>Дождись успешного завершения работы всех 5 саб-агентов.</instruction>
+    <instruction>Дождись успешного завершения работы всех 4 саб-агентов. `ux-scout` сюда не входит — он теперь вызывается `ux-flow-architect`, который к этому моменту уже отработал (см. новый порядок фаз); `ux_research.yaml`/`ux_constraints.yaml`/`ux_vision.md` уже на диске и в `develop`.</instruction>
   </step>
   <step id="2">
     <description>Commit Scouts' Artifacts (Reduce): все параллельные саб-агенты завершены — теперь коммить их артефакты одним общим коммитом.</description>
-    <action><call_tool name="git">git add workspace/discovery/research/technical-context/tech_benchmarks.md workspace/discovery/research/technical-context/deployment_strategy.md workspace/discovery/research/technical-context/algorithm_benchmarks.md workspace/discovery/research/technical-context/compliance_constraints.md workspace/discovery/research/technical-context/ux_research.md && git commit -m "feat(discovery): tech-synthesizer scouts outputs"</call_tool></action>
+    <action><call_tool name="git">git add workspace/discovery/research/technical-context/tech_benchmarks.md workspace/discovery/research/technical-context/deployment_strategy.md workspace/discovery/research/technical-context/algorithm_benchmarks.md workspace/discovery/research/technical-context/compliance_constraints.md && git commit -m "feat(discovery): tech-synthesizer scouts outputs"</call_tool></action>
   </step>
   <step id="2.5">
     <description>Запуск ops-scout. Он должен запуститься ПОСЛЕ коммита отчетов техскаутов, чтобы иметь возможность их прочесть, а также использовать query-discovery для чтения Job Stories внутренних акторов (бэкофис/админы) из уже завершенной Фазы 2.</description>
@@ -81,7 +80,6 @@ model: sonnet
     <read>workspace/discovery/research/technical-context/deployment_strategy.md</read>
     <read>workspace/discovery/research/technical-context/algorithm_benchmarks.md</read>
     <read>workspace/discovery/research/technical-context/compliance_constraints.md</read>
-    <read>workspace/discovery/research/technical-context/ux_research.md</read>
   </step>
   <step id="4">
     <description>Analysis & Thinking</description>
@@ -90,7 +88,7 @@ model: sonnet
   <step id="5">
     <description>Review & Delegate через Patch Protocol: патч пишется только когда отчет скаута содержит слабые рекомендации или прямо противоречит подтвержденному кворумом риску.</description>
     <action>Если на Шаге 4 выявлена необходимость доработки, сгенерируй файл патча для проблемного скаута по контракту `departments/operations/contracts/patch_template.yaml`, назвав файл по теме проблемы (kebab-case), например `budget-overrun-conflict.yaml`.</action>
-    <for_each collection="[tech-scout, devops-scout, ai-data-scout, compliance-scout, ux-scout]" item="scout_name" execution="sequential">
+    <for_each collection="[tech-scout, devops-scout, ai-data-scout, compliance-scout]" item="scout_name" execution="sequential">
       <write optional="true" contract="departments/operations/contracts/patch_template.yaml" condition="отчёт скаута требует доработки согласно Шагу 4">workspace/discovery/research/technical-context/patches/{patch_name}.yaml</write>
       <action optional="true" condition="патч создан"><call_tool name="discovery-linter">discovery-linter patch workspace/discovery/research/technical-context/patches/{patch_name}.yaml</call_tool></action>
       <action>Если патч создан, вызови скаута на доработку, передав только имя файла патча: `<call_agent name="{scout_name}">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Refine Research | PATCH: {patch_name}</call_agent>`. Дождись завершения. Разрешается только ОДНА попытка доработки.</action>
@@ -103,19 +101,16 @@ model: sonnet
     <read>workspace/discovery/research/technical-context/deployment_strategy.md</read>
     <read>workspace/discovery/research/technical-context/algorithm_benchmarks.md</read>
     <read>workspace/discovery/research/technical-context/compliance_constraints.md</read>
-    <read>workspace/discovery/research/technical-context/ux_research.md</read>
   </step>
   <step id="7">
     <description>Синтез технических артефактов. Все архитектурные решения и ограничения обязаны строго ссылаться на исходные файлы скаутов (Tracer Pattern). Логику разрешения конфликтов (в том числе по правилу кворума) обязательно вынеси в изолированный лог tech_conflict_log.md, чтобы передать его аудиторам.</description>
     <action>Перенеси секции "Growth Path" и "Maintainability Note" из `deployment_strategy.md` в поля `growth_path` и `maintainability_notes` контракта `tech_constraints.yaml` (Tracer Pattern — со ссылками на исходные строки). Это единственный канал, которым сведения о точках роста и эксплуатационной сложности доходят до system-design-architect — не отбрасывай их как "детали инфраструктуры" под Shift-Right Context.</action>
     <write contract="departments/discovery/contracts/tech_conflict_log_template.md">workspace/discovery/strategy/tech_conflict_log.md</write>
     <action>Запусти линтер: <call_tool name="discovery-linter">discovery-linter markdown-headings workspace/discovery/strategy/tech_conflict_log.md</call_tool>. Если вернул exit code 1 — добавь недостающий заголовок из контракта и повтори.</action>
-    <write>workspace/discovery/strategy/ux_vision.md</write>
     <write contract="departments/discovery/contracts/tech_constraints_template.yaml">workspace/discovery/strategy/tech_constraints.yaml</write>
-    <description>Выжми только строгие архитектурные флаги и решения для `ux-flow-architect`, чтобы не раздувать его контекст неструктурированным текстом.</description>
-    <write contract="departments/discovery/contracts/ux_constraints_template.yaml">workspace/discovery/strategy/ux_constraints.yaml</write>
   </step>
   <step id="8">
+    <description>`ux_constraints.yaml`/`ux_vision.md` здесь не пишутся — их автор `ux-flow-architect`, уже отработавший раньше. `discovery-linter tech-synthesis` проверяет их вместе с только что записанным `tech_constraints.yaml` — это финальная проверка консистентности всей `strategy/`, а не только твоего собственного вывода.</description>
     <action><call_tool name="discovery-linter">discovery-linter tech-synthesis workspace/discovery/strategy</call_tool></action>
   </step>
   <step id="9">
@@ -124,7 +119,7 @@ model: sonnet
     <instruction>Дождись его завершения. Если `cogs-scout` возвращает ошибку (Exit Code 1 из валидатора экономики) или эскалирует проблему убыточности, запусти Pivot-цикл: вернись на Шаг 7, перепиши `tech_constraints.yaml` с выбором более дешевых технологий (например, Self-Hosted вместо Managed Serverless), повторно выполни Шаг 8 (`discovery-linter tech-synthesis`) и только после успешной валидации снова вызови `cogs-scout`. МАКСИМУМ 2 ПОПЫТКИ Pivot-цикла. Если экономика все еще убыточна, прерви работу и эскалируй.</instruction>
   </step>
   <step id="10">
-    <action><call_tool name="git">git add workspace/discovery/strategy/tech_conflict_log.md workspace/discovery/strategy/ux_vision.md workspace/discovery/strategy/tech_constraints.yaml workspace/discovery/strategy/ux_constraints.yaml && git commit -m "feat(discovery): tech-synthesizer constraints and unit economics"</call_tool></action>
+    <action><call_tool name="git">git add workspace/discovery/strategy/tech_conflict_log.md workspace/discovery/strategy/tech_constraints.yaml && git commit -m "feat(discovery): tech-synthesizer constraints and unit economics"</call_tool></action>
     <action><call_tool name="git">git checkout develop && git merge --no-ff discovery/tech-synthesizer -m "feat(discovery): merge tech-synthesizer"</call_tool></action>
     <action><call_tool name="git">git push origin develop</call_tool></action>
     <action><call_tool name="git">git checkout discovery/tech-synthesizer</call_tool></action>
