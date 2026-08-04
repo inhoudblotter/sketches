@@ -75,9 +75,12 @@ dashboard: >-
   pipeline_total_usd, pipeline_count) — финансирование, а не доход (данные для справки, в базовой оценке Red Teaming не участвуют).
 tech_summary: >-
   Краткий технологический стек для питчдека (frontend, backend, database, infra, p2p) без
-  insight/growth_path/maintainability, собран из strategy/tech_constraints.yaml. Отсутствует
-  (null), если файл не сгенерирован. Полная версия (с insight/growth_path/maintainability) —
-  в detail-файле, ключ `tech`.
+  insight/growth_path/maintainability/data_sourcing, собран из strategy/tech_constraints.yaml.
+  Отсутствует (null), если файл не сгенерирован. Полная версия (с insight/growth_path/
+  maintainability/data_sourcing — сигналы data-miner про automation_verdict/moderation_signal/
+  legal_flags по фиче) — в detail-файле, ключ `tech`. discovery-pitcher её не читает: это
+  чисто pitch-deck-рендеринг (см. слайд Data Dependency & Integrity), а не входные данные
+  для Red Teaming вердикта.
 errata_data: >-
   Блокеры для питчдека и для Red Teaming (blockers: source, issue), собраны из
   errata/critical_errata.yaml. Отсутствует (null), если файл не сгенерирован.

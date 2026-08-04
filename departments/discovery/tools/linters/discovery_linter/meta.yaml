@@ -108,10 +108,12 @@ commands:
       - workspace/discovery/research/business-context/growth_draft.md
       - workspace/discovery/strategy/investment_memo.md
       - workspace/discovery/strategy/tech_conflict_log.md
+      - workspace/discovery/strategy/ux_vision.md
       - workspace/discovery/research/technical-context/tech_benchmarks.md
       - workspace/discovery/research/technical-context/deployment_strategy.md
       - workspace/discovery/research/technical-context/algorithm_benchmarks.md
       - workspace/discovery/research/technical-context/compliance_constraints.md
+      - workspace/discovery/research/technical-context/data_sourcing.md
     outputs:
       - stdout
   markdown-links:

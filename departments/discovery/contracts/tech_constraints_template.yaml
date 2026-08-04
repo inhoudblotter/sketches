@@ -36,4 +36,21 @@ growth_path:
 
 maintainability_notes: '[Какой эксплуатационной экспертизы требует стек и что произойдёт без неё (команда 1-2 человека, без выделенного SRE/DBA). Источник: deployment_strategy.md#Maintainability Note]'
 
+# Перенос (Tracer Pattern) по каждой фиче из секций data_sourcing.md — источник для ops-scout
+# (Moderation & Quality Signal → Functional Coverage Matrix) и cogs-scout (объём/лицензия → COGS).
+# Пусто/отсутствует, если data_sourcing.md не содержит фич, требующих внешних/пользовательских данных.
+# ВАЖНО: `domain`/`feature_id` ОБЯЗАНЫ быть реальной парой из соответствующего
+# workspace/discovery/domains/{domain}/epics/*/features.yaml (поле `id`) — линтер
+# (discovery-linter tech-constraints) хардфейлит пары, не резолвящиеся в реальную фичу.
+# Возьми их из `data_sourcing.md`, где data-miner обязан цитировать `[domain/feature_id]`
+# по результату `query-discovery features`, а не придумывать название заново.
+data_sourcing:
+  - domain: '[Домен, которому принадлежит фича. Например: billing]'
+    feature_id: '[Точный `id` фичи из её features.yaml. Например: card_payment]'
+    feature_name: '[Человекочитаемое название, только для чтения — traceability идёт по domain+feature_id, не по этому полю]'
+    automation_verdict: '[automated | semi-automated | manual-required. Источник: data_sourcing.md#Automation Verdict]'
+    moderation_signal: '[Объём новых записей + тип проверки. Например: ~200 записей/день, ручная модерация контента. "не требуется", если секция это указывает]'
+    legal_flags:
+      - '[Явный риск лицензии/ToS/PII без вердикта. Источник: data_sourcing.md#Legal Flags. Пусто, если "не выявлено"]'
+
 strategic_insight: '[Чем мы жертвуем ради этой архитектуры? Например: Жертвуем скоростью разработки ради дешевизны VPS]'

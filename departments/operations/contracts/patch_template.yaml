@@ -15,7 +15,7 @@
 # Жизненный цикл: pending → applied | failed
 # Сброс (failed → pending): выполняется оркестратором через patch-manager reset.
 
-gap_type: "[missing_epic_type|orphan_entity|errata_resolution|insufficient_coverage|pivot_refine|commitment_decision]"
+gap_type: "[missing_epic_type|orphan_entity|errata_resolution|insufficient_coverage|pivot_refine|commitment_decision|missing_infra_component]"
 authored_by: "[имя агента-оркестратора, например: po-strategist]"
 target_agent: "[имя саб-агента-исполнителя, например: po-strategist-sub]"
 created_at: "[ISO 8601, например: 2026-07-13T14:00:00Z]"

@@ -2,7 +2,7 @@
 
 > Автоматически сгенерировано `pipeline-analysis` из frontmatter агентов (`departments/discovery/staff`). Не редактируйте руками — правьте агентов и перегенерируйте файл (`pipeline-analysis discovery`). Философия и назначение отдела: см. [README.md](README.md).
 
-**Generated:** 2026-08-01T13:41:07.021043+00:00
+**Generated:** 2026-08-04T11:01:43.446862+00:00
 
 ---
 
@@ -288,7 +288,7 @@ UX Flow Architect (Проектировщик путей). Планирует п
 ### Phase 4
 
 #### `tech-synthesizer`
-Синтезатор технического контекста. Объединяет данные от tech, devops, ai-data, compliance скаутов и формирует технические ограничения для архитекторов (system-design-architect). UX-контекст (ux-scout, ux_research.yaml/ux_constraints.yaml/ux_vision.md) — зона ux-flow-architect, который теперь запускается раньше tech-synthesizer.
+Синтезатор технического контекста. Объединяет данные от tech, devops, ai-data, compliance, data-miner скаутов и формирует технические ограничения для архитекторов (system-design-architect). UX-контекст (ux-scout, ux_research.yaml/ux_constraints.yaml/ux_vision.md) — зона ux-flow-architect, который теперь запускается раньше tech-synthesizer.
 
 | Field | Value |
 |---|---|
@@ -298,7 +298,7 @@ UX Flow Architect (Проектировщик путей). Планирует п
 | Status | BLOCKED |
 **Required skills:** 5
 **Uses tools:** 11
-**Delegates to:** 6
+**Delegates to:** 7
 **Blocked on:** 2
 
 **Reads (Inputs):**
@@ -308,6 +308,7 @@ UX Flow Architect (Проектировщик путей). Планирует п
   - `deployment_strategy.md`
   - `algorithm_benchmarks.md`
   - `compliance_constraints.md`
+  - `data_sourcing.md`
 
 **Writes (Outputs):**
   - `{patch_name}.yaml`
@@ -398,6 +399,25 @@ UX Flow Architect (Проектировщик путей). Планирует п
 **Writes (Outputs):**
   - `compliance_constraints.md`
 
+##### `data-miner` _(subagent)_
+Разведчик источников данных. Определяет, откуда физически берутся данные для фич продукта, можно ли их сбор автоматизировать, и какая нагрузка по курации/модерации возникает. Не выбирает модели/алгоритмы (ai-data-scout) и не считает стоимость (cogs-scout).
+
+| Field | Value |
+|---|---|
+| Model | sonnet |
+| Temperature | 0.5 |
+| Context KB | 40.1 (~, часть входов ещё не сгенерирована) |
+**Required skills:** 4
+**Uses tools:** 4
+
+**Reads (Inputs):**
+  - `platform_strategy.yaml`
+  - `revenue_model.yaml`
+  - `{patch_name}.yaml`
+
+**Writes (Outputs):**
+  - `data_sourcing.md`
+
 ##### `ops-scout` _(subagent)_
 Operations & HR Scout (Рекрутер и Операционный архитектор). Формирует минимально жизнеспособную команду (Headcount) и бюджет ФОТ на основе Job Stories, целевой аудитории и метрик нагрузки (MAU). Результат передаётся в cogs-scout как статья fixed_monthly_usd.
 
@@ -405,7 +425,7 @@ Operations & HR Scout (Рекрутер и Операционный архите
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 108.3 (~, часть входов ещё не сгенерирована) |
+| Context KB | 110.3 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 4
 **Uses tools:** 8
 
@@ -426,7 +446,7 @@ Operations & HR Scout (Рекрутер и Операционный архите
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 130.2 (~, часть входов ещё не сгенерирована) |
+| Context KB | 132.2 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 7
 **Uses tools:** 3
 
@@ -468,7 +488,7 @@ Technical Estimator. Анализирует сгенерированные Job S
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 32.7 (~, часть входов ещё не сгенерирована) |
+| Context KB | 34.7 (~, часть входов ещё не сгенерирована) |
 **Required skills:** 1
 **Uses tools:** 1
 
@@ -504,7 +524,7 @@ Discovery Auditor (Red Teamer). Анализирует собранную стр
 |---|---|
 | Model | sonnet |
 | Temperature | 0.5 |
-| Context KB | 76.4 (~, часть входов ещё не сгенерирована) |
+| Context KB | 76.7 (~, часть входов ещё не сгенерирована) |
 | Status | BLOCKED |
 **Required skills:** 9
 **Uses tools:** 11

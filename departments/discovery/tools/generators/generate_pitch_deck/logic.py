@@ -21,6 +21,14 @@ SCOPE_ANALYTICS_SLIDES = 7
 SCOPE_ANALYTICS_SLIDES_WITH_COMPLIANCE = SCOPE_ANALYTICS_SLIDES + 1
 
 
+def _count_tech_slides(tech: dict | None) -> int:
+    """Tech Stack slide (1) plus Data Dependency & Integrity slide (1, only when
+    `tech.data_sourcing` is non-empty — see build_tech/compact_tech)."""
+    if not tech:
+        return 0
+    return 1 + bool(tech.get("data_sourcing"))
+
+
 def _load_optional_yaml(path, label: str) -> dict:
     if not (path and path.exists()):
         return {}
@@ -190,10 +198,11 @@ def run_generate_pitch_deck(
         slides_count += 1
 
     # 4. Tech Slide (full stack detail lives in project_analytics_detail.yaml;
-    # fall back to the compact tech_summary if detail wasn't generated/passed)
+    # fall back to the compact tech_summary if detail wasn't generated/passed) + 4.1
+    # Data Dependency & Integrity Slide (detail-only, part of `tech.data_sourcing`;
+    # tech_summary never carries it — see compact_tech — so that one only fires with detail_data)
     context["tech"] = detail_data.get("tech") or analytics_data.get("tech_summary")
-    if context["tech"]:
-        slides_count += 1
+    slides_count += _count_tech_slides(context["tech"])
 
     # 4.5 Roadmap Slide (detail-only)
     context["roadmap"] = detail_data.get("roadmap")

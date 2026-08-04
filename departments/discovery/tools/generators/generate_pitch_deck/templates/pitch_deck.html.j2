@@ -50,6 +50,10 @@
     {% include "slides/tech.html.j2" %}
   {% endif %}
 
+  {% if tech and tech.data_sourcing %}
+    {% include "slides/data_sourcing.html.j2" %}
+  {% endif %}
+
   {% if scope_analytics %}
     {% include "slides/analytics_observability.html.j2" %}
   {% endif %}

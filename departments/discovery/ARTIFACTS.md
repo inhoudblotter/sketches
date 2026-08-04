@@ -1,7 +1,7 @@
 # ARTIFACTS: Отдел Discovery
 
 > Автоматически сгенерировано `pipeline-analysis` из графа агентов (`departments/discovery/staff`).
-**Generated:** 2026-08-01T13:41:07.021043+00:00
+**Generated:** 2026-08-04T11:01:43.446862+00:00
 
 ---
 
@@ -23,10 +23,9 @@
 ## 🛡️ Покрытие линтерами (Linter Coverage)
 Доля выходных файлов отдела (сгенерированных агентом или тулом), которые проверяются хотя бы одним линтером (`tool_type: linter`, чей `inputs` совпадает с путём файла).
 
-**95.6%** выходных артефактов покрыто линтерами.
+**97.8%** выходных артефактов покрыто линтерами.
 
 Не покрыты линтером:
-- `workspace/discovery/strategy/ux_vision.md`
 - `workspace/discovery/strategy/product_vision_and_critique.md`
 
 ---
@@ -75,6 +74,7 @@
         │   └── technical-context
         │       ├── algorithm_benchmarks.md
         │       ├── compliance_constraints.md
+        │       ├── data_sourcing.md
         │       ├── deployment_strategy.md
         │       ├── patches
         │       │   └── {patch_name}.yaml

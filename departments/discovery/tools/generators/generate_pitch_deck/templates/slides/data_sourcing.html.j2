@@ -1,0 +1,32 @@
+<div class="embla__slide">
+  <div class="slide-content">
+    <h2>Зависимость от внешних данных (Data Dependency &amp; Integrity)</h2>
+    <p style="color: #aaa; margin-bottom: 30px;">
+      Фичи, требующие данных, которых у продукта ещё нет — источник, автоматизируемость сбора и нагрузка по модерации.
+    </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+      {% for entry in tech.data_sourcing %}
+        {% set verdict_color = {
+          "automated": "#4ade80",
+          "semi-automated": "#facc15",
+          "manual-required": "#f87171"
+        }.get(entry.automation_verdict, "#888") %}
+        <div class="metric-card" style="border-left: 4px solid {{ verdict_color }}; justify-content: flex-start;">
+          <div class="flex items-start justify-between gap-3 mb-1">
+            <span class="text-white text-sm font-bold" style="text-wrap: balance;">{{ entry.feature_name or entry.feature_id }}</span>
+            <span class="text-xs font-mono font-bold uppercase whitespace-nowrap flex-shrink-0" style="color: {{ verdict_color }};">{{ entry.automation_verdict }}</span>
+          </div>
+          <div class="metric-label mb-2">{{ entry.domain }}</div>
+          <div class="text-xs" style="color: #ccc; line-height: 1.5;">{{ entry.moderation_signal }}</div>
+          {% if entry.legal_flags %}
+          <div class="flex flex-col gap-1 mt-3">
+            {% for flag in entry.legal_flags %}
+            <div class="text-xs font-mono" style="color: #f87171;">{{ flag }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

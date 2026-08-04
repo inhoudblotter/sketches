@@ -25,6 +25,19 @@ def build_tech(strategy_dir: Path) -> dict | None:
         }
         for entry in (tech_data.get("growth_path") or [])
     ]
+    data_sourcing = [
+        {
+            "domain": clean_links(str(entry.get("domain", ""))),
+            "feature_id": clean_links(str(entry.get("feature_id", ""))),
+            "feature_name": clean_links(str(entry.get("feature_name", ""))),
+            "automation_verdict": clean_links(str(entry.get("automation_verdict", ""))),
+            "moderation_signal": clean_links(str(entry.get("moderation_signal", ""))),
+            "legal_flags": [
+                clean_links(str(flag)) for flag in (entry.get("legal_flags") or [])
+            ],
+        }
+        for entry in (tech_data.get("data_sourcing") or [])
+    ]
     return {
         "frontend": _stack_field(stack, "frontend"),
         "backend": _stack_field(stack, "backend"),
@@ -34,4 +47,5 @@ def build_tech(strategy_dir: Path) -> dict | None:
         "insight": clean_links(tech_data.get("strategic_insight", "N/A")),
         "growth_path": growth_path,
         "maintainability": clean_links(tech_data.get("maintainability_notes", "")),
+        "data_sourcing": data_sourcing,
     }

@@ -21,7 +21,7 @@
 | `↳ job-stories` | — |
 | `↳ job-stories-content` | — |
 | `↳ launch-roadmap` | discovery-pitcher |
-| `↳ markdown-headings` | ai-data-scout, compliance-scout, devops-scout, discovery-pitcher, growth-hacker-scout, marketing-scout, product-scout, tech-scout, tech-synthesizer, ux-flow-architect |
+| `↳ markdown-headings` | ai-data-scout, compliance-scout, data-miner, devops-scout, discovery-pitcher, growth-hacker-scout, marketing-scout, product-scout, tech-scout, tech-synthesizer, ux-flow-architect |
 | `↳ markdown-links` | — |
 | `↳ market-context` | business-synthesizer |
 | `↳ operations-team` | ops-scout |
@@ -48,13 +48,13 @@
 | `↳ data-model` | discovery-pitcher |
 | `↳ dependencies` | discovery-pitcher |
 | `↳ domain-consistency` | po-strategist |
-| `↳ epics` | ai-data-scout, devops-scout, tech-lead, tech-scout, ux-flow-architect |
+| `↳ epics` | ai-data-scout, data-miner, devops-scout, tech-lead, tech-scout, ux-flow-architect |
 | `↳ errata-domain` | po-strategist |
 | `↳ errata-epic` | ux-flow-architect |
 | `↳ errata-global` | errata-resolver |
 | `↳ estimation` | tech-lead |
 | `↳ exports` | — |
-| `↳ features` | ai-data-scout, discovery-pitcher, ux-scout |
+| `↳ features` | ai-data-scout, data-miner, discovery-pitcher, ux-scout |
 | `↳ flows` | ai-data-scout, compliance-scout, discovery-pitcher, tech-lead, tech-scout |
 | `↳ flows-self-check` | tech-lead, ux-flow-architect |
 | `↳ get` | — |
@@ -65,7 +65,7 @@
 | `↳ reclassify-feature` | — |
 | `↳ rename-entity` | — |
 | `↳ replace-term` | — |
-| `↳ requirements` | ai-data-scout, compliance-scout, devops-scout, tech-scout, ux-scout |
+| `↳ requirements` | ai-data-scout, compliance-scout, data-miner, devops-scout, tech-scout, ux-scout |
 | `↳ resolve-errata` | — |
 | `↳ search` | — |
 | `↳ self-check` | po-strategist |

@@ -258,6 +258,12 @@ def ux_constraints():
     )
 
 
+def ux_research():
+    run_command(
+        "departments.discovery.tools.linters.discovery_linter.validators.general.ux_research.command"
+    )
+
+
 def validate_agent():
     run_command("departments.operations.tools.validators.validate_agent.command")
 
