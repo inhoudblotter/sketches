@@ -1,7 +1,10 @@
 import math
 from pathlib import Path
 from ...utils.common import load_strategy_yaml, extract_float, _sum_nested_floats
-from departments.discovery.tools.shared.text_utils import clean_links
+from departments.discovery.tools.shared.text_utils import (
+    clean_links,
+    format_compact_number,
+)
 
 
 def _build_scenarios(scenario_bands: dict, cogs: float) -> list | None:
@@ -150,7 +153,7 @@ def build_dashboard(strategy_dir: Path) -> dict | None:
         "cogs": cogs,
         "budget_color": ("text-red" if (cogs > budget_limit > 0) else "text-green"),
         "bep_display": (
-            f"{math.ceil(bep_users):,} Users"
+            f"{format_compact_number(math.ceil(bep_users))} Users"
             if bep_users != float("inf")
             else "Negative Margin"
         ),

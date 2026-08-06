@@ -64,6 +64,48 @@ def test_data_sourcing_slide_absent_without_tech(tmp_path: Path):
     assert result.slides_count == 1  # Title slide only
 
 
+def test_dashboard_abbreviates_large_figures(tmp_path: Path):
+    yaml_path = _write_yaml(tmp_path / "pitch_deck.yaml", {})
+    analytics_path = _write_yaml(
+        tmp_path / "project_analytics.yaml",
+        {
+            "dashboard": {
+                "margin_pct": 62.3,
+                "margin_color": "text-green",
+                "arpu": 12.5,
+                "cogs": 4.7,
+                "budget_color": "text-green",
+                "bep_display": "2.3M Users",
+                "fixed_monthly": 5_400_000,
+                "infra_fixed_monthly": 3_100_000,
+                "operations_payroll_monthly": 2_300_000,
+                "mrr": 87_650_000,
+                "mau": 7_012_345,
+                "streams": [{"share": 100, "name": "SUB"}],
+            }
+        },
+    )
+    out_path = tmp_path / "pitch_deck.html"
+
+    run_generate_pitch_deck(
+        GeneratePitchDeckInput(
+            yaml_path=yaml_path,
+            out_path=out_path,
+            analytics_path=analytics_path,
+            detail_path=None,
+        )
+    )
+
+    html = out_path.read_text(encoding="utf-8")
+    # Big numbers render abbreviated (K/M/B) in the visible metric, not raw digits.
+    assert "$87.7M" in html
+    assert "$87650000" not in html
+    assert "7.0M" in html
+    # Exact figures survive as a hover tooltip for precision.
+    assert 'title="$87,650,000"' in html
+    assert 'title="7,012,345"' in html
+
+
 def test_data_sourcing_slide_absent_when_tech_has_no_data_sourcing(tmp_path: Path):
     yaml_path = _write_yaml(tmp_path / "pitch_deck.yaml", {})
     detail_path = _write_yaml(

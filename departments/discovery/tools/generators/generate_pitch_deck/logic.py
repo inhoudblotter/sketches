@@ -3,7 +3,11 @@ import markdown
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from .schemas import GeneratePitchDeckInput, GeneratePitchDeckOutput
-from departments.discovery.tools.shared.text_utils import clean_links, clean_list
+from departments.discovery.tools.shared.text_utils import (
+    clean_links,
+    clean_list,
+    format_compact_number,
+)
 from departments.discovery.tools.shared.file_utils import load_yaml
 
 NARRATIVE_SLIDES_BEFORE_ACTORS = [
@@ -227,6 +231,8 @@ def run_generate_pitch_deck(
     # Render Jinja Template
     templates_dir = Path(__file__).parent / "templates"
     env = Environment(loader=FileSystemLoader(str(templates_dir)))
+    env.filters["compact"] = format_compact_number
+    env.filters["commas"] = lambda value, decimals=0: f"{float(value):,.{decimals}f}"
     template = env.get_template("pitch_deck.html.j2")
 
     final_html = template.render(**context)

@@ -12,29 +12,29 @@
       <div class="metric-card">
         <div class="metric-value {{ dashboard.margin_color }}">{{ "%.1f"|format(dashboard.margin_pct) }}%</div>
         <div class="metric-label">Валовая маржа (Gross Margin)</div>
-        <div class="metric-sub">ARPU: ${{ "%.2f"|format(dashboard.arpu) }} | COGS: <span class='{{ dashboard.budget_color }}'>${{ "%.2f"|format(dashboard.cogs) }}</span></div>
+        <div class="metric-sub">ARPU: $<span title="${{ "%.2f"|format(dashboard.arpu) }}">{{ dashboard.arpu|compact(decimals=2, small_decimals=2) }}</span> | COGS: <span class='{{ dashboard.budget_color }}' title="${{ "%.2f"|format(dashboard.cogs) }}">${{ dashboard.cogs|compact(decimals=2, small_decimals=2) }}</span></div>
       </div>
       <div class="metric-card">
         <div class="metric-value text-blue">{{ dashboard.bep_display }}</div>
         <div class="metric-label">Точка безубыточности (Break-Even)</div>
-        <div class="metric-sub">Постоянные расходы: ${{ "%.0f"|format(dashboard.fixed_monthly) }}/мес</div>
+        <div class="metric-sub">Постоянные расходы: $<span title="${{ dashboard.fixed_monthly|commas }}">{{ dashboard.fixed_monthly|compact }}</span>/мес</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value text-white">${{ "%.0f"|format(dashboard.infra_fixed_monthly) }}</div>
+        <div class="metric-value text-white" title="${{ dashboard.infra_fixed_monthly|commas }}">${{ dashboard.infra_fixed_monthly|compact }}</div>
         <div class="metric-label">Infrastructure Baseline</div>
         <div class="metric-sub">Сырые серверные косты (без з/п)</div>
       </div>
       {% if dashboard.operations_payroll_monthly %}
       <div class="metric-card">
-        <div class="metric-value text-white">${{ "%.0f"|format(dashboard.operations_payroll_monthly) }}</div>
+        <div class="metric-value text-white" title="${{ dashboard.operations_payroll_monthly|commas }}">${{ dashboard.operations_payroll_monthly|compact }}</div>
         <div class="metric-label">Team Payroll (Ops)</div>
         <div class="metric-sub">ФОТ бэкофиса из operations_team.yaml</div>
       </div>
       {% endif %}
       <div class="metric-card">
-        <div class="metric-value text-green">${{ "%.0f"|format(dashboard.mrr) }}</div>
+        <div class="metric-value text-green" title="${{ dashboard.mrr|commas }}">${{ dashboard.mrr|compact }}</div>
         <div class="metric-label">Прогноз MRR (Год 1)</div>
-        <div class="metric-sub">Целевой MAU: {{ dashboard.mau|int }}</div>
+        <div class="metric-sub">Целевой MAU: <span title="{{ dashboard.mau|commas }}">{{ dashboard.mau|compact }}</span></div>
       </div>
     </div>
   </div>
@@ -48,8 +48,8 @@
       {% for s in dashboard.scenarios %}
       <div class="metric-card">
         <div class="metric-value {{ 'text-red' if s.name == 'worst' else ('text-green' if s.name == 'best' else 'text-white') }}">{{ "%.1f"|format(s.margin_pct) }}%</div>
-        <div class="metric-label">{{ s.name|upper }} — MRR ${{ "%.0f"|format(s.mrr) }}</div>
-        <div class="metric-sub">ARPU ${{ "%.2f"|format(s.arpu) }} × MAU {{ s.mau|int }} — {{ s.driver_ref }}</div>
+        <div class="metric-label">{{ s.name|upper }} — MRR $<span title="${{ s.mrr|commas }}">{{ s.mrr|compact }}</span></div>
+        <div class="metric-sub">ARPU $<span title="${{ "%.2f"|format(s.arpu) }}">{{ s.arpu|compact(decimals=2, small_decimals=2) }}</span> × MAU <span title="{{ s.mau|commas }}">{{ s.mau|compact }}</span> — {{ s.driver_ref }}</div>
       </div>
       {% endfor %}
     </div>
