@@ -3,7 +3,7 @@
     <h2 class="w-full">Наблюдаемость (Observability)</h2>
     {% if scope_analytics.observability %}
     <div class="max-w-xl mb-8 px-2">
-      <span class="text-xs font-bold uppercase tracking-widest block mb-3" style="font-family: var(--family-mono); color: #60a5fa;">North Star Metric</span>
+      <span class="text-xs font-bold uppercase tracking-widest block mb-3" style="font-family: var(--family-mono); color: #60a5fa;">Северная звезда (North Star Metric)</span>
       <p class="text-base sm:text-xl font-light leading-relaxed m-0" style="color: #eee;">{{ scope_analytics.observability.north_star_metric }}</p>
     </div>
     <div class="flex items-center justify-start sm:justify-center flex-wrap gap-6 sm:gap-10">
@@ -14,7 +14,7 @@
       <div class="w-px h-12 sm:h-14" style="background: #333;"></div>
       <div class="text-center">
         <div class="metric-value mb-1" style="font-size: clamp(2rem, 7vw, 3.4rem); color: #facc15;">{{ scope_analytics.observability.critical_events_count }}</div>
-        <div class="metric-label">Critical Events</div>
+        <div class="metric-label">Критичные события (Critical Events)</div>
       </div>
       {% if scope_analytics.total_metrics_count %}
       <div class="w-px h-12 sm:h-14" style="background: #333;"></div>
@@ -27,7 +27,7 @@
     {% else %}
     <div class="metric-card" style="border-left: 4px solid #60a5fa; display: inline-block; padding: 30px 60px;">
       <div class="metric-value text-blue" style="font-size: 3rem;">{{ scope_analytics.total_metrics_count }}</div>
-      <div class="metric-label">Определено метрик приемки (MVP)</div>
+      <div class="metric-label">Определено метрик приёмки (MVP)</div>
     </div>
     {% endif %}
   </div>

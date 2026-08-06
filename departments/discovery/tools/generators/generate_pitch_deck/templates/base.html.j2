@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="utf-8">
   <title>{{ pitch_title|default("Pitch Deck") }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
     /* Strict Minimalism / Venture Classic */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@500;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
     
     :root {
       --family-display: 'Outfit', sans-serif;
@@ -51,12 +51,12 @@
   </style>
   <style type="text/tailwindcss">
     @layer base {
-      h1, h2, h3 { font-family: var(--family-display); text-transform: none; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 0.5em 0; }
+      h1, h2, h3, h4 { font-family: var(--family-display); text-transform: none; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 0.5em 0; hyphens: auto; overflow-wrap: break-word; }
       h1 { font-size: var(--font-h1); }
       h2 { font-size: var(--font-h2); color: #ddd; }
       h3 { font-size: var(--font-h3); }
       ul { margin-top: 1em; padding-left: 20px; }
-      li { margin-bottom: 0.5em; font-weight: 300; color: #ccc; font-size: var(--font-body); line-height: 1.4; }
+      li { margin-bottom: 0.5em; font-weight: 300; color: #ccc; font-size: var(--font-body); line-height: 1.4; hyphens: auto; overflow-wrap: break-word; }
       strong { color: #fff; font-weight: 600; }
     }
   </style>
@@ -104,8 +104,8 @@
     .metric-card { background: #111; border: 1px solid #333; border-radius: 0; padding: 30px; text-align: left; display: flex; flex-direction: column; justify-content: center; }
     @media (max-width: 768px) { .metric-card { padding: 15px; } }
     .metric-value { font-family: var(--family-mono); font-size: var(--font-metric-val); font-weight: 800; margin-bottom: 10px; overflow-wrap: anywhere; }
-    .metric-label { font-size: var(--font-metric-lbl); color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
-    .metric-sub { font-size: var(--font-metric-sub); color: #555; margin-top: 5px; }
+    .metric-label { font-size: var(--font-metric-lbl); color: #888; text-transform: uppercase; letter-spacing: 0.05em; hyphens: auto; overflow-wrap: break-word; }
+    .metric-sub { font-size: var(--font-metric-sub); color: #555; margin-top: 5px; hyphens: auto; overflow-wrap: break-word; }
     
     /* Tech Stack Badges */
     .tech-badges { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }

@@ -20,7 +20,7 @@
     {% endif %}
 
     {% if actors.machine_personas %}
-    <p style="color: #aaa; margin-bottom: 10px;"><strong>Machine Personas</strong> (небиологические потребители)</p>
+    <p style="color: #aaa; margin-bottom: 10px;"><strong>Машинные персонажи (Machine Personas)</strong> — небиологические потребители</p>
     <ul style="margin-bottom: 20px;">
       {% for mp in actors.machine_personas %}
       <li>{{ mp.name }} <span style="color: #888;">({{ mp.machine_type }}, от лица {{ mp.owning_actor }})</span></li>

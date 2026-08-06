@@ -1,6 +1,6 @@
 <div class="embla__slide">
   <div class="slide-content">
-    <h2>Архитектурная Сложность и Охват (Complexity & Scope)</h2>
+    <h2>Архитектурная сложность и охват (Complexity & Scope)</h2>
     <p class="text-zinc-400 mb-6">Оценка платформ, связности доменов и сложности пользовательских сценариев.</p>
     {% set flow_metrics = scope_analytics.flow_metrics | default({}, true) %}
     {% set domain_coupling = scope_analytics.domain_coupling | default({}, true) %}
@@ -9,7 +9,7 @@
 
       <!-- Platforms Full Width Row -->
       <div class="metric-card border-l-4 border-l-blue-400 mb-0 px-5 py-4">
-        <div class="metric-label mb-3">Целевые платформы</div>
+        <div class="metric-label mb-3">Целевые платформы (Target Platforms)</div>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {% for platform in scope_analytics.platforms %}
             <div class="text-sm bg-[#222] border border-[#444] px-3 py-2 rounded text-gray-200 flex items-center justify-center text-center">
@@ -53,7 +53,7 @@
 
       <!-- Graph -->
       <div class="bg-[#111] p-5 border border-[#333] flex flex-col items-center">
-        <h3 class="mb-4 text-lg text-white text-left w-full">Domain Coupling (Узкие места)</h3>
+        <h3 class="mb-4 text-lg text-white text-left w-full">Связность доменов (Domain Coupling)</h3>
         <div class="w-full overflow-x-auto">
           <div class="mermaid bg-transparent w-full flex justify-center items-center min-w-[300px]">
 %%{init: {'theme':'dark', 'themeVariables': { 'darkMode': true, 'background': 'transparent' }}}%%

@@ -1,45 +1,45 @@
 <div class="embla__slide">
   <div class="slide-content">
-    <h2>Технологический Стек и Масштабирование (Tech Stack & Scaling)</h2>
+    <h2>Технологический стек и масштабирование (Tech Stack & Scaling)</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 w-full">
       {% if tech.frontend %}
       <div class="bg-[#111] border border-[#333] px-5 py-4 rounded-none flex flex-col justify-center h-full">
-        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Frontend</span>
+        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Фронтенд (Frontend)</span>
         <strong class="text-white text-sm" style="font-family: var(--family-mono);">{{ tech.frontend }}</strong>
       </div>
       {% endif %}
       {% if tech.backend %}
       <div class="bg-[#111] border border-[#333] px-5 py-4 rounded-none flex flex-col justify-center h-full">
-        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Backend</span>
+        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Бэкенд (Backend)</span>
         <strong class="text-white text-sm" style="font-family: var(--family-mono);">{{ tech.backend }}</strong>
       </div>
       {% endif %}
       {% if tech.database %}
       <div class="bg-[#111] border border-[#333] px-5 py-4 rounded-none flex flex-col justify-center h-full">
-        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Database</span>
+        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">База данных (Database)</span>
         <strong class="text-white text-sm" style="font-family: var(--family-mono);">{{ tech.database }}</strong>
       </div>
       {% endif %}
       {% if tech.infra %}
       <div class="bg-[#111] border border-[#333] px-5 py-4 rounded-none flex flex-col justify-center h-full">
-        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Infrastructure</span>
+        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Инфраструктура (Infrastructure)</span>
         <strong class="text-white text-sm" style="font-family: var(--family-mono);">{{ tech.infra }}</strong>
       </div>
       {% endif %}
       {% if tech.p2p %}
       <div class="bg-[#111] border border-[#333] px-5 py-4 rounded-none flex flex-col justify-center h-full md:col-span-2">
-        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">P2P Layer</span>
+        <span class="text-xs text-zinc-500 uppercase tracking-widest mb-1">P2P-слой (P2P Layer)</span>
         <strong class="text-white text-sm" style="font-family: var(--family-mono);">{{ tech.p2p }}</strong>
       </div>
       {% endif %}
     </div>
     <div style="margin-top: 40px; text-align: left; background: #111; padding: 30px; border-radius: 0; border: 1px solid #333;">
-      <h4 style="color: #888; font-size: 0.85em; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--family-mono); font-weight: 700;">Strategic TTM Insight</h4>
+      <h4 style="color: #888; font-size: 0.85em; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--family-mono); font-weight: 600;">Стратегический инсайт TTM (Strategic TTM Insight)</h4>
       <p style="font-size: 0.95em; line-height: 1.6; color: #ddd; margin: 0;">{{ tech.insight }}</p>
     </div>
     {% if tech.growth_path %}
     <div style="margin-top: 20px; text-align: left; background: #111; padding: 30px; border-radius: 0; border: 1px solid #333;">
-      <h4 style="color: #888; font-size: 0.85em; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--family-mono); font-weight: 700;">Growth Path</h4>
+      <h4 style="color: #888; font-size: 0.85em; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--family-mono); font-weight: 600;">Путь роста (Growth Path)</h4>
       <div class="grid grid-cols-1 gap-2">
         {% for step in tech.growth_path %}
         <div style="border-bottom: 1px solid #222; padding: 8px 0; font-size: 0.9em; line-height: 1.5; color: #ddd;">
@@ -53,7 +53,7 @@
     {% endif %}
     {% if tech.maintainability %}
     <div style="margin-top: 20px; text-align: left; background: #111; padding: 30px; border-radius: 0; border: 1px solid #333;">
-      <h4 style="color: #888; font-size: 0.85em; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--family-mono); font-weight: 700;">Maintainability</h4>
+      <h4 style="color: #888; font-size: 0.85em; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--family-mono); font-weight: 600;">Поддерживаемость (Maintainability)</h4>
       <p style="font-size: 0.95em; line-height: 1.6; color: #ddd; margin: 0;">{{ tech.maintainability }}</p>
     </div>
     {% endif %}
