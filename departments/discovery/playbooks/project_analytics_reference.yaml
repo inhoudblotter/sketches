@@ -67,6 +67,11 @@ dashboard: >-
   budget_color, bep_display, fixed_monthly, mrr, mau, streams, scenarios, grant_runway), собран
   из strategy/revenue_model.yaml и strategy/unit_economics_model.yaml. Отсутствует (null), если
   один из этих файлов не сгенерирован.
+  `hardware_amortization_usd_per_user`/`hardware_amortization_monthly` — вынесены отдельной строкой
+  из `variable_per_user_usd.hardware_amortization_usd` (cogs-scout), тем же принципом, что и
+  `operations_payroll_monthly`: физическое устройство — материально другая категория расходов,
+  сворачивать её в общий COGS означает скрыть от инвестора реальный кост-драйвер. 0, если
+  hardware_devices в tech_constraints.yaml пуст или ни одно устройство не требует амортизации.
   `scenarios` — список Worst/Base/Best (name, driver_ref, arpu, mau, mrr, margin_pct), посчитанный
   из revenue_model.yaml#scenario_bands на том же COGS, что и основной дашборд (сценарии
   пересчитывают только рыночную сторону MAU/ARPU, не себестоимость). Отсутствует (null), если

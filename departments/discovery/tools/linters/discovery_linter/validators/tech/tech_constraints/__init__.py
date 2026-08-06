@@ -3,7 +3,7 @@ from departments.discovery.tools.linters.discovery_linter.validators.shared.vali
 )
 from departments.discovery.tools.shared.epic_utils import iter_epic_feature_files
 from pydantic import BaseModel, Field
-from typing import List, Optional, Set, Union
+from typing import List, Optional, Sequence, Set, Union
 import yaml
 from pathlib import Path
 
@@ -50,6 +50,26 @@ class DataSourcingEntry(BaseModel):
     legal_flags: List[str] = Field(default_factory=list)
 
 
+class FeatureRef(BaseModel):
+    domain: str
+    feature_id: str
+
+
+class HardwareDeviceEntry(BaseModel):
+    # Unlike DataSourcingEntry (1 external source = 1 feature), one device is
+    # commonly shared infrastructure for a POOL of features (e.g. one POS
+    # terminal backs payment + receipt + inventory at once) — so linkage is a
+    # list, not a single domain/feature_id pair.
+    device_id: str
+    device_name: str
+    device_branch: str
+    linked_features: List[FeatureRef]
+    unit_cost_usd: Union[float, str]
+    sourcing_risk: str
+    field_support_signal: str
+    regulatory_flags: List[str] = Field(default_factory=list)
+
+
 class TechConstraintsConfig(BaseModel):
     technology_stack: TechnologyStack
     resource_quotas_per_user: ResourceQuotas
@@ -58,6 +78,7 @@ class TechConstraintsConfig(BaseModel):
     maintainability_notes: str
     strategic_insight: str
     data_sourcing: List[DataSourcingEntry] = Field(default_factory=list)
+    hardware_devices: List[HardwareDeviceEntry] = Field(default_factory=list)
 
 
 class ValidationResult(BaseModel):
@@ -107,19 +128,22 @@ def _collect_domain_feature_ids(domains_dir: Path, domain: str) -> Set[str]:
     return ids
 
 
-def _validate_data_sourcing_links(
-    config: TechConstraintsConfig, domains_dir: Path
+def _validate_domain_feature_links(
+    entries: Sequence[Union[DataSourcingEntry, FeatureRef]],
+    domains_dir: Path,
+    section: str,
+    domain_ids_cache: dict[str, Set[str]],
 ) -> List[str]:
-    """Anti-Hallucination gate for data-miner's cross-domain feature references
-    (Tracer Pattern target of tech-synthesizer Step 7): each `domain`/`feature_id`
-    pair must resolve to a real entry the domain actually wrote, not a name
-    data-miner or tech-synthesizer invented while summarizing."""
+    """Anti-Hallucination gate for cross-domain feature references (Tracer Pattern
+    target of tech-synthesizer Step 7, shared by data-miner's `data_sourcing` and
+    hardware-scout's flattened `hardware_devices[].linked_features`): each
+    `domain`/`feature_id` pair must resolve to a real entry the domain actually
+    wrote, not a name invented while summarizing."""
     errors: List[str] = []
-    domain_ids_cache: dict[str, Set[str]] = {}
-    for entry in config.data_sourcing:
+    for entry in entries:
         if not (domains_dir / entry.domain).is_dir():
             errors.append(
-                f"data_sourcing: domain '{entry.domain}' (feature_id='{entry.feature_id}') "
+                f"{section}: domain '{entry.domain}' (feature_id='{entry.feature_id}') "
                 f"does not exist under {domains_dir}"
             )
             continue
@@ -129,7 +153,7 @@ def _validate_data_sourcing_links(
             )
         if entry.feature_id not in domain_ids_cache[entry.domain]:
             errors.append(
-                f"data_sourcing: feature_id '{entry.feature_id}' not found in any "
+                f"{section}: feature_id '{entry.feature_id}' not found in any "
                 f"features.yaml under domains/{entry.domain}/epics/*/ "
                 f"(hallucinated or renamed feature reference)"
             )
@@ -151,11 +175,22 @@ def run_validation(file_path: Path, fix: bool = True):
 
     config = validate_yaml_file(file_path, TechConstraintsConfig)
 
-    if config.data_sourcing:
+    hardware_feature_refs = [
+        ref for device in config.hardware_devices for ref in device.linked_features
+    ]
+    if config.data_sourcing or hardware_feature_refs:
         # tech_constraints.yaml lives at workspace/discovery/strategy/tech_constraints.yaml;
         # domains live at the sibling workspace/discovery/domains/.
         domains_dir = file_path.parent.parent / "domains"
-        link_errors = _validate_data_sourcing_links(config, domains_dir)
+        domain_ids_cache: dict[str, Set[str]] = {}
+        link_errors = _validate_domain_feature_links(
+            config.data_sourcing, domains_dir, "data_sourcing", domain_ids_cache
+        ) + _validate_domain_feature_links(
+            hardware_feature_refs,
+            domains_dir,
+            "hardware_devices.linked_features",
+            domain_ids_cache,
+        )
         if link_errors:
             raise ValueError("; ".join(link_errors))
 

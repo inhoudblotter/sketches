@@ -83,6 +83,12 @@ def build_dashboard(strategy_dir: Path) -> dict | None:
     if cogs == 0 and tokenomics_costs:
         cogs = extract_float(tokenomics_costs)
 
+    hardware_amortization_usd_per_user = extract_float(
+        var_per_user.get("hardware_amortization_usd", 0)
+        if isinstance(var_per_user, dict)
+        else 0
+    )
+
     gross_margin = arpu - cogs
     # MAGIC NUMBERS FIX: PLR2004
     PERCENT_MULTIPLIER = 100
@@ -160,6 +166,8 @@ def build_dashboard(strategy_dir: Path) -> dict | None:
         "fixed_monthly": fixed_monthly,
         "infra_fixed_monthly": infra_fixed_monthly,
         "operations_payroll_monthly": operations_payroll_monthly,
+        "hardware_amortization_usd_per_user": hardware_amortization_usd_per_user,
+        "hardware_amortization_monthly": hardware_amortization_usd_per_user * mau,
         "mrr": mrr,
         "mau": mau,
         "streams": streams_list,

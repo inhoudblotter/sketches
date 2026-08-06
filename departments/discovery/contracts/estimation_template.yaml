@@ -15,6 +15,7 @@ estimations:
       blindspots: "[High/Medium/Low. Укажите конкретные риски или слепые зоны]"
     # Выявленные риски. Базовые значения: [SPIKE REQUIRED], [NEED RESEARCH], [LOW VERIFIABILITY],
     # [MULTI-RUN FLOW], [VENDOR DEPENDENCY], [SLA CRITICAL], [SECURITY CRITICAL],
-    # [DATA SCIENCE REQUIRED]. Разрешается добавлять свои теги, если базовых не хватает. Указывать только применимые.
+    # [DATA SCIENCE REQUIRED], [EXTERNAL DEVICE DEPENDENCY], [DATA SOURCING REQUIRED].
+    # Разрешается добавлять свои теги, если базовых не хватает. Указывать только применимые.
     flags:
       "[FLAG_NAME]": "[Одно предложение: почему этот флаг добавлен]"

@@ -114,6 +114,7 @@ commands:
       - workspace/discovery/research/technical-context/algorithm_benchmarks.md
       - workspace/discovery/research/technical-context/compliance_constraints.md
       - workspace/discovery/research/technical-context/data_sourcing.md
+      - workspace/discovery/research/technical-context/hardware_market.md
     outputs:
       - stdout
   markdown-links:

@@ -12,6 +12,7 @@ cogs_per_user_usd:
   variable_per_user_usd:
     egress_traffic: '[Стоимость исходящего трафика на юзера. Например: 0.10]'
     tokenomics_costs: '[Опционально: Gas fees, стоимость деплоя смарт-контрактов на юзера. Например: 0.05]'
+    hardware_amortization_usd: '[Опционально: BOM/unit_cost_usd из tech_constraints.yaml#hardware_devices, амортизированный на срок службы устройства (месяцы) и делённый на MAU, если устройство закупается/субсидируется продуктом на пользователя. Например: 0.75]'
     external_apis:
       - provider: '[Например: OpenAI]'
         cost: '[Стоимость за юзера. Например: 1.50]'

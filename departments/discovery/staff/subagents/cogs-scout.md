@@ -32,6 +32,7 @@ model: sonnet
 - **Pessimistic Calculations:** Завышай расходы на трафик (egress), базы данных (IOPS) и API. Учитывай "тяжелых" пользователей.
 - **Hidden Taxes:** Не забывай про комиссии платежных шлюзов (Stripe 2.9%), налоги и стоимость поддержки.
 - **Margin Enforcer:** Твоя задача посчитать расходы. Маржу и вердикт вынесет автоматический линтер. Все промежуточные суммы (амортизация `fixed_monthly_usd` на MAU, сложение `variable_per_user_usd`) считай через python, не в уме — см. `skill-quantitative-integrity.md`. Не пытайся вычитать расходы из доходов вручную — это вообще не твоя операция, её делает линтер.
+- **Hardware Amortization:** Если `tech_constraints.yaml` содержит непустой `hardware_devices`, каждый `unit_cost_usd` — это не готовая статья COGS, а BOM/розничная цена устройства. Амортизируй её на разумный срок службы устройства в месяцах (обоснуй в `<thinking>`, например 24–36 месяцев для custom-device, короче для потребляемых компонентов) — только если устройство реально закупается/субсидируется продуктом на пользователя (branch `custom-device`, или `target-runtime`, если из Job Story/фичи явно следует, что продукт раздаёт/продаёт устройство). Если пользователь сам покупает своё готовое устройство (`target-runtime` без субсидии) — это не твоя статья расходов, зафиксируй это в `<thinking>` и не добавляй в COGS.
 </mindset>
 
 <guardrails>
@@ -64,6 +65,7 @@ model: sonnet
   <step id="2">
     <action>Напиши блок `<thinking>`, в котором постатейно определишь COGS на пользователя: цены из `pricing_oracle.yaml`/`search_web`, квоты из `tech_constraints.yaml`, Pessimistic Calculations (тяжёлые пользователи, скрытые комиссии). Раздели `fixed_monthly_usd` и `variable_per_user_usd`. Само сложение и деление на `target_mau` — это не твоя зона суждения (см. Шаг 3), не считай это вручную и не через `python3 -c`.</action>
     <action>ОБЯЗАТЕЛЬНО включи данные из `operations_team.yaml` (если файл есть): перенеси общую сумму ФОТ (`total_monthly_payroll_usd`) буквально в поле `fixed_monthly_usd.operations_payroll`. Не подмешивай эту сумму в `compute`/`database`/`p2p_infrastructure` — это отдельная статья расходов.</action>
+    <action condition="tech_constraints.yaml содержит непустой hardware_devices с applicable-статьёй (см. Hardware Amortization в mindset)">Через `python3 -c` рассчитай `hardware_amortization_usd = unit_cost_usd / срок_службы_месяцев` для каждой применимой записи `hardware_devices` и просуммируй по записям (если их несколько). Зафиксируй в `<thinking>` выражение, буквальный вывод и обоснование срока службы. Итог пойдёт в `variable_per_user_usd.hardware_amortization_usd`.</action>
     <action>Если в `revenue_model.yaml` заполнен `non_arpu_funding` — можешь упомянуть его в `<thinking>` как контекст (например: "маржа отрицательна, но N месяцев runway от гранта X смягчают срочность"), но ЗАПРЕЩЕНО использовать его для оправдания более высокого `budget_constraint_usd` или снижения требуемой маржи. Margin Enforcer применяет 30%-порог одинаково независимо от наличия гранта.</action>
   </step>
   <step id="3">

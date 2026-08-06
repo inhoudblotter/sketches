@@ -54,6 +54,10 @@
     {% include "slides/data_sourcing.html.j2" %}
   {% endif %}
 
+  {% if tech and tech.hardware_devices %}
+    {% include "slides/hardware.html.j2" %}
+  {% endif %}
+
   {% if scope_analytics %}
     {% include "slides/analytics_observability.html.j2" %}
   {% endif %}

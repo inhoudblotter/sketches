@@ -25,10 +25,13 @@ def calc_variable_sum(
     maintenance_and_support: float,
     payment_gateway_fees: float,
     tokenomics_costs: Optional[float] = None,
+    hardware_amortization_usd: Optional[float] = None,
 ) -> float:
     total = egress_traffic
     if tokenomics_costs:
         total += tokenomics_costs
+    if hardware_amortization_usd:
+        total += hardware_amortization_usd
     total += external_apis_cost
     total += maintenance_and_support + payment_gateway_fees
     return total

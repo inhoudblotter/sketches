@@ -38,6 +38,29 @@ def build_tech(strategy_dir: Path) -> dict | None:
         }
         for entry in (tech_data.get("data_sourcing") or [])
     ]
+    hardware_devices = [
+        {
+            "device_id": clean_links(str(entry.get("device_id", ""))),
+            "device_name": clean_links(str(entry.get("device_name", ""))),
+            "device_branch": clean_links(str(entry.get("device_branch", ""))),
+            "linked_features": [
+                {
+                    "domain": clean_links(str(ref.get("domain", ""))),
+                    "feature_id": clean_links(str(ref.get("feature_id", ""))),
+                }
+                for ref in (entry.get("linked_features") or [])
+            ],
+            "unit_cost_usd": entry.get("unit_cost_usd"),
+            "sourcing_risk": clean_links(str(entry.get("sourcing_risk", ""))),
+            "field_support_signal": clean_links(
+                str(entry.get("field_support_signal", ""))
+            ),
+            "regulatory_flags": [
+                clean_links(str(flag)) for flag in (entry.get("regulatory_flags") or [])
+            ],
+        }
+        for entry in (tech_data.get("hardware_devices") or [])
+    ]
     return {
         "frontend": _stack_field(stack, "frontend"),
         "backend": _stack_field(stack, "backend"),
@@ -48,4 +71,5 @@ def build_tech(strategy_dir: Path) -> dict | None:
         "growth_path": growth_path,
         "maintainability": clean_links(tech_data.get("maintainability_notes", "")),
         "data_sourcing": data_sourcing,
+        "hardware_devices": hardware_devices,
     }

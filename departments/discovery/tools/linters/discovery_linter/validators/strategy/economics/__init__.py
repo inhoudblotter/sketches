@@ -53,6 +53,7 @@ class FixedMonthly(BaseModel):
 class VariablePerUser(BaseModel):
     egress_traffic: float
     tokenomics_costs: Optional[float] = None
+    hardware_amortization_usd: Optional[float] = None
     external_apis: List[ExternalApiCost]
     operational: OperationalCost
 
@@ -119,6 +120,7 @@ def _calculate_cogs(
         var.operational.maintenance_and_support,
         var.operational.payment_gateway_fees,
         var.tokenomics_costs,
+        var.hardware_amortization_usd,
     )
 
     calculated_cogs = calc_total_cogs(fixed_sum, var_sum, rev_model.target_mau)

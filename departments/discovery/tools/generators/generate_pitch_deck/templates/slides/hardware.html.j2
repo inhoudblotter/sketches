@@ -1,0 +1,39 @@
+<div class="embla__slide">
+  <div class="slide-content">
+    <h2>Аппаратная Инфраструктура (Hardware Devices)</h2>
+    <p style="color: #aaa; margin-bottom: 30px;">
+      Целевые устройства и/или кастомные девайсы, на которых развёрнут продукт — юнит-стоимость, риск поставки и полевая поддержка.
+    </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+      {% for entry in tech.hardware_devices %}
+        {% set risk_color = {
+          "multi-sourced": "#4ade80",
+          "sole-sourced": "#f87171",
+          "none": "#888"
+        }.get(entry.sourcing_risk, "#888") %}
+        <div class="metric-card" style="border-left: 4px solid {{ risk_color }}; justify-content: flex-start;">
+          <div class="flex items-start justify-between gap-3 mb-1">
+            <span class="text-white text-sm font-bold" style="text-wrap: balance;">{{ entry.device_name or entry.device_id }}</span>
+            <span class="text-xs font-mono font-bold uppercase whitespace-nowrap flex-shrink-0" style="color: {{ risk_color }};">{{ entry.sourcing_risk }}</span>
+          </div>
+          <div class="metric-label mb-2">{{ entry.device_branch }}{% if entry.unit_cost_usd %} · ${{ entry.unit_cost_usd }}/unit{% endif %}</div>
+          {% if entry.linked_features %}
+          <div class="flex flex-wrap gap-1 mb-2">
+            {% for ref in entry.linked_features %}
+            <span class="text-xs font-mono" style="color: #ccc; background: #1a1a1a; padding: 2px 6px;">{{ ref.domain }}/{{ ref.feature_id }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+          <div class="text-xs" style="color: #ccc; line-height: 1.5;">{{ entry.field_support_signal }}</div>
+          {% if entry.regulatory_flags %}
+          <div class="flex flex-col gap-1 mt-3">
+            {% for flag in entry.regulatory_flags %}
+            <div class="text-xs font-mono" style="color: #facc15;">{{ flag }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

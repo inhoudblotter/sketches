@@ -57,12 +57,14 @@ model: sonnet
     <read optional="true">workspace/discovery/domains/{domain}/epics/{epic_name}/estimation.yaml</read>
     <read>workspace/discovery/strategy/tech_constraints.yaml</read>
     <read>workspace/discovery/domains/{domain}/epics/{epic_name}/stories.yaml</read>
+    <read>workspace/discovery/domains/{domain}/epics/{epic_name}/features.yaml</read>
     <for_each collection="workspace/discovery/domains/{domain}/epics/{epic_name}/flows/*.yaml" item="flow_id" execution="sequential">
       <read>workspace/discovery/domains/{domain}/epics/{epic_name}/flows/{flow_id}.yaml</read>
     </for_each>
   </step>
   <step id="2">
-    <description>Оцени сложность историй. Если это Warm Start, сгенерируй оценки ТОЛЬКО для историй из `MISSING_STORIES` (точечная вставка). Для каждой оцениваемой истории (по ID) укажи вычисленные `story_points` (число Фибоначчи), сверь их с таблицей калибровки токенов из плейбука (Шаг 2а) и проверь применимость каждого флага из Каталога флагов риска (Шаг 4: `[SPIKE REQUIRED]`, `[NEED RESEARCH]`, `[LOW VERIFIABILITY]`, `[MULTI-RUN FLOW]`, `[VENDOR DEPENDENCY]`, `[SLA CRITICAL]`, `[SECURITY CRITICAL]`, `[DATA SCIENCE REQUIRED]`), добавив применимые флаги как ключи в `flags` вместе с их текстовым обоснованием.</description>
+    <description>Оцени сложность историй. Если это Warm Start, сгенерируй оценки ТОЛЬКО для историй из `MISSING_STORIES` (точечная вставка). Для каждой оцениваемой истории (по ID) укажи вычисленные `story_points` (число Фибоначчи), сверь их с таблицей калибровки токенов из плейбука (Шаг 2а) и проверь применимость каждого флага из Каталога флагов риска (Шаг 4: `[SPIKE REQUIRED]`, `[NEED RESEARCH]`, `[LOW VERIFIABILITY]`, `[MULTI-RUN FLOW]`, `[VENDOR DEPENDENCY]`, `[SLA CRITICAL]`, `[SECURITY CRITICAL]`, `[DATA SCIENCE REQUIRED]`, `[EXTERNAL DEVICE DEPENDENCY]`, `[DATA SOURCING REQUIRED]`), добавив применимые флаги как ключи в `flags` вместе с их текстовым обоснованием.</description>
+    <action>Для `[EXTERNAL DEVICE DEPENDENCY]`/`[DATA SOURCING REQUIRED]`: по `features.yaml` найди, какой `feature_id` ссылается на историю через `linked_job_stories`. Если пара `{domain}/{feature_id}` встречается в `linked_features` любой записи `tech_constraints.yaml#hardware_devices` — ставь `[EXTERNAL DEVICE DEPENDENCY]`, процитировав `device_id`. Если та же пара встречается в `tech_constraints.yaml#data_sourcing` с `automation_verdict` отличным от `automated` — ставь `[DATA SOURCING REQUIRED]`, процитировав `automation_verdict`/`moderation_signal`. История без фичи в `features.yaml` (или фича не встречается ни в одном из двух массивов) не получает эти флаги.</action>
     <write contract="departments/discovery/contracts/estimation_template.yaml">workspace/discovery/domains/{domain}/epics/{epic_name}/estimation.yaml</write>
   </step>
   <step id="3">
@@ -77,7 +79,7 @@ model: sonnet
 <escalation_protocol>
 <triggers>
 
-- Любой из файлов, помеченных `<read>` на шаге 1 (`stories.yaml`, `tech_constraints.yaml`), не найден
+- Любой из файлов, помеченных `<read>` на шаге 1 (`stories.yaml`, `features.yaml`, `tech_constraints.yaml`), не найден
 - Эпик `{epic_name}` отсутствует в домене `{domain}`
 - CLI-валидатор discovery-linter estimation завершился с ошибкой (Exit Code 1)
   </triggers>

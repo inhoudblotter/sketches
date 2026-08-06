@@ -1,6 +1,6 @@
 ---
 name: tech-synthesizer
-description: Синтезатор технического контекста. Объединяет данные от tech, devops, ai-data, compliance, data-miner скаутов и формирует технические ограничения для архитекторов (system-design-architect). UX-контекст (ux-scout, ux_research.yaml/ux_constraints.yaml/ux_vision.md) — зона ux-flow-architect, который теперь запускается раньше tech-synthesizer.
+description: Синтезатор технического контекста. Объединяет данные от tech, devops, ai-data, compliance, data-miner, hardware скаутов и формирует технические ограничения для архитекторов (system-design-architect). UX-контекст (ux-scout, ux_research.yaml/ux_constraints.yaml/ux_vision.md) — зона ux-flow-architect, который теперь запускается раньше tech-synthesizer.
 model: sonnet
 ---
 
@@ -53,19 +53,23 @@ model: sonnet
   <step id="1">
     <action><call_tool name="EnterWorktree">{}</call_tool></action>
     <action><call_tool name="git">git checkout -B discovery/tech-synthesizer develop</call_tool></action>
-    <description>Параллельный вызов технических скаутов (Map)</description>
-    <action>Вызови всех 5 технических скаутов параллельно:
+    <description>Параллельный вызов технических скаутов (Map), волнами по ≤ 5 (Parallel Batch Cap, PIT-16)</description>
+    <action>Wave 1 — вызови 5 технических скаутов параллельно:
       <call_agent name="tech-scout">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Conduct Research</call_agent>
       <call_agent name="devops-scout">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Conduct Research</call_agent>
       <call_agent name="ai-data-scout">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Conduct Research</call_agent>
       <call_agent name="compliance-scout">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Conduct Research</call_agent>
       <call_agent name="data-miner">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Conduct Research</call_agent>
     </action>
-    <instruction>Дождись успешного завершения работы всех 5 саб-агентов. `ux-scout` сюда не входит — он теперь вызывается `ux-flow-architect`, который к этому моменту уже отработал (см. новый порядок фаз); `ux_research.yaml`/`ux_constraints.yaml`/`ux_vision.md` уже на диске и в `develop`.</instruction>
+    <instruction>Дождись успешного завершения всех 5 саб-агентов Wave 1 и наличия их выходных файлов, прежде чем стартовать Wave 2.</instruction>
+    <action>Wave 2 — вызови оставшегося скаута:
+      <call_agent name="hardware-scout">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Conduct Research</call_agent>
+    </action>
+    <instruction>Дождись успешного завершения hardware-scout. `ux-scout` сюда не входит — он теперь вызывается `ux-flow-architect`, который к этому моменту уже отработал (см. новый порядок фаз); `ux_research.yaml`/`ux_constraints.yaml`/`ux_vision.md` уже на диске и в `develop`.</instruction>
   </step>
   <step id="2">
     <description>Commit Scouts' Artifacts (Reduce): все параллельные саб-агенты завершены — теперь коммить их артефакты одним общим коммитом.</description>
-    <action><call_tool name="git">git add workspace/discovery/research/technical-context/tech_benchmarks.md workspace/discovery/research/technical-context/deployment_strategy.md workspace/discovery/research/technical-context/algorithm_benchmarks.md workspace/discovery/research/technical-context/compliance_constraints.md workspace/discovery/research/technical-context/data_sourcing.md && git commit -m "feat(discovery): tech-synthesizer scouts outputs"</call_tool></action>
+    <action><call_tool name="git">git add workspace/discovery/research/technical-context/tech_benchmarks.md workspace/discovery/research/technical-context/deployment_strategy.md workspace/discovery/research/technical-context/algorithm_benchmarks.md workspace/discovery/research/technical-context/compliance_constraints.md workspace/discovery/research/technical-context/data_sourcing.md workspace/discovery/research/technical-context/hardware_market.md && git commit -m "feat(discovery): tech-synthesizer scouts outputs"</call_tool></action>
   </step>
   <step id="2.5">
     <description>Запуск ops-scout. Он должен запуститься ПОСЛЕ коммита отчетов техскаутов, чтобы иметь возможность их прочесть, а также использовать query-discovery для чтения Job Stories внутренних акторов (бэкофис/админы) из уже завершенной Фазы 2.</description>
@@ -82,6 +86,7 @@ model: sonnet
     <read>workspace/discovery/research/technical-context/algorithm_benchmarks.md</read>
     <read>workspace/discovery/research/technical-context/compliance_constraints.md</read>
     <read optional="true">workspace/discovery/research/technical-context/data_sourcing.md</read>
+    <read optional="true">workspace/discovery/research/technical-context/hardware_market.md</read>
   </step>
   <step id="4">
     <description>Analysis & Thinking</description>
@@ -92,7 +97,7 @@ model: sonnet
   <step id="5">
     <description>Review & Delegate через Patch Protocol: патч пишется, когда отчёт скаута содержит слабые рекомендации, прямо противоречит подтвержденному кворумом риску, или (для devops-scout) не покрывает инфраструктурный компонент, подразумеваемый другим скаутом (Infra Gap Rule, Шаг 4).</description>
     <action>Если на Шаге 4 выявлена необходимость доработки, сгенерируй файл патча для проблемного скаута по контракту `departments/operations/contracts/patch_template.yaml`, назвав файл по теме проблемы (kebab-case), например `budget-overrun-conflict.yaml`. Для патча по Infra Gap Rule используй `gap_type: missing_infra_component` и в `detail` обязательно укажи, какой скаут и какая находка (со ссылкой [file.md#L1-L2]) требуют этот компонент — devops-scout не должен сам догадываться, откуда взялось требование.</action>
-    <for_each collection="[tech-scout, devops-scout, ai-data-scout, compliance-scout, data-miner]" item="scout_name" execution="sequential">
+    <for_each collection="[tech-scout, devops-scout, ai-data-scout, compliance-scout, data-miner, hardware-scout]" item="scout_name" execution="sequential">
       <write optional="true" contract="departments/operations/contracts/patch_template.yaml" condition="отчёт скаута требует доработки согласно Шагу 4">workspace/discovery/research/technical-context/patches/{patch_name}.yaml</write>
       <action optional="true" condition="патч создан"><call_tool name="discovery-linter">discovery-linter patch workspace/discovery/research/technical-context/patches/{patch_name}.yaml</call_tool></action>
       <action>Если патч создан, вызови скаута на доработку, передав только имя файла патча: `<call_agent name="{scout_name}">WORKSPACE_ROOT: {WORKSPACE_ROOT} | COMMAND: Refine Research | PATCH: {patch_name}</call_agent>`. Дождись завершения. Разрешается только ОДНА попытка доработки.</action>
@@ -106,11 +111,13 @@ model: sonnet
     <read>workspace/discovery/research/technical-context/algorithm_benchmarks.md</read>
     <read>workspace/discovery/research/technical-context/compliance_constraints.md</read>
     <read optional="true">workspace/discovery/research/technical-context/data_sourcing.md</read>
+    <read optional="true">workspace/discovery/research/technical-context/hardware_market.md</read>
   </step>
   <step id="7">
     <description>Синтез технических артефактов. Все архитектурные решения и ограничения обязаны строго ссылаться на исходные файлы скаутов (Tracer Pattern). Логику разрешения конфликтов (в том числе по правилу кворума) обязательно вынеси в изолированный лог tech_conflict_log.md, чтобы передать его аудиторам.</description>
     <action>Перенеси секции "Growth Path" и "Maintainability Note" из `deployment_strategy.md` в поля `growth_path` и `maintainability_notes` контракта `tech_constraints.yaml` (Tracer Pattern — со ссылками на исходные строки). Это единственный канал, которым сведения о точках роста и эксплуатационной сложности доходят до system-design-architect — не отбрасывай их как "детали инфраструктуры" под Shift-Right Context.</action>
-    <action condition="data_sourcing.md существует и содержит хотя бы одну секцию по фиче">Перенеси по каждой фиче из `data_sourcing.md` пару `domain/feature_id` из заголовка секции (не переизобретай — копируй буквально) вместе с Automation Verdict, Moderation & Quality Signal и Legal Flags в массив `data_sourcing` контракта `tech_constraints.yaml` (Tracer Pattern — со ссылками на исходные строки). Это единственный канал, которым эти сигналы доходят до `ops-scout` (Functional Coverage Matrix) и `cogs-scout` — сам `data_sourcing.md` они не читают. `discovery-linter tech-constraints` (Шаг 8) хардфейлит любую пару `domain/feature_id`, не резолвящуюся в реальную фичу — если `data-miner` процитировал несуществующую пару, это баг его отчёта, а не повод подменить значение своим на синтезе.</action>
+    <action condition="data_sourcing.md существует и содержит хотя бы одну секцию по фиче">Перенеси по каждой фиче из `data_sourcing.md` пару `domain/feature_id` из заголовка (копируй буквально) вместе с Automation Verdict, Moderation & Quality Signal и Legal Flags в массив `data_sourcing` контракта `tech_constraints.yaml` (Tracer Pattern — со ссылками на исходные строки). Единственный канал, которым эти сигналы доходят до `ops-scout`/`cogs-scout`. `discovery-linter tech-constraints` (Шаг 8) хардфейлит любую пару `domain/feature_id`, не резолвящуюся в реальную фичу.</action>
+    <action condition="hardware_market.md существует и содержит хотя бы одну техническую секцию (раздел B непустой)">Перенеси по каждой теме устройства из `hardware_market.md` заголовок → `device_id`/`device_name`, весь пул `Linked Features` → `linked_features` (копируй список целиком, не сворачивай в одну пару), Ветка → `device_branch`, цену из Alternatives Comparison/Cost Scaling → `unit_cost_usd`, Supply Chain Risk → `sourcing_risk`, Field Degradation & Update Logistics → `field_support_signal`, Regulatory Flags → `regulatory_flags` в массив `hardware_devices` контракта `tech_constraints.yaml` (Tracer Pattern — со ссылками на исходные строки). Единственный канал, которым эти сигналы доходят до `ops-scout`/`cogs-scout`. `discovery-linter tech-constraints` (Шаг 8) хардфейлит любую пару `domain/feature_id` внутри `linked_features`, не резолвящуюся в реальную фичу.</action>
     <write contract="departments/discovery/contracts/tech_conflict_log_template.md">workspace/discovery/strategy/tech_conflict_log.md</write>
     <action>Запусти линтер: <call_tool name="discovery-linter">discovery-linter markdown-headings workspace/discovery/strategy/tech_conflict_log.md</call_tool>. Если вернул exit code 1 — добавь недостающий заголовок из контракта и повтори.</action>
     <write contract="departments/discovery/contracts/tech_constraints_template.yaml">workspace/discovery/strategy/tech_constraints.yaml</write>

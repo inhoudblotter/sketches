@@ -27,10 +27,11 @@ SCOPE_ANALYTICS_SLIDES_WITH_COMPLIANCE = SCOPE_ANALYTICS_SLIDES + 1
 
 def _count_tech_slides(tech: dict | None) -> int:
     """Tech Stack slide (1) plus Data Dependency & Integrity slide (1, only when
-    `tech.data_sourcing` is non-empty — see build_tech/compact_tech)."""
+    `tech.data_sourcing` is non-empty) plus Hardware Devices slide (1, only when
+    `tech.hardware_devices` is non-empty) — see build_tech/compact_tech."""
     if not tech:
         return 0
-    return 1 + bool(tech.get("data_sourcing"))
+    return 1 + bool(tech.get("data_sourcing")) + bool(tech.get("hardware_devices"))
 
 
 def _load_optional_yaml(path, label: str) -> dict:

@@ -21,7 +21,7 @@
 | `↳ job-stories` | — |
 | `↳ job-stories-content` | — |
 | `↳ launch-roadmap` | discovery-pitcher |
-| `↳ markdown-headings` | ai-data-scout, compliance-scout, data-miner, devops-scout, discovery-pitcher, growth-hacker-scout, marketing-scout, product-scout, tech-scout, tech-synthesizer, ux-flow-architect |
+| `↳ markdown-headings` | ai-data-scout, compliance-scout, data-miner, devops-scout, discovery-pitcher, growth-hacker-scout, hardware-scout, marketing-scout, product-scout, tech-scout, tech-synthesizer, ux-flow-architect |
 | `↳ markdown-links` | — |
 | `↳ market-context` | business-synthesizer |
 | `↳ operations-team` | ops-scout |
@@ -48,14 +48,14 @@
 | `↳ data-model` | discovery-pitcher |
 | `↳ dependencies` | discovery-pitcher |
 | `↳ domain-consistency` | po-strategist |
-| `↳ epics` | ai-data-scout, data-miner, devops-scout, tech-lead, tech-scout, ux-flow-architect |
+| `↳ epics` | ai-data-scout, data-miner, devops-scout, hardware-scout, tech-lead, tech-scout, ux-flow-architect |
 | `↳ errata-domain` | po-strategist |
 | `↳ errata-epic` | ux-flow-architect |
 | `↳ errata-global` | errata-resolver |
 | `↳ estimation` | tech-lead |
 | `↳ exports` | — |
-| `↳ features` | ai-data-scout, data-miner, discovery-pitcher, ux-scout |
-| `↳ flows` | ai-data-scout, compliance-scout, discovery-pitcher, tech-lead, tech-scout |
+| `↳ features` | ai-data-scout, data-miner, discovery-pitcher, hardware-scout, ux-scout |
+| `↳ flows` | ai-data-scout, compliance-scout, discovery-pitcher, hardware-scout, tech-lead, tech-scout |
 | `↳ flows-self-check` | tech-lead, ux-flow-architect |
 | `↳ get` | — |
 | `↳ metrics` | compliance-scout, devops-scout, discovery-pitcher, po-strategist |
@@ -65,13 +65,13 @@
 | `↳ reclassify-feature` | — |
 | `↳ rename-entity` | — |
 | `↳ replace-term` | — |
-| `↳ requirements` | ai-data-scout, compliance-scout, data-miner, devops-scout, tech-scout, ux-scout |
+| `↳ requirements` | ai-data-scout, compliance-scout, data-miner, devops-scout, hardware-scout, tech-scout, ux-scout |
 | `↳ resolve-errata` | — |
 | `↳ search` | — |
 | `↳ self-check` | po-strategist |
 | `↳ set-field` | — |
 | `↳ stats` | ops-scout, tech-lead, tech-scout, ux-flow-architect |
-| `↳ stories` | discovery-pitcher, ops-scout, ux-scout |
+| `↳ stories` | discovery-pitcher, hardware-scout, ops-scout, ux-scout |
 | `↳ team-functions` | ops-scout |
 | `↳ telemetry-events` | ai-data-scout, devops-scout |
 | `↳ toc` | ops-scout, po-strategist, tech-lead, ux-flow-architect |

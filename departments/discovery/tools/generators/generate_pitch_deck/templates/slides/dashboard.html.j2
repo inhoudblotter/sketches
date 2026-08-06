@@ -1,12 +1,11 @@
 <div class="embla__slide">
   <div class="slide-content">
     <h2>Юнит-Экономика и Окупаемость</h2>
+    {% set included = ["серверная инфраструктура", "сторонние API", "комиссии платёжных шлюзов"] %}
+    {% if dashboard.operations_payroll_monthly %}{% set included = included + ["ФОТ бэкофиса (см. Team Payroll)"] %}{% endif %}
+    {% if dashboard.hardware_amortization_monthly %}{% set included = included + ["амортизация устройств (см. Hardware Amortization)"] %}{% endif %}
     <p style="font-size: 16px; color: #888; margin-top: -10px; margin-bottom: 30px; font-style: italic;">
-      {% if dashboard.operations_payroll_monthly %}
-      * Учитываются серверная инфраструктура, сторонние API, комиссии платёжных шлюзов и ФОТ бэкофиса (см. карточку Team Payroll ниже). Налоги и маркетинг исключены.
-      {% else %}
-      * Учитываются серверная инфраструктура, сторонние API и комиссии платёжных шлюзов. ФОТ (штат отсутствует/не заведён), налоги и маркетинг исключены.
-      {% endif %}
+      * Учитываются {{ included|join(", ") }}. Налоги и маркетинг исключены.
     </p>
     <div class="dashboard-grid">
       <div class="metric-card">
@@ -29,6 +28,13 @@
         <div class="metric-value text-white" title="${{ dashboard.operations_payroll_monthly|commas }}">${{ dashboard.operations_payroll_monthly|compact }}</div>
         <div class="metric-label">Team Payroll (Ops)</div>
         <div class="metric-sub">ФОТ бэкофиса из operations_team.yaml</div>
+      </div>
+      {% endif %}
+      {% if dashboard.hardware_amortization_monthly %}
+      <div class="metric-card">
+        <div class="metric-value text-white" title="${{ dashboard.hardware_amortization_monthly|commas }}">${{ dashboard.hardware_amortization_monthly|compact }}</div>
+        <div class="metric-label">Hardware Amortization</div>
+        <div class="metric-sub">$<span title="${{ "%.2f"|format(dashboard.hardware_amortization_usd_per_user) }}">{{ dashboard.hardware_amortization_usd_per_user|compact(decimals=2, small_decimals=2) }}</span>/user × MAU</div>
       </div>
       {% endif %}
       <div class="metric-card">

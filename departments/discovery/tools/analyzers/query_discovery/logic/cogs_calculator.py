@@ -49,6 +49,7 @@ def calculate_cogs(draft_path: Path) -> dict:
         operational.get("maintenance_and_support", 0),
         operational.get("payment_gateway_fees", 0),
         var.get("tokenomics_costs"),
+        var.get("hardware_amortization_usd"),
     )
 
     target_mau = revenue.get("target_mau")

@@ -53,4 +53,24 @@ data_sourcing:
     legal_flags:
       - '[Явный риск лицензии/ToS/PII без вердикта. Источник: data_sourcing.md#Legal Flags. Пусто, если "не выявлено"]'
 
+# Перенос (Tracer Pattern) по каждой теме устройства из hardware_market.md — источник для
+# cogs-scout (unit_cost_usd → hardware_amortization_usd в COGS) и ops-scout (field_support_signal →
+# Functional Coverage Matrix, если требуется физическая логистика/поддержка устройств в поле).
+# Пусто/отсутствует, если hardware_market.md не содержит тем (продукт — чистый web/cloud SaaS).
+# Одно устройство может обслуживать пул фич — `linked_features` берётся списком из
+# `hardware_market.md#Linked Features` буквально, каждая пара ОБЯЗАНА резолвиться в реальную
+# фичу (линтер discovery-linter tech-constraints хардфейлит нерезолвящиеся пары).
+hardware_devices:
+  - device_id: '[Kebab-case ID темы устройства из заголовка секции hardware_market.md. Например: offline_scan_kiosk]'
+    device_name: '[Человекочитаемое название темы, только для чтения]'
+    device_branch: '[target-runtime | custom-device. Источник: hardware_market.md, поле "Ветка"]'
+    linked_features:
+      - domain: '[Домен фичи из пула. Например: billing]'
+        feature_id: '[Точный `id` фичи из её features.yaml. Например: card_payment]'
+    unit_cost_usd: '[Цена устройства за штуку на релевантном тире (Pilot/Volume для custom-device, розничная для target-runtime). Источник: hardware_market.md#Alternatives Comparison или #Cost Scaling]'
+    sourcing_risk: '[sole-sourced | multi-sourced — вывод из hardware_market.md#Supply Chain Risk. "none", если риск не выявлен]'
+    field_support_signal: '[Физически ли возможен OTA, или требуется truck-roll/физическая замена — источник: hardware_market.md#Field Degradation & Update Logistics. "не требуется", если устройство не требует полевой поддержки]'
+    regulatory_flags:
+      - '[Явный риск сертификации (CE/FCC/RoHS/UN38.3) без вердикта. Источник: hardware_market.md#Regulatory Flags. Пусто, если не выявлено]'
+
 strategic_insight: '[Чем мы жертвуем ради этой архитектуры? Например: Жертвуем скоростью разработки ради дешевизны VPS]'
